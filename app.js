@@ -15,7 +15,7 @@ sequelize.sync().then(()=>{
 });
 
 // router
-//app.use("/api", require("./api"))
+app.use("/api", require("./api"))
 app.get('/', (req, res) => res.send('Hello World!'))
 
 // open

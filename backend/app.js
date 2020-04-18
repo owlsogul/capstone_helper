@@ -8,7 +8,7 @@ app.use(express.json())
 
 // db
 var sequelize = require('./models').sequelize;
-sequelize.sync().then(()=>{
+sequelize.sync({ force: true }).then(()=>{
     console.log("Successfully connec to server")
 }).catch((err)=>{
     console.log(err)

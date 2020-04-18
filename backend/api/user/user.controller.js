@@ -69,7 +69,8 @@ exports.login = (req, res) => {
     const respond = (user) => {
         res
         .cookie("token", loginToken, { maxAge: 1000* 60 * 60 * 2, httpOnly: true, signed: true })
-        .json(200, {
+        .status(200)
+        .json({
             message: 'logged in successfully'
         })
     }

@@ -25,7 +25,7 @@ module.exports = {
   checkLogin: function(req, res, next){
 
     // 데이터 파싱
-    let token = req.cookies.token
+    let token = req.signedCookies.token
     let [ user, err ] = parseToken(token)
     console.log(user + ", " + err)
 

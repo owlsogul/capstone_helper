@@ -55,8 +55,9 @@ exports.login = (req, res) => {
 
     const issueLoginToken = (user) => {
       let token = tokener.signLoginToken(user.email)
+      let encrptedToken = coder.encrypt(token)
       if (token) {
-        loginToken = token
+        loginToken = encrptedToken
         return user
       }
       else {
@@ -133,3 +134,15 @@ exports.register = (req, res) => {
 
 }
 
+exports.checkToken = (req, res, next) =>{
+
+    let rawToken = req.signedCookies.token
+    console.log("raw token : " + rawToken)
+    let token = coder.decrypt(rawToken)
+    console.log("token " + token)
+    let verify = tokener.verifyToken(token)
+    console.log("verify " + verify)
+
+    res.json({ rawToken: rawToken, token: token, verfiy: verify })
+
+}

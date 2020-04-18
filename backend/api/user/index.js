@@ -6,6 +6,8 @@ const uc = require("./user.controller")
 
 router.post("/login", uc.login)
 
+router.post("/logout", [serviceUser.checkLogin, uc.logout])
+
 router.post("/checkToken", [serviceUser.checkLogin, uc.checkToken])
 
 router.post("/register", uc.register)

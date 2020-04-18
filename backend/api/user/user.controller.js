@@ -91,9 +91,9 @@ exports.login = (req, res) => {
 
 }
 
-exports.logout = (req, res) => {
+exports.logout = (req, res, next) => {
 
-
+    res.clearCookie("token").status(200).json({ message: "logout successfully"})
 
 }
 

@@ -3,6 +3,7 @@ const crypto = require("crypto")
 const coder = require("../../util/coder")
 const tokener = require("../../util/tokener")
 const newErr = require("../../middleware/error")
+const mailer = require("../../util/mailer")
 
 function validateUserId(userId){
   if (!userId) return false;
@@ -17,6 +18,17 @@ function validateUserPw(userPw){
 
 function validateUser(userId, userPw){
   return validateUserId(userId) && validateUserPw(userPw)
+}
+
+function makeRandomString(from, length) {
+    var chars = from ? from : "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+    var string_length = length ? length : 20;
+    var randomstring = '';
+    for (var i=0; i<string_length; i++) {
+    var rnum = Math.floor(Math.random() * chars.length);
+        randomstring += chars.substring(rnum,rnum+1);
+    }
+    return randomstring;
 }
 
 exports.login = (req, res) => {
@@ -99,39 +111,61 @@ exports.logout = (req, res, next) => {
 
 exports.register = (req, res) => {
 
-  let userId = req.body.userId
-  let userPw = req.body.userPw
-  let userName = req.body.userName
+    let userId = req.body.userId
+    let userPw = req.body.userPw
+    let userName = req.body.userName
 
-  let salt = Math.round((new Date().valueOf() * Math.random())) + "";
-  let hashPassword = crypto.createHash("sha512").update(userPw + salt).digest("hex");
+    let salt = Math.round((new Date().valueOf() * Math.random())) + "";
+    let hashPassword = crypto.createHash("sha512").update(userPw + salt).digest("hex");
 
-  if (!validateUser(userId, userPw)) {
-    req.Error.wrongParameter(res, "userId or userPw")
-    return
-  }
+    if (!validateUser(userId, userPw)) {
+        req.Error.wrongParameter(res, "userId or userPw")
+        return
+    }
 
-  if (!userName){
-      req.Error.wrongParameter(res, "userName")
-      return
-  }
+    if (!userName){
+        req.Error.wrongParameter(res, "userName")
+        return
+    }
 
-  models.User
-    .create({
-      email: userId,
-      password: hashPassword,
-      name: userName,
-      salt: salt,
-    })
-    .then(result => {
-      res.json({ userId: result.email })
-    })
-    .catch(err => {
-      let name = err.name
+    const createAuthData = (user)=>{
+        return models.UserAuthData.create({
+            user: user.email,
+            authLink: makeRandomString(false, 20),
+            expireDate: Date.parse("2020-04-20")
+        })
+    }
 
-      if (name == "SequelizeUniqueConstraintError"){ req.Error.duplicatedUser(res) }
-      else { console.log(err); req.Error.internal(res) }
-    })
+    const sendEmail = (authData) => {
+        return mailer.sendMail(
+            authData.user, 
+            "가입 인증 메일", 
+            `<p>귀하의 인증 번호는 다음과 같습니다.</p> 
+            <p><strong>${authData.authLink}</strong></p>
+            <p>다음 URL로 들어가주십시오.</p>
+            http://localhost/api/user/auth_check/${authData.authLink}
+            `
+        )
+    }
+
+    models.User
+        .create({
+            email: userId,
+            password: hashPassword,
+            name: userName,
+            salt: salt,
+        })
+        .then(createAuthData)
+        .then(sendEmail)
+        .then(result => {
+            res.json({ userId: userId })
+        })
+        .catch(err => {
+            let name = err.name
+
+            if (name == "SequelizeUniqueConstraintError"){ req.Error.duplicatedUser(res) }
+            else { console.log(err); req.Error.internal(res) }
+        })
 
 }
 
@@ -145,5 +179,37 @@ exports.checkToken = (req, res, next) =>{
     console.log("verify " + verify)
 
     res.json({ rawToken: rawToken, token: token, verfiy: verify })
+
+}
+
+exports.authCheck = (req, res, next)=>{
+    var authLink = req.params.authLink ? req.params.authLink : ""
+    
+    const registerConfirm = (authData) =>{
+        return new Promise((res, rej)=>{
+            if (!authData) { rej("Already Check"); return; }
+            models.User
+                .update({ level: 1 }, {where: { email: authData.user }})
+                .then(result=>{
+                    console.log(result)
+                    if (result.length == 0){ rej("No User"); return; }
+                    authData.destroy()
+                    res()
+                })
+        })
+    }
+
+    models.UserAuthData
+        .findOne({
+            where: { authLink: authLink }
+        })
+        .then(registerConfirm)
+        .then(()=>{
+            res.json({message: "GOOD"})
+        })
+        .catch((err)=>{
+            console.log(err)
+            res.status(400).json({message: "NO!!"})
+        })
 
 }

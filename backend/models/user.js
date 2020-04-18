@@ -6,8 +6,11 @@ module.exports = function(sequelize, DataTypes){
             allowNull: false
         },
         password: {
-            type: DataTypes.STRING(30),
+            type: DataTypes.STRING,
             allowNull: false
+        },
+        salt: {
+          type: DataTypes.STRING
         },
         name: {
             type: DataTypes.STRING(30),

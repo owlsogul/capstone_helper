@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 //import PropTypes from "prop-types";
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';

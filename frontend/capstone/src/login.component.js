@@ -1,17 +1,14 @@
 import React, {Component} from 'react';
 
 
-function sendLogin() {
+function sendLogin(sendObj) {
     return fetch('/api/user/login', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          userId: "id",
-          userPw: "pw"
-        }),
+        body: JSON.stringify(sendObj),
       });
 }
 
@@ -32,7 +29,7 @@ export default class Login extends Component {
     }
 
     doLogin(){
-        sendLogin()
+        sendLogin(this.state)
     }
 
     render() {
@@ -42,11 +39,6 @@ export default class Login extends Component {
 
                 <div className="form-group">
                     <label>이메일</label>
-                    <input type="ID" className="form-control" placeholder="이메일을 입력하세요." value={this.state.userId} onChange={this.handleIdChange}/>
-                </div>
-
-                <div className="form-group">
-                    <label>이메일 따라쟁이</label>
                     <input type="ID" className="form-control" placeholder="이메일을 입력하세요." value={this.state.userId} onChange={this.handleIdChange}/>
                 </div>
 

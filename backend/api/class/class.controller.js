@@ -10,7 +10,7 @@ exports.createClass = (req, res, next)=>{
     }
 
     const checkLevel = (user)=>{
-        if (!user || user.level < 100){
+        if (!user || user.level < 101){
             throw "Low Level"
         }
         return user

@@ -30,6 +30,8 @@ export default class Login extends Component {
 
     doLogin(){
         sendLogin(this.state)
+        .then(res=>res.json())
+        .then(console.log)
     }
 
     render() {

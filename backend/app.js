@@ -8,7 +8,10 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser(serverConfig.cookieKey));
 app.use(express.json())
 
+
 // middleware
+var cors = require('cors');
+app.use(cors()); // CORS 설정
 const error = require("./middleware/error")
 app.use(error.initModule)
 

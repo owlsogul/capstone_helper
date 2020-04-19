@@ -133,11 +133,16 @@ exports.register = (req, res) => {
         return
     }
 
+    if (!studentCode){
+        req.Error.wrongParameter(res, "studentCode")
+        return
+    }
+
     models.sequelize.transaction().then(t=>{
-        
+
         const createAuthData = (user)=>{
             return models.UserAuthData.create({
-                user: user.email,
+                user: userId,
                 authLink: makeRandomString(false, 20),
                 expireDate: Date.now() + (1000 * 60 * 60 * 24)
             }, { transaction: t })
@@ -145,7 +150,7 @@ exports.register = (req, res) => {
 
         const createStudentMeta = (user)=>{
             return models.StudentMeta.create({
-                user: user.email,
+                user: userId,
                 studentCode: studentCode,
             }, { transaction: t })
         }
@@ -169,8 +174,8 @@ exports.register = (req, res) => {
                 name: userName,
                 salt: salt,
             }, { transaction: t })
-            .then(createAuthData)
             .then(createStudentMeta)
+            .then(createAuthData)
             .then(sendEmail)
             .then(result => {
                 res.json({ userId: userId })

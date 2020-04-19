@@ -132,7 +132,7 @@ exports.register = (req, res) => {
         return models.UserAuthData.create({
             user: user.email,
             authLink: makeRandomString(false, 20),
-            expireDate: Date.parse("2020-04-20")
+            expireDate: Date.now() + (1000 * 60 * 60 * 24)
         })
     }
 
@@ -185,6 +185,16 @@ exports.checkToken = (req, res, next) =>{
 exports.authCheck = (req, res, next)=>{
     var authLink = req.params.authLink ? req.params.authLink : ""
     
+    const checkExpire = (authData) =>{
+        let expireDate = authData.expireDate
+        console.log(expireDate)
+        if (authData.expireDate < Date.now()){
+            console.log("expired!")
+            throw "Expired!"
+        }
+        return authData
+    }
+
     const registerConfirm = (authData) =>{
         return new Promise((res, rej)=>{
             if (!authData) { rej("Already Check"); return; }
@@ -203,6 +213,7 @@ exports.authCheck = (req, res, next)=>{
         .findOne({
             where: { authLink: authLink }
         })
+        .then(checkExpire)
         .then(registerConfirm)
         .then(()=>{
             res.json({message: "GOOD"})

@@ -5,6 +5,10 @@ const tokener = require("../../util/tokener")
 const newErr = require("../../middleware/error")
 const mailer = require("../../util/mailer")
 
+function ifNot(l, v){
+    return l ? l : v
+}
+
 function validateUserId(userId){
   if (!userId) return false;
   return true
@@ -114,6 +118,7 @@ exports.register = (req, res) => {
     let userId = req.body.userId
     let userPw = req.body.userPw
     let userName = req.body.userName
+    let studentCode = req.body.studentCode
 
     let salt = Math.round((new Date().valueOf() * Math.random())) + "";
     let hashPassword = crypto.createHash("sha512").update(userPw + salt).digest("hex");
@@ -129,14 +134,20 @@ exports.register = (req, res) => {
     }
 
     models.sequelize.transaction().then(t=>{
+        
         const createAuthData = (user)=>{
             return models.UserAuthData.create({
                 user: user.email,
                 authLink: makeRandomString(false, 20),
                 expireDate: Date.now() + (1000 * 60 * 60 * 24)
-            }, {
-                transaction: t
-            })
+            }, { transaction: t })
+        }
+
+        const createStudentMeta = (user)=>{
+            return models.StudentMeta.create({
+                user: user.email,
+                studentCode: studentCode,
+            }, { transaction: t })
         }
     
         const sendEmail = (authData) => {
@@ -159,7 +170,65 @@ exports.register = (req, res) => {
                 salt: salt,
             }, { transaction: t })
             .then(createAuthData)
+            .then(createStudentMeta)
             .then(sendEmail)
+            .then(result => {
+                res.json({ userId: userId })
+                return t.commit()
+            })
+            .catch(err => {
+                let name = err.userName
+                if (name == "SequelizeUniqueConstraintError"){ req.Error.duplicatedUser(res) }
+                else { console.log(err); req.Error.internal(res) }
+                return t.rollback()
+            })
+    })
+    
+
+}
+
+exports.registerProf = (req, res) => {
+
+    let userId = req.body.userId
+    let userPw = req.body.userPw
+    let userName = req.body.userName
+    let userPhone = req.body.userPhone
+
+    let salt = Math.round((new Date().valueOf() * Math.random())) + "";
+    let hashPassword = crypto.createHash("sha512").update(userPw + salt).digest("hex");
+
+    if (!validateUser(userId, userPw)) {
+        req.Error.wrongParameter(res, "userId or userPw")
+        return
+    }
+
+    if (!userName){
+        req.Error.wrongParameter(res, "userName")
+        return
+    }
+
+    if (!userPhone){
+        req.Error.wrongParameter(res, "userName")
+        return
+    }
+
+    models.sequelize.transaction().then(t=>{
+        const createProfessorData = (user)=>{
+            return models.ProfessorMeta.create({
+                user: user.email,
+                phoneNumber: userPhone,
+            }, { transaction: t })
+        }
+    
+        return models.User
+            .create({
+                email: userId,
+                password: hashPassword,
+                name: userName,
+                level: 100,
+                salt: salt,
+            }, { transaction: t })
+            .then(createProfessorData)
             .then(result => {
                 res.json({ userId: userId })
                 return t.commit()

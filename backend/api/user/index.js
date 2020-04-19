@@ -14,4 +14,6 @@ router.post("/checkToken", [serviceUser.checkLogin, uc.checkToken])
 
 router.post("/register", uc.register)
 
+router.post("/register_prof", uc.registerProf)
+
 module.exports = router

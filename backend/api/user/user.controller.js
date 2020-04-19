@@ -128,44 +128,50 @@ exports.register = (req, res) => {
         return
     }
 
-    const createAuthData = (user)=>{
-        return models.UserAuthData.create({
-            user: user.email,
-            authLink: makeRandomString(false, 20),
-            expireDate: Date.now() + (1000 * 60 * 60 * 24)
-        })
-    }
-
-    const sendEmail = (authData) => {
-        return mailer.sendMail(
-            authData.user, 
-            "가입 인증 메일", 
-            `<p>귀하의 인증 번호는 다음과 같습니다.</p> 
-            <p><strong>${authData.authLink}</strong></p>
-            <p>다음 URL로 들어가주십시오.</p>
-            http://localhost/api/user/auth_check/${authData.authLink}
-            `
-        )
-    }
-
-    models.User
-        .create({
-            email: userId,
-            password: hashPassword,
-            name: userName,
-            salt: salt,
-        })
-        .then(createAuthData)
-        .then(sendEmail)
-        .then(result => {
-            res.json({ userId: userId })
-        })
-        .catch(err => {
-            let name = err.name
-
-            if (name == "SequelizeUniqueConstraintError"){ req.Error.duplicatedUser(res) }
-            else { console.log(err); req.Error.internal(res) }
-        })
+    models.sequelize.transaction().then(t=>{
+        const createAuthData = (user)=>{
+            return models.UserAuthData.create({
+                user: user.email,
+                authLink: makeRandomString(false, 20),
+                expireDate: Date.now() + (1000 * 60 * 60 * 24)
+            }, {
+                transaction: t
+            })
+        }
+    
+        const sendEmail = (authData) => {
+            return mailer.sendMail(
+                authData.user, 
+                "가입 인증 메일", 
+                `<p>귀하의 인증 번호는 다음과 같습니다.</p> 
+                <p><strong>${authData.authLink}</strong></p>
+                <p>다음 URL로 들어가주십시오.</p>
+                http://localhost/api/user/auth_check/${authData.authLink}
+                `
+            )
+        }
+    
+        return models.User
+            .create({
+                email: userId,
+                password: hashPassword,
+                name: userName,
+                salt: salt,
+            }, { transaction: t })
+            .then(createAuthData)
+            .then(sendEmail)
+            .then(result => {
+                res.json({ userId: userId })
+                return t.commit()
+            })
+            .catch(err => {
+                let name = err.userName
+                if (name == "SequelizeUniqueConstraintError"){ req.Error.duplicatedUser(res) }
+                else { console.log(err); req.Error.internal(res) }
+                return t.rollback()
+            })
+    })
+    
 
 }
 

@@ -12,6 +12,13 @@
 * indentation(tap size)은 4칸을 사용하도록 한다. vscode default이다.
 * vscode option(alt) + shift+ f를 통해서 indentation을 통일한다.
 
+## 디렉토리 구조
+[프론트]
+* src > component: 컴포넌트 파일들을 넣어둔다. 
+* src > containers: 컨테이너 파일들 (주로 state를 props로 매핑하는 코드들)
+* src > pages: routing을 위한 페이지 파일들
+* src > store: redux 작업들 (내부에 actions, reducers 폴더 존재)
+
 ## 변수명 설정하기
 * 수업 개설하기 - open class
 [frontEnd]

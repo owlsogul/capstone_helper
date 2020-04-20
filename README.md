@@ -9,7 +9,7 @@
 
 ## coding rules
 * [React Styleguidist](https://react-styleguidist.js.org/docs/documenting.html)에서 정의한 react 표준을 따른다.
-* indentation(tap size)은 2칸을 사용하도록 한다. vscode 세팅에서 바꿔주면 된다.
+* indentation(tap size)은 4칸을 사용하도록 한다. vscode default이다.
 * vscode option(alt) + shift+ f를 통해서 indentation을 통일한다.
 
 ## 변수명 설정하기

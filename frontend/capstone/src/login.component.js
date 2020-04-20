@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 
-
 function sendLogin(sendObj) {
     return fetch('/api/user/login', {
         method: 'POST',
@@ -11,7 +10,6 @@ function sendLogin(sendObj) {
         body: JSON.stringify(sendObj),
       });
 }
-
 
 export default class Login extends Component {
 

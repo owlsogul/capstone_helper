@@ -4,10 +4,10 @@ import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
-import NavigationBar from './NavigationBar';
+import NavigationBar from './components/NavigationBar';
 
-import Login from './login.component';
-import SignUp from './signup.component';
+import Login from './components/login.component';
+import SignUp from './components/signup.component';
 
 function App() {
   return (

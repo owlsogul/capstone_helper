@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 //import PropTypes from "prop-types";
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 class NavigationBar extends Component {

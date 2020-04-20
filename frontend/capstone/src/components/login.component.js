@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 function sendLogin(sendObj) {
     return fetch('/api/user/login', {

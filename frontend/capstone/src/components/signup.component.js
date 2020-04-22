@@ -17,7 +17,7 @@ class CommonRegister extends Component {
 
     constructor(props){
         super(props)
-        this.state = { userId: "jomingyu@cau.ac.kr", userPw: "p@ssword1234",  userPwChk: "p@ssword1234", userName: "조민규", studentCode: "20162307", userPhone: ""}
+        this.state = { userId: "", userPw: "",  userPwChk: "", userName: "", studentCode: "", userPhone: ""}
     }
 
     onClickRegister(){

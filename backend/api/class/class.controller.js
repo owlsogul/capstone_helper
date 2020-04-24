@@ -10,26 +10,26 @@ const models = require("../../models")
 /**
  * @swagger
  *  paths: {
- *      /api/class/create:{
- *          post: {
- *              tags: [ class ],
- *              summary: "수업을 개설할 때 호출하는 API",
- *              description: "",
- *              consumes: [ "application/json" ],
- *              produces: [ "application/json" ],
- *              parameters : [{
- *                  in: "body",
- *                  name: "body",
- *                  description: "개설할 수업에 대한 정보",
- *                  schema: { $ref: "#/components/req/ReqCreateClass" }
- *              }],
- *              responses: {
- *                  200: { $ref: "#/components/res/ResCreateClass" },
- *                  400: { $ref: "#/components/res/ResNoAuthorization" },
- *                  500: { $ref: "#/components/res/ResInternal" },
- *              }
+ *    /api/class/create:{
+ *      post: {
+ *        tags: [ class ],
+ *        summary: "수업을 개설할 때 호출하는 API",
+ *        description: "",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "body",
+ *          name: "body",
+ *          description: "개설할 수업에 대한 정보",
+ *          schema: { $ref: "#/components/req/ReqCreateClass" }
+ *            }],
+ *          responses: {
+ *            200: { $ref: "#/components/res/ResCreateClass" },
+ *            400: { $ref: "#/components/res/ResNoAuthorization" },
+ *            500: { $ref: "#/components/res/ResInternal" },
  *          }
- *      }
+ *        }
+ *     }
  *  }
  */
 exports.createClass = (req, res, next) => {

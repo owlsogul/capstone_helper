@@ -12,7 +12,7 @@ const models = require("../../models")
  *  paths: {
  *    /api/class/create:{
  *      post: {
- *        tags: [ class ],
+ *        tags: [ Class ],
  *        summary: "수업을 개설할 때 호출하는 API",
  *        description: "",
  *        consumes: [ "application/json" ],
@@ -72,6 +72,31 @@ exports.createClass = (req, res, next) => {
     })
 }
 
+/**
+ * @swagger
+ *  paths: {
+ *    /api/class/invite_assist: {
+ *      post: {
+ *        tags: [ Class ],
+ *        summary: "수업 개설 후 조교를 초대하는 API",
+ *        description: "자신이 개설한 수업인지 확인 후, 입력한 조교들을 초대한다.",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "body",
+ *          name: "body",
+ *          description: "수업 id 와 조교들을 입력한다.",
+ *          schema: { $ref: "#/components/req/ReqInviteAssist" }
+*         }],
+ *        responses: {
+ *          200: { $ref: "#/components/res/ResInviteAssist" },
+ *          400: { $ref: "#/components/res/ResNoAuthorization" },
+ *          500: { $ref: "#/components/res/ResInternal" },
+ *        }
+ *      }
+ *    }
+ *  }
+ */
 exports.inviteAssist = (req, res, next) => {
 
   let userId = req.ServiceUser.userId
@@ -121,7 +146,8 @@ exports.inviteAssist = (req, res, next) => {
     .then(sendRes)
     .catch((err) => {
       console.log(err)
-      if (true) req.Error.noAuthorization(res)
+      if (err.message == "Wrong Class") req.Error.noAuthorization(res)
+      else if (err.message == "Nobody Registered") req.Error.wrongParameter(res)
       else req.Error.internal(res)
     })
 

@@ -152,3 +152,129 @@ exports.inviteAssist = (req, res, next) => {
     })
 
 }
+
+
+
+exports.createAssistInviteCode = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let expiredDate = Date.parse(req.body.expiredDate) // needed to UTC date string
+
+  if (!expiredDate || Date.now() > expiredDate){
+    req.Error.wrongParameter(res, "wrong date")
+    return;
+  }
+
+  const makeRandomString = (from, length) => {
+    var chars = from ? from : "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+    var string_length = length ? length : 20;
+    var randomstring = '';
+    for (var i = 0; i < string_length; i++) {
+      var rnum = Math.floor(Math.random() * chars.length);
+      randomstring += chars.substring(rnum, rnum + 1);
+    }
+    return randomstring;
+  }
+
+  const findOwnedClass = () => {
+    return models.Class.findOne({ where: { professor: userId, classId: classId } })
+  }
+
+  const createInviteCode = (targetClass)=>{
+    if (!targetClass) throw new Error("Wrong Class")
+    return models.InvitationCode.create({
+      code: makeRandomString(false, false),
+      classId: targetClass.classId,
+      expiredDate: expiredDate,
+      isAssist: true,
+    })
+  }
+
+  const respond = (invitationCode) => {
+    res.json(invitationCode)
+  }
+
+  findOwnedClass()
+    .then(createInviteCode)
+    .then(respond)
+    .catch((err)=>{
+      console.log(err)
+      if (err.message == "Wrong Class") req.Error.wrongParameter(res);
+      else req.Error.internal(res)
+    })
+}
+
+exports.createStudentInviteCode = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let expiredDate = Date.parse(req.body.expiredDate) // needed to UTC date string
+  let isAutoJoin = req.body.isAutoJoin
+
+  if (!expiredDate || Date.now() > expiredDate){
+    req.Error.wrongParameter(res, "wrong date")
+    return;
+  }
+
+  const makeRandomString = (from, length) => {
+    var chars = from ? from : "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+    var string_length = length ? length : 20;
+    var randomstring = '';
+    for (var i = 0; i < string_length; i++) {
+      var rnum = Math.floor(Math.random() * chars.length);
+      randomstring += chars.substring(rnum, rnum + 1);
+    }
+    return randomstring;
+  }
+
+  const findManagedClass = () => {
+    return new Promise((res, rej)=>{
+      models.User.findOne( {where: { userId: userId }})
+      .then(user=>{
+        if (!user) throw new Error("NoUser")
+        if (user.level == 50) {
+          models.Manage
+            .findOne({ where: { user: userId, classId: classId }, include: [ { model: models.Class } ] })
+            .then(manage=>{
+              if (!manage) rej(new Error("WrongClass"))
+              res(manage.Class)
+            })
+            .catch(rej)
+        }
+        else if (user.level == 101){
+          models.Class
+            .findOne({ where: { professor: userId, classId: classId }})
+            .then(res)
+            .catch(rej)
+        }
+        else {
+          throw new Error("LowLevel")
+        }
+      })
+      .catch(rej)
+    })
+  }
+
+  const createInviteCode = (targetClass)=>{
+    console.log("target class? " + JSON.stringify(targetClass))
+    if (!targetClass) throw new Error("WrongClass")
+    return models.InvitationCode.create({
+      code: makeRandomString(false, false),
+      classId: targetClass.classId,
+      expiredDate: expiredDate,
+    })
+  }
+
+  const respond = (invitationCode) => {
+    res.json(invitationCode)
+  }
+
+  findManagedClass()
+    .then(createInviteCode)
+    .then(respond)
+    .catch((err)=>{
+      console.log(err)
+    })
+
+}

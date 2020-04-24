@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes){
-    let model = sequelize.define("InivitationCode", {
+    let model = sequelize.define("InvitationCode", {
         code: {
             type: DataTypes.STRING(50),
             primaryKey: true,
@@ -17,6 +17,11 @@ module.exports = function(sequelize, DataTypes){
             type: DataTypes.BOOLEAN,
             allowNull: false,
             defaultValue: true
+        },
+        isAssist: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false
         }
     }, {
         underscored: true,

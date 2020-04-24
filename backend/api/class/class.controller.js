@@ -6,6 +6,8 @@
  */
 
 const models = require("../../models")
+const Sequelize = require("Sequelize")
+const Op = Sequelize.Op;
 
 /**
  * @swagger
@@ -280,5 +282,81 @@ exports.createStudentInviteCode = (req, res, next)=>{
       console.log(err)
     })
 
+}
+
+exports.enterInvitationCode = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let code = req.params.invitationCode
+
+  let invitation = null
+
+  const checkEmailConfirm = ()=>{
+    return new Promise((res, rej)=>{
+      models.User
+        .findOne({ 
+          where: { 
+            userId: userId, 
+            level: { [Op.gt]: 0, [Op.lt]: 100 } 
+          } 
+        })
+        .then(user=>{
+          if (!user) rej("NotConfirm")
+          res()
+        })
+    })
+  }
+
+  const findInvitationCode = ()=>{
+    return models.InvitationCode.findOne({ where: { code: code } })
+  }
+
+  const validateDate = (invitationCode)=>{
+    if (!invitationCode) throw new Error("WrongCode")
+    if (new Date() > Date.parse(invitationCode.expiredDate)) {
+      invitationCode.destroy()
+      throw new Error("WrongDate")
+    }
+    invitation = invitationCode
+    return invitationCode
+  }
+
+  const createRelation = (invitationCode)=>{
+    if (invitationCode.isAssist){ // 조교
+      // TODO: transaction
+      return models.User.update({ level: 50 }, { where: { userId: userId } })
+              .then(()=>{
+                return models.Manage.create({
+                  classId: invitationCode.classId,
+                  user: userId
+                })
+              })
+    }
+    else { // 학생
+      let takeStatus = invitationCode.isAutoJoin ? 1 : 0
+      return models.Take.create({
+        classId: invitationCode.classId,
+        user: userId,
+        takeStatus: takeStatus
+      })
+    }
+  }
+
+  const respond = (result)=>{
+    res.json(result)
+  }
+
+  checkEmailConfirm()
+    .then(findInvitationCode)
+    .then(validateDate)
+    .then(createRelation)
+    .then(respond)
+    .catch(err=>{
+      if (err.message == "NotConfirm") req.Error.noAuthorization(res)
+      else if (err.message == "WrongCode") req.Error.wrongParameter(res, "WrongCode")
+      else if (err.message == "WrongDate") req.Error.wrongParameter(res, "WrongDate")
+      console.log(err)
+    })
+  
 
 }

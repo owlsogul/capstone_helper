@@ -12,6 +12,6 @@ router.post("/create_assist_invite_code", [serviceUser.checkLogin, cc.createAssi
 
 router.post("/create_student_invite_code", [serviceUser.checkLogin, cc.createStudentInviteCode])
 
-
+router.get("/invite/:invitationCode", [serviceUser.checkLogin, cc.enterInvitationCode])
 
 module.exports = router

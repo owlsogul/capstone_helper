@@ -7,37 +7,90 @@
  *   ReqSignIn:
  *     type: object
  *     required:
- *       - user_id
- *       - password
+ *       - userId
+ *       - userPw
  *     properties:
- *       user_id:
+ *       userId:
  *         type: string
  *         description: 아이디
- *       password:
+ *       userPw:
  *         type: string
  *         description: 비밀번호
- *   ResSignIn:
+ *   ReqSignUp:
  *     type: object
  *     required:
- *       - status
+ *       - userId
+ *       - userPw
+ *       - userName
+ *       - studentCode
  *     properties:
- *       status:
+ *       userId:
  *         type: string
- *         description: 로그인 성공 여부- error, success
- *       token:
- *         type: object
- *         description: 계정 정보
- *   Response_error:
+ *         description: 아이디
+ *       userPw:
+ *         type: string
+ *         description: 비밀번호
+ *       userName:
+ *          type: string
+ *          description: 학생의 이름
+ *       studentCode:
+ *          type: string
+ *          description: 학생의 학번
+ *   ReqSignUpProf:
  *     type: object
  *     required:
- *       - status
+ *       - userId
+ *       - userPw
+ *       - userName
+ *       - userPhone
+ *     properties:
+ *       userId:
+ *         type: string
+ *         description: 아이디
+ *       userPw:
+ *         type: string
+ *         description: 비밀번호
+ *       userName:
+ *          type: string
+ *          description: 교수님의 이름
+ *       userPhone:
+ *          type: string
+ *          description: 교수님의 전화 번호
+ *   ResAuth:
+ *     type: object
+ *     required:
+ *       - message
  *     properties:
  *       message:
  *         type: string
+ *         description: 로그인/회원가입 성공 여부 - error, success
+ *       userId:
+ *         type: string
+ *         description: 로그인/회원가입이 성공 했을 경우 userId 반환
+ *   ReqBasic:
+ *     type: object
+ *     required:
+ *     properties:
+ *   ResBasic:
+ *     type: object
+ *     required:
+ *       - message
+ *     properties:
+ *       message:
+ *         type: string
+ *         description: 기본적인 메시지
+ *   ResError:
+ *     type: object
+ *     required:
+ *       - err
+ *     properties:
+ *       err:
+ *         type: string
  *         description: 오류 사유
- *       status:
- *         type: integer
- *         description: response code
+ *       data:
+ *         type: string
+ *         description: 오류 추가적인 데이터
+ * 
  */
 
 const models = require("../../models")
@@ -80,11 +133,11 @@ function makeRandomString(from, length) {
 /**
  * @swagger
  *  paths:
- *    /login:
+ *    /api/user/signin:
  *      post:
  *        tags:
  *        - "User"
- *        summary: "Login process"
+ *        summary: "로그인할 때 호출하는 API"
  *        description: ""
  *        consumes:
  *        - "application/json"
@@ -99,20 +152,20 @@ function makeRandomString(from, length) {
  *            $ref: "#/definitions/ReqSignIn"
  *        responses:
  *          200:
- *            description: "로그인 결과"
+ *            description: "로그인을 성공했을 때 반환됨"
  *            schema:
- *              $ref: "#/definitions/Auth_response"
+ *              $ref: "#/definitions/ResAuth"
  *          400:
- *            description: "잘못된 데이터"
+ *            description: "잘못된 데이터거나 로그인 데이터가 없거나 할때 반환됨"
  *            schema:
- *              $ref: "#/definitions/Response_error"
+ *              $ref: "#/definitions/ResError"
  *          500:
- *            description: "로그인 오류 & 실패"
+ *            description: "서버 내부 오류"
  *            schema:
- *              $ref: "#/definitions/Response_error"
+ *              $ref: "#/definitions/ResError"
  */
 
-exports.login = (req, res) => {
+exports.signin = (req, res) => {
 
     let userId = req.body.userId
     let userPw = req.body.userPw
@@ -135,7 +188,7 @@ exports.login = (req, res) => {
 
         let salt = user.salt
         let hashPw = crypto.createHash("sha512").update(userPw + salt).digest("hex");
-        let dbPw = user.password
+        let dbPw = user.userPw
 
         if (hashPw == dbPw){
             return user
@@ -147,7 +200,7 @@ exports.login = (req, res) => {
     }
 
     const issueLoginToken = (user) => {
-      let token = tokener.signLoginToken(user.email)
+      let token = tokener.signLoginToken(user.userId)
       let encrptedToken = coder.encrypt(token)
       if (token) {
         loginToken = encrptedToken
@@ -164,13 +217,13 @@ exports.login = (req, res) => {
         .cookie("token", loginToken, { maxAge: 1000* 60 * 60 * 2, httpOnly: true, signed: true })
         .status(200)
         .json({
-            message: 'logged in successfully'
+            message: "success"
         })
     }
 
     models.User
       .findOne({
-        where: { email: userId }
+        where: { userId: userId }
       })
       .then(check)
       .then(issueLoginToken)
@@ -184,13 +237,83 @@ exports.login = (req, res) => {
 
 }
 
-exports.logout = (req, res, next) => {
 
-    res.clearCookie("token").status(200).json({ message: "logout successfully"})
+/**
+ * @swagger
+ *  paths:
+ *    /api/user/signout:
+ *      post:
+ *        tags:
+ *        - "User"
+ *        summary: "로그아웃 할 때 호출하는 API"
+ *        description: "설정된 쿠키만 지우기 때문에 로그인 시 호출되도록 프론트에서 다루도록 한다."
+ *        consumes:
+ *        - "application/json"
+ *        produces:
+ *        - "application/json"
+ *        parameters:
+ *        - in: "body"
+ *          name: "body"
+ *          description: "아무것도 없다."
+ *          required: true
+ *          schema:
+ *            $ref: "#/definitions/ReqBasic"
+ *        responses:
+ *          200:
+ *            description: "로그아웃을 성공했을 때 반환"
+ *            schema:
+ *              $ref: "#/definitions/ResBasic"
+ *          401:
+ *            description: "로그인이 만료되어있을 때 반환"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ *          403:
+ *            description: "로그인이 안되어 있을 때 반환"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ * 
+ */
+exports.signout = (req, res, next) => {
+
+    res.clearCookie("token").status(200).json({ message: "success"})
 
 }
 
-exports.register = (req, res) => {
+/**
+ * @swagger
+ *  paths:
+ *    /api/user/signup:
+ *      post:
+ *        tags:
+ *        - "User"
+ *        summary: "학생 회원가입 할 때 호출하는 API"
+ *        description: ""
+ *        consumes:
+ *        - "application/json"
+ *        produces:
+ *        - "application/json"
+ *        parameters:
+ *        - in: "body"
+ *          name: "body"
+ *          description: "회원가입 계정 정보와 서비스 정보를 전달"
+ *          required: true
+ *          schema:
+ *            $ref: "#/definitions/ReqSignUp"
+ *        responses:
+ *          200:
+ *            description: "회원가입을 성공했을 때 반환됨"
+ *            schema:
+ *              $ref: "#/definitions/ResAuth"
+ *          400:
+ *            description: "잘못된 데이터거나 회원가입 할 데이터가 없거나 할때 반환됨"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ *          500:
+ *            description: "서버 내부 오류"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ */
+exports.signup = (req, res) => {
 
     let userId = req.body.userId
     let userPw = req.body.userPw
@@ -246,8 +369,8 @@ exports.register = (req, res) => {
     
         return models.User
             .create({
-                email: userId,
-                password: hashPassword,
+                userId: userId,
+                userPw: hashPassword,
                 name: userName,
                 salt: salt,
             }, { transaction: t })
@@ -259,7 +382,7 @@ exports.register = (req, res) => {
                 return t.commit()
             })
             .catch(err => {
-                let name = err.userName
+                let name = err.name
                 if (name == "SequelizeUniqueConstraintError"){ req.Error.duplicatedUser(res) }
                 else { console.log(err); req.Error.internal(res) }
                 return t.rollback()
@@ -269,7 +392,41 @@ exports.register = (req, res) => {
 
 }
 
-exports.registerProf = (req, res) => {
+/**
+ * @swagger
+ *  paths:
+ *    /api/user/signup_prof:
+ *      post:
+ *        tags:
+ *        - "User"
+ *        summary: "교수 회원가입 할 때 호출하는 API"
+ *        description: ""
+ *        consumes:
+ *        - "application/json"
+ *        produces:
+ *        - "application/json"
+ *        parameters:
+ *        - in: "body"
+ *          name: "body"
+ *          description: "회원가입 계정 정보와 서비스 정보를 전달"
+ *          required: true
+ *          schema:
+ *            $ref: "#/definitions/ReqSignUpProf"
+ *        responses:
+ *          200:
+ *            description: "회원가입을 성공했을 때 반환됨"
+ *            schema:
+ *              $ref: "#/definitions/ResAuth"
+ *          400:
+ *            description: "잘못된 데이터거나 회원가입 할 데이터가 없거나 할때 반환됨"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ *          500:
+ *            description: "서버 내부 오류"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ */
+exports.signupProf = (req, res) => {
 
     let userId = req.body.userId
     let userPw = req.body.userPw
@@ -304,8 +461,8 @@ exports.registerProf = (req, res) => {
     
         return models.User
             .create({
-                email: userId,
-                password: hashPassword,
+                userId: userId,
+                userPw: hashPassword,
                 name: userName,
                 level: 100,
                 salt: salt,
@@ -322,8 +479,6 @@ exports.registerProf = (req, res) => {
                 return t.rollback()
             })
     })
-    
-
 }
 
 exports.checkToken = (req, res, next) =>{
@@ -338,7 +493,38 @@ exports.checkToken = (req, res, next) =>{
     res.json({ rawToken: rawToken, token: token, verfiy: verify })
 
 }
-
+/**
+ * @swagger
+ *  paths:
+ *    /api/user/auth_check:
+ *      get:
+ *        tags:
+ *        - "User"
+ *        summary: "이메일 인증 링크"
+ *        description: "이메일 인증 링크입니다. 들어오면 정회원으로 등급업 됩니다."
+ *        consumes:
+ *        - "application/json"
+ *        produces:
+ *        - "application/json"
+ *        parameters:
+ *        - in: "paramater"
+ *          name: "authLink"
+ *          description: "회원가입 계정 정보와 서비스 정보를 전달"
+ *          required: true
+ *        responses:
+ *          200:
+ *            description: "회원가입을 성공했을 때 반환됨"
+ *            schema:
+ *              $ref: "#/definitions/ResAuth"
+ *          400:
+ *            description: "잘못된 데이터거나 회원가입 할 데이터가 없거나 할때 반환됨"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ *          500:
+ *            description: "서버 내부 오류"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ */
 exports.authCheck = (req, res, next)=>{
     var authLink = req.params.authLink ? req.params.authLink : ""
     
@@ -356,7 +542,7 @@ exports.authCheck = (req, res, next)=>{
         return new Promise((res, rej)=>{
             if (!authData) { rej("Already Check"); return; }
             models.User
-                .update({ level: 1 }, {where: { email: authData.user }})
+                .update({ level: 1 }, {where: { userId: authData.user }})
                 .then(result=>{
                     console.log(result)
                     if (result.length == 0){ rej("No User"); return; }

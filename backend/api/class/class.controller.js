@@ -274,7 +274,11 @@ exports.createStudentInviteCode = (req, res, next)=>{
     .then(createInviteCode)
     .then(respond)
     .catch((err)=>{
+      if (err.message == "NoUser" || err.message == "LowLevel") req.Error.noAuthorization(res)
+      else if (err.message == "WrongClass") req.Error.wrongParameter(res,"wrong class")
+      else req.Error.internal(res)
       console.log(err)
     })
+
 
 }

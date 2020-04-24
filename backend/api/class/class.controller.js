@@ -11,7 +11,7 @@ exports.createClass = (req, res, next)=>{
 
     const checkLevel = (user)=>{
         if (!user || user.level < 101){
-            throw "Low Level"
+            throw new Error("Low Level")
         }
         return user
     }
@@ -33,7 +33,8 @@ exports.createClass = (req, res, next)=>{
         .then(sendRes)
         .catch((err)=>{
             console.log(err)
-            res.json({ message: "err" })
+            if (err.message == "Low Level") req.Error.noAuthorization(res)
+            else req.Error.internal(res)
         })
 
 }

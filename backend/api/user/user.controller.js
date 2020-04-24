@@ -258,7 +258,7 @@ exports.signin = (req, res) => {
  *        tags:
  *        - "User"
  *        summary: "로그아웃 할 때 호출하는 API"
- *        description: "설정된 쿠키만 지우기 때문에 로그인 시 호출되도록 프론트에서 다루도록 한다."
+ *        description: "로그인이 되어있지 않으면 오류를 리턴하므로 참고하도록 한다."
  *        consumes:
  *        - "application/json"
  *        produces:

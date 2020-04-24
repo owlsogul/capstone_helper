@@ -374,7 +374,7 @@ exports.signup = (req, res) => {
                 `<p>귀하의 인증 번호는 다음과 같습니다.</p> 
                 <p><strong>${authData.authLink}</strong></p>
                 <p>다음 URL로 들어가주십시오.</p>
-                http://localhost/api/user/auth_check/${authData.authLink}
+                ${ifNot(req.AppSetting.host, "localhost")}/api/user/auth_check/${authData.authLink}
                 `
             )
         }

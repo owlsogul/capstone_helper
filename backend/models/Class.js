@@ -14,6 +14,10 @@ module.exports = function(sequelize, DataTypes){
             type: DataTypes.STRING(50),
             allowNull: false
         },
+        classTime: {
+          type: DataTypes.STRING(50),
+          allowNull: true
+        },
         isClose: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

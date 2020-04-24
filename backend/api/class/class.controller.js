@@ -36,6 +36,7 @@ exports.createClass = (req, res, next) => {
 
   let userId = req.ServiceUser.userId
   let className = req.body.className
+  let classTime = req.body.classTime
 
   const findUser = () => {
     return models.User.findOne({ where: { userId: userId } })
@@ -51,7 +52,8 @@ exports.createClass = (req, res, next) => {
   const createClass = (user) => {
     return models.Class.create({
       professor: user.userId,
-      className: className
+      className: className,
+      classTime: classTime
     })
   }
 
@@ -68,5 +70,4 @@ exports.createClass = (req, res, next) => {
       if (err.message == "Low Level") req.Error.noAuthorization(res)
       else req.Error.internal(res)
     })
-
 }

@@ -6,14 +6,14 @@ const uc = require("./user.controller")
 
 router.get("/auth_check/:authLink", uc.authCheck)
 
-router.post("/login", uc.login)
+router.post("/signin", uc.signin)
 
-router.post("/logout", [serviceUser.checkLogin, uc.logout])
+router.post("/signout", [serviceUser.checkLogin, uc.signout])
+
+router.post("/signup", uc.signup)
 
 router.post("/checkToken", [serviceUser.checkLogin, uc.checkToken])
 
-router.post("/register", uc.register)
-
-router.post("/register_prof", uc.registerProf)
+router.post("/signup_prof", uc.signupProf)
 
 module.exports = router

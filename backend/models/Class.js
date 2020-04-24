@@ -13,6 +13,11 @@ module.exports = function(sequelize, DataTypes){
         className: {
             type: DataTypes.STRING(50),
             allowNull: false
+        },
+        isClose: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
         }
     }, {
         underscored: true,

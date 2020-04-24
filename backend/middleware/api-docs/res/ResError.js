@@ -14,5 +14,9 @@ module.exports = {
   ResNoAuthorization: {
     description: "권한이 없을 때 호출",
     schema: { $ref: "#/components/res/ResError" }
+  },
+  ResWrongParameter: {
+    description: "잘못된 파라메터가 있을 경우 호출",
+    schema: { $ref: "#/components/res/ResError" }
   }
 }

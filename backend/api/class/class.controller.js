@@ -92,7 +92,8 @@ exports.createClass = (req, res, next) => {
 *         }],
  *        responses: {
  *          200: { $ref: "#/components/res/ResInviteAssist" },
- *          400: { $ref: "#/components/res/ResNoAuthorization" },
+ *          400: { $ref: "#/components/res/ResWrongParameter" },
+ *          403: { $ref: "#/components/res/ResNoAuthorization" },
  *          500: { $ref: "#/components/res/ResInternal" },
  *        }
  *      }
@@ -156,7 +157,32 @@ exports.inviteAssist = (req, res, next) => {
 }
 
 
-
+/**
+ * @swagger
+ *  paths: {
+ *    /api/class/create_assist_invite_code: {
+ *      post: {
+ *        tags: [ Class ],
+ *        summary: "조교를 위한 초대링크를 생성하는 API",
+ *        description: "초대링크 생성",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "body",
+ *          name: "body",
+ *          description: "수업 id 와 만료 날짜를 입력한다.",
+ *          schema: { $ref: "#/components/req/ReqCreateAssistInviteCode" }
+*         }],
+ *        responses: {
+ *          200: { $ref: "#/components/res/ResCreateInviteCode" },
+ *          400: { $ref: "#/components/res/ResWrongParameter" },
+ *          403: { $ref: "#/components/res/ResNoAuthorization" },
+ *          500: { $ref: "#/components/res/ResInternal" },
+ *        }
+ *      }
+ *    }
+ *  }
+ */
 exports.createAssistInviteCode = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId
@@ -207,6 +233,32 @@ exports.createAssistInviteCode = (req, res, next)=>{
     })
 }
 
+/**
+ * @swagger
+ *  paths: {
+ *    /api/class/create_assist_student_code: {
+ *      post: {
+ *        tags: [ Class ],
+ *        summary: "학생을 위한 초대링크를 생성하는 API",
+ *        description: "초대링크 생성",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "body",
+ *          name: "body",
+ *          description: "수업 id 와 만료 날짜, 자동 가입 여부를 입력한다.",
+ *          schema: { $ref: "#/components/req/ReqCreateStudentInviteCode" }
+*         }],
+ *        responses: {
+ *          200: { $ref: "#/components/res/ResCreateInviteCode" },
+ *          400: { $ref: "#/components/res/ResWrongParameter" },
+ *          403: { $ref: "#/components/res/ResNoAuthorization" },
+ *          500: { $ref: "#/components/res/ResInternal" },
+ *        }
+ *      }
+ *    }
+ *  }
+ */
 exports.createStudentInviteCode = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId
@@ -284,6 +336,33 @@ exports.createStudentInviteCode = (req, res, next)=>{
 
 }
 
+
+/**
+ * @swagger
+ *  paths: {
+ *    /api/class/invite/parameter: {
+ *      get: {
+ *        tags: [ Class ],
+ *        summary: "초대링크에 들어가기 위한 API, 페이지",
+ *        description: "초대 링크 진입",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "parameter",
+ *          name: "parameter",
+ *          description: "수업 코드",
+ *          schema: { $ref: "#/components/req/ReqClassInvite" }
+*         }],
+ *        responses: {
+ *          200: { $ref: "#/components/res/ResCreateInviteCode" },
+ *          400: { $ref: "#/components/res/ResWrongParameter" },
+ *          403: { $ref: "#/components/res/ResNoAuthorization" },
+ *          500: { $ref: "#/components/res/ResInternal" },
+ *        }
+ *      }
+ *    }
+ *  }
+ */
 exports.enterInvitationCode = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId

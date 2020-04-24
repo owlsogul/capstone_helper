@@ -23,4 +23,27 @@ module.exports = {
     }
   },
 
+  ResCreateInviteCode: {
+    description: "만들어진 초대코드를 반환한다.",
+    schema: {
+      type: "object",
+      required: [ "code" ],
+      properties: {
+        code: { type: "string", description: "만들어진 초대코드" },
+      }
+    }
+  },
+
+  ResClassInvite: {
+    description: "가입된 수업코드를 반환한다..",
+    schema: {
+      type: "object",
+      required: [ "classId" ],
+      properties: {
+        classId: { type: "string", description: "가입된 수업 코드" },
+      }
+    }
+  }
+  
+
 }

@@ -6,7 +6,7 @@ exports.createClass = (req, res, next)=>{
     let className = req.body.className
 
     const findUser = ()=>{
-        return models.User.findOne({where: { email: userId }})
+        return models.User.findOne({where: { userId: userId }})
     }
 
     const checkLevel = (user)=>{
@@ -18,7 +18,7 @@ exports.createClass = (req, res, next)=>{
 
     const createClass = (user)=>{
         return models.Class.create({
-            professor: user.email,
+            professor: user.userId,
             className: className
         })
     }

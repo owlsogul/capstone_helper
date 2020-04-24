@@ -2,7 +2,18 @@
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
+const reqComponents = Object.assign(
+  {}, 
+  require("./req/ReqUser"), 
+  require("./req/ReqClass")
+)
 
+const resComponents = Object.assign(
+  {},
+  require("./res/ResError"),
+  require("./res/ResUser"),
+  require("./res/ResClass"),
+)
 
 // Swagger definition
 // You can set every attribute except paths and swagger
@@ -13,7 +24,11 @@ const swaggerDefinition = {
     version: '1.0.0', // Version (required)
     description: 'Capstone Helper API list' // Description (optional)
   },
-  basePath: '/' // Base path (optional)
+  basePath: '/', // Base path (optional)
+  components: {
+    req: reqComponents,
+    res: resComponents
+  }
 };
 
 // Options for the swagger docs
@@ -21,7 +36,7 @@ const options = {
   // Import swaggerDefinitions
   swaggerDefinition,
   // Path to the API docs
-  apis: ['./api/user/user.controller.js']
+  apis: ['./api/user/user.controller.js', "./api/class/class.controller.js"]
 };
 
 // Initialize swagger-jsdoc -> returns validated swagger spec in json format

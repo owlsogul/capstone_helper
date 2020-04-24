@@ -12,8 +12,11 @@ router.post("/signout", [serviceUser.checkLogin, uc.signout])
 
 router.post("/signup", uc.signup)
 
-router.post("/checkToken", [serviceUser.checkLogin, uc.checkToken])
-
 router.post("/signup_prof", uc.signupProf)
+
+router.get("/user_info", [serviceUser.checkLogin, uc.getUserInfo])
+
+// for test
+router.post("/checkToken", [serviceUser.checkLogin, uc.checkToken])
 
 module.exports = router

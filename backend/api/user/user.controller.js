@@ -79,6 +79,18 @@
  *       message:
  *         type: string
  *         description: 기본적인 메시지
+ *   ResUserInfo:
+ *     type: object
+ *     required:
+ *       - userId
+ *       - level
+ *     properties:
+ *       message:
+ *         type: string
+ *         description: 유저 아이디
+ *       level:
+ *         type: integer
+ *         description: 유저 권한 레벨
  *   ResError:
  *     type: object
  *     required:
@@ -564,6 +576,66 @@ exports.authCheck = (req, res, next)=>{
         .catch((err)=>{
             console.log(err)
             res.status(400).json({message: "NO!!"})
+        })
+
+}
+
+/**
+ * @swagger
+ *  paths:
+ *    /api/user/user_info:
+ *      get:
+ *        tags:
+ *        - "User"
+ *        summary: "로그인 한 유저의 정보를 가져오는 API"
+ *        description: "Cookie 정보를 바탕으로 권한 레벨만 리턴함"
+ *        consumes:
+ *        - "application/json"
+ *        produces:
+ *        - "application/json"
+ *        parameters:
+ *        - in: "body"
+ *          name: "body"
+ *          description: "아무것도 없다."
+ *          required: true
+ *          schema:
+ *            $ref: "#/definitions/ReqBasic"
+ *        responses:
+ *          200:
+ *            description: "유저 정보"
+ *            schema:
+ *              $ref: "#/definitions/ResUserInfo"
+ *          401:
+ *            description: "로그인이 만료되어있을 때 반환"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ *          403:
+ *            description: "로그인이 안되어 있을 때 반환"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ *          500:
+ *            description: "서버 오류일 때 반환"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ * 
+ */
+exports.getUserInfo = (req, res, next) => {
+    
+    let userId = req.ServiceUser.userId
+    
+    const respond = (user) =>{
+        res.status(200).json({
+            userId: userId,
+            level : user.level
+        })
+    }
+
+    models.User
+        .findOne({ where: { userId: userId } })
+        .then(respond)
+        .catch((err)=>{
+            console.log(err)
+            req.Error.internal(res)
         })
 
 }

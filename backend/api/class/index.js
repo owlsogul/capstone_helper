@@ -6,6 +6,9 @@ const cc = require("./class.controller")
 
 router.post("/create", [serviceUser.checkLogin, cc.createClass])
 
+router.post("/invite_assist", [serviceUser.checkLogin, cc.inviteAssist])
+
+
 
 
 

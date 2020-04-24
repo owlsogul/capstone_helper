@@ -8,12 +8,12 @@
 
 module.exports = function(sequelize, DataTypes){
     let model = sequelize.define("User", {
-        email: {
+        userId: {
             type: DataTypes.STRING(50),
             primaryKey: true,
             allowNull: false
         },
-        password: {
+        userPw: {
             type: DataTypes.STRING,
             allowNull: false
         },

@@ -23,3 +23,12 @@
 * 수업 개설하기 - open class
 [frontEnd]
 * 상단바 - NavigationBar
+
+## 테스트 계정
+[학생 계정]
+student00~09@cau.ac.kr
+p@ssword1234
+
+[교수 계정]
+professor00~02@cau.ac.kr
+p@ssword1234

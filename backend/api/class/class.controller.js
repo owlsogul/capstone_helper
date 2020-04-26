@@ -36,6 +36,40 @@ const Op = Sequelize.Op;
  *  }
  */
 exports.listClass = (req, res, next)=>{
+  
+  let userId = req.ServiceUser.userId
+
+  const findUser = () => {
+    return models.User.findOne({ where: { userId: userId } })
+  }
+
+  const findTake = (user)=>{
+    return models.Take.findAll({ where: { user: userId } })
+  }
+
+  const findManage = (user)=>{
+    return models.Manage.findAll({ where: { user: userId } })
+  }
+
+  const findOwn = (user)=>{
+    return models.Class.findAll({ where: { professor: userId } })
+  }
+
+  const findRelations = (user)=>{
+    return Promise.all([findTake(user), findManage(user), findOwn(user) ])
+  }
+
+  const respond = (values) =>{
+    res.json({ take: values[0], manage: values[1], own: values[2]})
+  }
+  
+  findUser()
+    .then(findRelations)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      req.Error.internal(res)
+    })
 
 }
 

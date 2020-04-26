@@ -6,14 +6,16 @@ module.exports = {
       required: [ "take", "manage", "own" ],
       properties: {
         take: { 
-          type: "array", 
+          type: "array",
+          description: "학생이 수강 중인 수업",
           items: { 
             type: "object", 
             properties: { classId: {type: "integer"}, takeStatus: {type: "integer", description: "허가 받았으면 1, 대기중이면 0"} }
           } 
         },
         manage: { 
-          type: "array", 
+          type: "array",
+          description: "조교님이 관리 중인 수업",
           items: { 
             type: "object", 
             properties: { classId: {type: "integer"} }
@@ -21,6 +23,7 @@ module.exports = {
         },
         own : { 
           type: "array", 
+          description: "교수님이 강의 중인 수업",
           items: { 
             type: "object", 
             properties: { classId: {type: "integer"} }

@@ -1,4 +1,35 @@
 module.exports = {
+  ResListClass:{
+    description: "참여중인 수업에 대한 정보",
+    schema: {
+      type: "object",
+      required: [ "take", "manage", "own" ],
+      properties: {
+        take: { 
+          type: "array", 
+          items: { 
+            type: "object", 
+            properties: { classId: {type: "integer"}, takeStatus: {type: "integer", description: "허가 받았으면 1, 대기중이면 0"} }
+          } 
+        },
+        manage: { 
+          type: "array", 
+          items: { 
+            type: "object", 
+            properties: { classId: {type: "integer"} }
+          } 
+        },
+        own : { 
+          type: "array", 
+          items: { 
+            type: "object", 
+            properties: { classId: {type: "integer"} }
+          } 
+        }
+      }
+    }
+  },
+
   ResCreateClass:{
     description: "개설된 수업에 대한 정보",
     schema: {

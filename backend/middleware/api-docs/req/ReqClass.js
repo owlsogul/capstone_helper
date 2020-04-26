@@ -1,4 +1,9 @@
 module.exports = {
+  RecListClass: {
+    type: "object",
+    required: [],
+    properties: {} 
+  },
   ReqCreateClass: {
     type: "object",
     required: [ "className" ],

@@ -4,6 +4,8 @@ const router = express.Router();
 const serviceUser = require("../../middleware/serviceuser")
 const cc = require("./class.controller")
 
+router.get("/list", [serviceUser.checkLogin, cc.listClass])
+
 router.post("/create", [serviceUser.checkLogin, cc.createClass])
 
 router.post("/invite_assist", [serviceUser.checkLogin, cc.inviteAssist])

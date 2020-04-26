@@ -9,6 +9,36 @@ const models = require("../../models")
 const Sequelize = require("Sequelize")
 const Op = Sequelize.Op;
 
+
+/**
+ * @swagger
+ *  paths: {
+ *    /api/class/list:{
+ *      get: {
+ *        tags: [ Class ],
+ *        summary: "수업 목룍을 호출하는 API",
+ *        description: "",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "body",
+ *          name: "body",
+ *          description: "개설할 수업에 대한 정보",
+ *          schema: { $ref: "#/components/req/RecListClass" }
+ *            }],
+ *          responses: {
+ *            200: { $ref: "#/components/res/ResListClass" },
+ *            400: { $ref: "#/components/res/ResNoAuthorization" },
+ *            500: { $ref: "#/components/res/ResInternal" },
+ *          }
+ *        }
+ *     }
+ *  }
+ */
+exports.listClass = (req, res, next)=>{
+
+}
+
 /**
  * @swagger
  *  paths: {

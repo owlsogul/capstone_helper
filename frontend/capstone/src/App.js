@@ -8,6 +8,7 @@ import NavigationBar from './components/NavigationBar';
 
 import Login from './components/login.component';
 import SignUp from './components/signup.component';
+import wait from './components/wait';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route exact path='/' component={Login} />
               <Route path="/sign-in" component={Login} />
               <Route path="/sign-up" component={SignUp} />
+              <Route path="/wait" component={wait} />
             </Switch>
           </div>
         </div>

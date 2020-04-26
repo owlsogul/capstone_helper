@@ -17,7 +17,7 @@ module.exports = {
     required: [ "classId", "assistants" ],
     properties: {
       classId: { type: "integer", description: "조교를 초대할 수업" },
-      assistants: { type: "array", description: "조교들의 이메일" }
+      assistants: { type: "array", description: "조교들의 이메일", items: { type: "string"} }
     }
   },
   ReqCreateAssistInviteCode: {

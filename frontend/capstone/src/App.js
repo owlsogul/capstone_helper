@@ -9,6 +9,7 @@ import NavigationBar from './components/NavigationBar';
 import Login from './components/login.component';
 import SignUp from './components/signup.component';
 import wait from './components/wait';
+import OpenClass from './components/openclass.componet';
 import RedirectingComponent from './components/RedirectingComponent.js';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
               <Route path="/sign-in" component={Login} />
               <Route path="/sign-up" component={SignUp} />
               <Route path="/wait" component={wait} />
+              <Route path="/open-class" component={OpenClass} />
             </Switch>
           </div>
         </div>

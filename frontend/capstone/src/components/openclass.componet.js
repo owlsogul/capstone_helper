@@ -235,10 +235,7 @@ class InviteStudentForm extends Component {
                     console.log(this.state.userId, this.state.userPw)
                     e.preventDefault()
                     this.doLogin()
-                }}>로그인</button>
-                <p className="forgot-password text-right">
-                    <a href="#">비밀번호 찾기</a>
-                </p>
+                }}>메인으로 이동</button>
             </form>
         )
     }

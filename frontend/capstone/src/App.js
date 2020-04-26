@@ -9,6 +9,7 @@ import NavigationBar from './components/NavigationBar';
 import Login from './components/login.component';
 import SignUp from './components/signup.component';
 import wait from './components/wait';
+import RedirectingComponent from './components/RedirectingComponent.js';
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
         <div className="auth-wrapper">
           <div className="auth-inner">
             <Switch>
-              <Route exact path='/' component={Login} />
+              <Route exact path='/' component={RedirectingComponent} />
               <Route path="/sign-in" component={Login} />
               <Route path="/sign-up" component={SignUp} />
               <Route path="/wait" component={wait} />

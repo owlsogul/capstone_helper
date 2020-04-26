@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 function sendLogin(sendObj) {
-    return fetch('/api/user/login', {
+    return fetch('/api/user/signin', {
         method: 'POST',
         headers: {
           Accept: 'application/json',
@@ -57,7 +57,7 @@ export default class Login extends Component {
                 <button className="btn btn-primary btn-block" onClick={(e)=>{
                     console.log(this.state.userId, this.state.userPw)
                     e.preventDefault()
-                    this.doLogin()
+                    this.doL0ogin()
                 }}>로그인</button>
                 <p className="forgot-password text-right">
                     <a href="#">비밀번호 찾기</a>

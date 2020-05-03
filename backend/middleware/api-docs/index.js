@@ -36,7 +36,11 @@ const options = {
   // Import swaggerDefinitions
   swaggerDefinition,
   // Path to the API docs
-  apis: ['./api/user/user.controller.js', "./api/class/class.controller.js"]
+  apis: [
+    './api/user/user.controller.js', 
+    "./api/class/class.controller.js",
+    "./api/team/team.controller.js",
+  ]
 };
 
 // Initialize swagger-jsdoc -> returns validated swagger spec in json format

@@ -60,3 +60,7 @@ exports.listTeam = (req, res, next)=>{
     })
 
 }
+
+exports.createTeam = (req, res, next)=>{
+
+}

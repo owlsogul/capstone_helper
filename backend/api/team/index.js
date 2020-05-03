@@ -6,5 +6,6 @@ const serviceUser = require("../../middleware/serviceuser")
 
 router.get("/list", [serviceUser.checkLogin, tc.listTeam])
 
+router.post("/create", [serviceUser.checkLogin, tc.createTeam])
 
 module.exports = router

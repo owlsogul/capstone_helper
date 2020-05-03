@@ -1,9 +1,35 @@
 import React, { Component } from 'react';
+import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
+import { useState } from 'react';
 
+// 새로 class를 만드는 함수
 function sendCreateClass(sendObj) {
-    return new Promise((res, rej)=>{
-        setTimeout(res, 3000)
-    })
+    return fetch('/api/class/create', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(sendObj),
+    });
+}
+
+// TODO: 에러 표시 화면
+function AlertDismissibleExample() {
+    const [show, setShow] = useState(true);
+  
+    if (show) {
+      return (
+        <Alert variant="danger" onClose={() => setShow(false)} dismissible>
+          <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+          <p>
+            무언가의 에러에 대한 설명
+          </p>
+        </Alert>
+      );
+    }
+    return <Button onClick={() => setShow(true)}>Show Alert</Button>;
 }
 
 class AssistRow extends Component {
@@ -69,12 +95,27 @@ class CreateClassForm extends Component {
         this.setState({ targetAssist: e.target.value })
     }
 
-    doCreate(){
-        sendCreateClass()
-            .then((res)=>{
-                this.props.changeScene("invite")
+    doCreate(e){
+        sendCreateClass(e)
+            .then((response)=>{
+                if (response.status == 200) {
+                    console.log("에러 없음")
+                    this.props.changeScene("invite")
+                }
+                else {
+                    console.log("에러 발생")
+                    if (response.status == 400) {
+                        alert("권한 문제가 발생하였습니다!")
+                    } else if (response.status == 500) {
+                        alert("서버 내부 오류가 발생하였습니다.")
+                    } else if (response.status == 403) {
+                        alert("로그인이 필요합니다.")
+                    } else {
+                        console.log(response.status)
+                        alert("알지 못할 오류가 발생하였습니다.")
+                    }
+                }
             })
-        
     }
 
     render(){

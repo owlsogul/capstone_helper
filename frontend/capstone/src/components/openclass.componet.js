@@ -294,15 +294,18 @@ export default class OpenClass extends Component {
         this.setState({ currentScene: newScene })
     }
 
-
     render() {
         let form = this.state.currentScene === "class" ? 
                     (<CreateClassForm changeScene={this.changeScene.bind(this)}/>) : 
                     (<InviteStudentForm changeScene={this.changeScene.bind(this)}/>)
 
         return (
+            <div className="auth-wrapper">
+            <div className="auth-inner">
             <div>
                 {form}
+            </div>
+            </div>
             </div>
         );
     }

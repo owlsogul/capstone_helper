@@ -18,4 +18,6 @@ router.get("/invite/:invitationCode", [serviceUser.checkLogin, cc.enterInvitatio
 
 router.get("/member", [serviceUser.checkLogin, cc.listMember])
 
+router.get("/set_matching", [serviceUser.checkLogin, cc.setMatching])
+
 module.exports = router

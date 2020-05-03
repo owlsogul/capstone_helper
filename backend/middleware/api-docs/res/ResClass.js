@@ -121,4 +121,15 @@ module.exports = {
     }
   },
 
+  ResSetMatching: {
+    description: "성공 여부를 반환한다.",
+    schema: {
+      type: "object",
+      required: [ "msg" ],
+      properties: {
+        msg: { type: "string", description: "success" },
+      }
+    }
+  },
+
 }

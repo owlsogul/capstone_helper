@@ -558,7 +558,7 @@ exports.listMember = (req, res, next)=>{
 
   const respond = (result) =>{
     return res.json({
-      takes: result[0], manages: result[1], "class": result[2]
+      takes: result[0], manages: result[1], "targetClass": result[2]
     })
   }
 
@@ -568,6 +568,106 @@ exports.listMember = (req, res, next)=>{
       console.log(err)
       req.Error.internal(res)
     })
+}
+
+/**
+ * @swagger
+ *  paths: {
+ *    /api/class/set_matching: {
+ *      get: {
+ *        tags: [ Class ],
+ *        summary: "팀 매칭 여부를 결정하는 api",
+ *        description: "팀 매칭을 하는 기간인지 아닌지 결정하는 api입니다.",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "body",
+ *          name: "body",
+ *          description: "수업 코드",
+ *          schema: { $ref: "#/components/req/ReqSetMatching" }
+*         }],
+ *        responses: {
+ *          200: { $ref: "#/components/res/ResListMember" },
+ *          400: { $ref: "#/components/res/ResWrongParameter" },
+ *          403: { $ref: "#/components/res/ResNoAuthorization" },
+ *          500: { $ref: "#/components/res/ResInternal" },
+ *        }
+ *      }
+ *    }
+ *  }
+ */
+exports.setMatching = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let matchingInfo = req.body.matching
+
+  if (!classId){
+    req.Error.wrongParameter(res,"classId")
+    return;
+  }
+
+  const findUser = ()=>{
+    return models.User.findOne({ where: { userId: userId }})
+  }
+
+  const chkPermission = (user)=>{
+    if (!user) {
+      throw new Error("NoAuth")
+    }
+    if (user.level == 50){
+      return models.Manage.findOne({ where: { user: userId, classId: classId} })
+    }
+    else {
+      return models.Class.findOne({ where: { professor: userId, classId: classId } })
+    }
+  }
+
+  const setMatching = (result)=>{
+    if (!result) {
+      throw new Error("NoAuth")
+    }
+    else {
+      return models.Class.update({ isMatching: matchingInfo }, { where: { classId: classId } })
+    }
+  }
+
+  const sortTeam = ()=>{
+    return new Promise((res1, rej1)=>{
+      if (!matchingInfo){ // matching 끝일 경우
+        models.Team.findAll({ where: { classId: classId }})
+          .then(teams=>{
+            Promise.all([teams.map((team, idx)=>{
+              return models.Team.update({ teamName: `${idx+1}팀` },{ where: { teamId: team.teamId } })
+            })]).then(data=>{
+              console.log(data)
+              res1(data)
+            })
+            .catch(rej1)
+          })
+      }
+      else {
+        res1()
+      }
+    })
+  }
+
+  const respond = ()=>{
+    res.json({ msg: "success" })
+  }
+
+  findUser()
+    .then(chkPermission)
+    .then(setMatching)
+    .then(sortTeam)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoAuth") req.Error.noAuthorization(res)
+      else req.Error.internal(res)
+    })
+
+
 
 
 }

@@ -48,6 +48,15 @@ module.exports = {
     properties: {
       classId: { type: "integer", description: "수업 코드" },
     }
-  }
+  },
+
+  ReqSetMatching: {
+    type: "object",
+    required: [ "classId" ],
+    properties: {
+      classId: { type: "integer", description: "수업 코드" },
+      matchingInfo: { type: "boolean", description: "매칭 할지 안할지" },
+    }
+  },
 
 }

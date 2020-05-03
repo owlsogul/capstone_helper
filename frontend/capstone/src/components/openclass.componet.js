@@ -97,16 +97,23 @@ class CreateClassForm extends Component {
 
     doCreate(e){
         sendCreateClass(e)
-            .then((response) => response.json())
-            .then((json)=>{
-                console.log(json)
-                if (json["err"] == null || json["err"] == undefined) {
+            .then((response)=>{
+                if (response.status == 200) {
                     console.log("에러 없음")
                     this.props.changeScene("invite")
                 }
                 else {
                     console.log("에러 발생")
-                    alert("권한 문제가 발생하였습니다!")
+                    if (response.status == 400) {
+                        alert("권한 문제가 발생하였습니다!")
+                    } else if (response.status == 500) {
+                        alert("서버 내부 오류가 발생하였습니다.")
+                    } else if (response.status == 403) {
+                        alert("로그인이 필요합니다.")
+                    } else {
+                        console.log(response.status)
+                        alert("알지 못할 오류가 발생하였습니다.")
+                    }
                 }
             })
     }

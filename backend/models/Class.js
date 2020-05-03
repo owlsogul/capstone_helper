@@ -36,6 +36,9 @@ module.exports = function(sequelize, DataTypes){
         model.belongsTo(models.User, {
             foreignKey: "professor",
         })
+        model.hasMany(models.Team, {
+          foreignKey: "classId"
+        })
     }    
     return model;
 }

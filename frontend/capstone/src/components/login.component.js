@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 
 function sendLogin(sendObj) {
     return fetch('/api/user/signin', {
@@ -15,7 +16,7 @@ export default class Login extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { userId: "", userPw: "" }
+        this.state = { userId: "", userPw: "", isLoginFinished: false }
     }
 
     handlePwChange = (e) => {
@@ -27,13 +28,25 @@ export default class Login extends Component {
     }
 
     doLogin() {
-        sendLogin(this.state)
-            .then(res => res.json())
-            .then(console.log)
+        sendLogin({ userId: this.state.userId, userPw: this.state.userPw })
+            .then(res => {
+                if (res.status == 200) {
+                    alert("정상적으로 로그인 됨")
+                    this.setState({ isLoginFinished: true })
+                } else if (res.status == 400) {
+                    alert("잘못된 데이터거나 로그인 데이터가 없습니다.")
+                } else if (res.status == 500) {
+                    alert("서버 내부적인 오류가 있습니다.")
+                }
+            })
     }
 
     render() {
-        return (
+        // 로그인 후 이동 정의
+        if (this.state.isLoginFinished) {
+            return <Redirect to='/main' />;
+        } else {
+            return(
             <div className="auth-wrapper">
                 <div className="auth-inner">
                     <form>
@@ -67,6 +80,7 @@ export default class Login extends Component {
                     </form>
                 </div>
             </div>
-        );
+            )
+        }
     }
 }

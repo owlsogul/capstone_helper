@@ -26,7 +26,7 @@ class CommonRegister extends Component {
 
     onClickRegister() {
         console.log(JSON.stringify(this.state))
-        fetch(this.props.appendix === "Prof" ? '/api/user/register_prof' : '/api/user/register', {
+        fetch(this.props.appendix === "Prof" ? '/api/user/signup_prof' : '/api/user/signup', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -40,6 +40,16 @@ class CommonRegister extends Component {
             })
             .then(() => {
                 this.props.onSuccessRegister(this.props.appendix)
+            })
+            .catch((err)=>{
+                console.log(err)
+                if (err.status == 400) {
+                    alert("잘못된 데이터거나 회원가입 할 데이터가 없습니다.")
+                } else if (err.status == 500){
+                    alert("서버 내부 오류.")
+                } else {
+                    alert("알 수 없는 에러 발생.")
+                }
             })
     }
 

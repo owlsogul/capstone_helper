@@ -22,15 +22,18 @@ export default class NoticePage extends Component {
   getNotice() {
     notice(this.state)
       .then((res) => res.json())
-      .then((json)=>{
+      .then((json) => {
         console.log(json)
       })
   }
 
   render() {
     return (
-      // <this.ComplexList />
-      <ComplexList list={list}/>
+      <div className="full-page">
+        <div className="auth-wrapper">
+          <ComplexList list={list} />
+        </div>
+      </div>
     );
   }
 

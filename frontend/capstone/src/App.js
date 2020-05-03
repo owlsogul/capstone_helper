@@ -17,9 +17,9 @@ function App() {
       <div className="App">
         <NavigationBar></NavigationBar>
         <Switch>
+          <Route exact path='/' component={RedirectingComponent} />
           <Route path="/open-class" component={OpenClass} />
           <Route path="/notice" component={NoticePage} />
-          <Route exact path='/' component={RedirectingComponent} />
           <Route path="/sign-in" component={Login} />
           <Route path="/sign-up" component={SignUp} />
           <Route path="/wait" component={wait} />

@@ -2,15 +2,19 @@ import React, { Component } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
+import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 const ComplexList = () => (
   <ul>
     {list.map(item => (
-      <li key={item.id}>
-        <h1>{item.title}</h1>
+      <div class="jumbotron">
+        <h1 class="display-4">{item.title}</h1>
+        <hr class="my-4"></hr>
         <h3>{item.body}</h3>
         <div>{item.date}</div>
-      </li>
+        <a class="btn btn-primary btn-lg" href="#" role="button">수정</a>
+        <a class="btn btn-primary btn-lg" href="#" role="button">삭제</a>
+      </div>
     ))}
   </ul>
 );
@@ -28,36 +32,3 @@ const list = [
   },
 ];
 export default ComplexList;
-
-/*
-class Notice extends Component {
-  render() {
-    return (
-      <Accordion defaultActiveKey="0">
-        <Card>
-          <Card.Header>
-            <Accordion.Toggle as={Button} variant="link" eventKey="0">
-              Click me!
-      </Accordion.Toggle>
-          </Card.Header>
-          <Accordion.Collapse eventKey="0">
-            <Card.Body>Hello! I'm the body</Card.Body>
-          </Accordion.Collapse>
-        </Card>
-        <Card>
-          <Card.Header>
-            <Accordion.Toggle as={Button} variant="link" eventKey="1">
-              Click me!
-      </Accordion.Toggle>
-          </Card.Header>
-          <Accordion.Collapse eventKey="1">
-            <Card.Body>Hello! I'm another body</Card.Body>
-          </Accordion.Collapse>
-        </Card>
-      </Accordion>
-    )
-  }
-}
-
-export default Notice;
-*/

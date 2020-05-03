@@ -77,7 +77,48 @@ module.exports = {
         classId: { type: "string", description: "가입된 수업 코드" },
       }
     }
-  }
-  
+  },
+
+  ResListMember: {
+    description: "수업 관리자, 수강자를 반환한다.",
+    schema: {
+      type: "object",
+      required: ["takes", "manages", "targetClass"],
+      properties: {
+        takse: {
+          type: "array",
+          description: "수강중인 사람",
+          items: {
+            type: "object",
+            properties: {
+              classId: { type: "integer", description: "수업 코드"},
+              user: { type: "string", description: "유저 아이디" },
+            }
+          }
+        },
+
+        manages: {
+          type: "array",
+          description: "관리중인 조교",
+          items: {
+            type: "object",
+            properties: {
+              classId: { type: "integer", description: "수업 코드" },
+              user: { type: "string", description: "유저 아이디" },
+            }
+          }
+        },
+
+        targetClass: {
+          type: "object",
+          properties: {
+            classId: { type: "integer", description: "수업 코드" },
+            professor: { type: "string", description: "유저 아이디" },
+          }
+        }
+
+      }
+    }
+  },
 
 }

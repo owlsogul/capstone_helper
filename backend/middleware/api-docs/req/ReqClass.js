@@ -40,6 +40,14 @@ module.exports = {
   ReqClassInvite: {
     type: "string",
     description: "초대링크"
+  },
+
+  ReqListMember: {
+    type: "object",
+    required: [ "classId" ],
+    properties: {
+      classId: { type: "integer", description: "수업 코드" },
+    }
   }
 
 }

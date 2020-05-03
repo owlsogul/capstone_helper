@@ -503,3 +503,71 @@ exports.enterInvitationCode = (req, res, next)=>{
   
 
 }
+
+/**
+ * @swagger
+ *  paths: {
+ *    /api/class/listMember: {
+ *      get: {
+ *        tags: [ Class ],
+ *        summary: "수업의 멤버 리스트 확인하는 api",
+ *        description: "초대 링크 진입",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "body",
+ *          name: "body",
+ *          description: "수업 코드",
+ *          schema: { $ref: "#/components/req/ReqListMember" }
+*         }],
+ *        responses: {
+ *          200: { $ref: "#/components/res/ResListMember" },
+ *          400: { $ref: "#/components/res/ResWrongParameter" },
+ *          403: { $ref: "#/components/res/ResNoAuthorization" },
+ *          500: { $ref: "#/components/res/ResInternal" },
+ *        }
+ *      }
+ *    }
+ *  }
+ */
+exports.listMember = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+
+  if (!classId){
+    req.Error.wrongParameter(res,"classId")
+    return
+  }
+
+  const findTakes = ()=>{
+    return models.Take.findAll({ where: { classId: classId } })
+  }
+
+  const findManage = ()=>{
+    return models.Manage.findAll({ where: { classId: classId } })
+  }
+
+  const findClass = () =>{
+    return models.Class.findOne({ where: { classId: classId } })
+  }
+
+  const mergeData = ()=>{
+    return Promise.all([ findTakes(), findManage(), findClass()])
+  }
+
+  const respond = (result) =>{
+    return res.json({
+      takes: result[0], manages: result[1], "class": result[2]
+    })
+  }
+
+  mergeData()
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      req.Error.internal(res)
+    })
+
+
+}

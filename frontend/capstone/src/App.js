@@ -10,6 +10,7 @@ import wait from './components/wait';
 import OpenClass from './components/openclass.componet';
 import RedirectingComponent from './components/RedirectingComponent.js';
 import NoticePage from './pages/NoticePage.js';
+import Sidebar from './components/Sidebar';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/sign-up" component={SignUp} />
           <Route path="/wait" component={wait} />
         </Switch>
+        {/* <Sidebar></Sidebar> */}
       </div >
     </Router >
   )

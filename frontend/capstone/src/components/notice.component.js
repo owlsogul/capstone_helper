@@ -8,7 +8,7 @@ const ComplexList = () => (
   <ul>
     {list.map(item => (
       <div class="jumbotron">
-        <h1 class="display-4">{item.title}</h1>
+        <h1 class="display-6">{item.title}</h1>
         <hr class="my-4"></hr>
         <h3>{item.body}</h3>
         <div>{item.date}</div>
@@ -21,13 +21,13 @@ const ComplexList = () => (
 
 const list = [
   {
-    title: '아아 긴급한 공지사항이 있습니다',
-    body: '종강까지 d-100',
+    title: '중간고사 기간 수업 관련 공지',
+    body: '이번 학기는 중간고사 기간에 따로 수업이 없습니다. 잘 확인하셔서 착오 없으시길 바랍니다. ',
     date: '1999-11-25',
   },
   {
-    title: '마이크테스트 원투',
-    body: '과제가 왜이렇게 많아',
+    title: '과제 생성 공지',
+    body: '과제가 2개 생성되었으니 학생들은 eclass를 확인하기 바랍니다. ',
     date: '1999-11-25',
   },
 ];

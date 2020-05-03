@@ -9,27 +9,23 @@ import SignUp from './components/signup.component';
 import wait from './components/wait';
 import OpenClass from './components/openclass.componet';
 import RedirectingComponent from './components/RedirectingComponent.js';
-import Notice from './components/notice.component.js';
+import NoticePage from './pages/NoticePage.js';
 
 function App() {
   return (
     <Router>
       <div className="App">
         <NavigationBar></NavigationBar>
-        <div className="auth-wrapper">
-          <div className="auth-inner">
-            <Switch>
-              <Route exact path='/' component={RedirectingComponent} />
-              <Route path="/sign-in" component={Login} />
-              <Route path="/sign-up" component={SignUp} />
-              <Route path="/wait" component={wait} />
-              <Route path="/open-class" component={OpenClass} />
-              <Route path="/notice" component={Notice} />
-            </Switch>
-          </div>
-        </div>
-      </div>
-    </Router>
+        <Switch>
+          <Route path="/open-class" component={OpenClass} />
+          <Route path="/notice" component={NoticePage} />
+          <Route exact path='/' component={RedirectingComponent} />
+          <Route path="/sign-in" component={Login} />
+          <Route path="/sign-up" component={SignUp} />
+          <Route path="/wait" component={wait} />
+        </Switch>
+      </div >
+    </Router >
   )
 }
 

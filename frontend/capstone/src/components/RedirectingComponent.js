@@ -10,6 +10,7 @@ function userInfo(sendObj) {
   })
 }
 
+// 수업 목록을 받아오는 함수
 function classList() {
   return fetch('/api/class/list', {
     method: 'GET',

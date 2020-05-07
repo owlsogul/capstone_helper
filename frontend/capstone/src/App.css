@@ -86,3 +86,43 @@ li {
   line-height: 1.5;
   font-weight: bold;
 }
+
+.dashboard-page {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1040;
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.dashboard-container{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.dashboard-left {
+  width: 100px;
+  z-index: 1039;
+}
+
+.dashboard-body {
+  flex: 1
+}
+
+.dashboard-left-extension {
+  position: fixed;
+  left: -100px;
+  top: 0;
+  width: 150px;
+  z-index: 1038;
+  transition: all 1s;
+  height: 100%;
+}
+
+.show-extension {
+  left: 100px;
+}

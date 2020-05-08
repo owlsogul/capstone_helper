@@ -141,7 +141,7 @@ class CreateClassForm extends Component {
                 <button className="btn btn-primary btn-block" onClick={(e) => {
                     console.log(this.state.userId, this.state.userPw)
                     e.preventDefault()
-                    this.doCreate({ userId: this.state.userId, userPw: this.state.userPw})
+                    this.doCreate({ className: this.state.className, classTime: this.state.classTime})
                 }}>수업 생성</button>
             </form>
         )

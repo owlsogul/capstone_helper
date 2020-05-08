@@ -26,9 +26,7 @@ function App() {
           <Route path="/sign-in" component={Login} />
           <Route path="/sign-up" component={SignUp} />
           <Route path="/wait" component={wait} />
-
           <Route path="/dashboard" component={DashboardPage} />
-
         </Switch>
         {/* <Sidebar></Sidebar> */}
       </div >

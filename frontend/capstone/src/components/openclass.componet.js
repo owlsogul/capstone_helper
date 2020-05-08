@@ -3,16 +3,17 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { useState } from 'react';
 
-// 새로 class를 만드는 함수
-function sendCreateClass(sendObj) {
-    return fetch('/api/class/create', {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(sendObj),
-    });
+// 수업 개설 후 조교 초대 API
+function inviteAssist() {
+
+}
+// 조교를 위한 초대링크 생성 API
+function createAssistInviteCode() {
+
+}
+// 학생을 위한 초대링크 생성 API
+function createAssistStudentCode() {
+
 }
 
 class AssistRow extends Component {
@@ -65,27 +66,38 @@ class CreateClassForm extends Component {
         this.setState({ targetAssist: e.target.value })
     }
 
-    doCreate(e) {
-        sendCreateClass(e)
-            .then((response) => {
-                if (response.status == 200) {
-                    console.log("에러 없음")
-                    this.props.changeScene("invite")
-                }
-                else {
-                    console.log("에러 발생")
-                    if (response.status == 400) {
-                        alert("권한 문제가 발생하였습니다!")
-                    } else if (response.status == 500) {
-                        alert("서버 내부 오류가 발생하였습니다.")
-                    } else if (response.status == 403) {
-                        alert("로그인이 필요합니다.")
-                    } else {
-                        console.log(response.status)
-                        alert("알지 못할 오류가 발생하였습니다.")
-                    }
-                }
-            })
+    createClass() {
+        fetch('/api/class/create', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ className: this.state.className, classTime: this.state.classTime}),
+        })
+        .then(res => {
+            if (res.status != 200) throw res.status
+            return res.json()
+        })
+        .then(json => {
+            // classId와 className을 저장해준다??
+        })
+        .then(()=> {
+            this.props.changeScene("invite")
+        })
+        .catch((err)=> {
+            console.log("에러 발생")
+            if (err.status == 400) {
+                alert("권한 문제가 발생하였습니다!")
+            } else if (err.status == 500) {
+                alert("서버 내부 오류가 발생하였습니다.")
+            } else if (err.status == 403) {
+                alert("로그인이 필요합니다.")
+            } else {
+                console.log(err.status)
+                alert("알지 못할 오류가 발생하였습니다.")
+            }
+        })
     }
 
     render() {
@@ -141,7 +153,7 @@ class CreateClassForm extends Component {
                 <button className="btn btn-primary btn-block" onClick={(e) => {
                     console.log(this.state.userId, this.state.userPw)
                     e.preventDefault()
-                    this.doCreate({ className: this.state.className, classTime: this.state.classTime})
+                    this.createClass()
                 }}>수업 생성</button>
             </form>
         )
@@ -149,12 +161,12 @@ class CreateClassForm extends Component {
 }
 
 /**
- * 초대 링크를 만드는 폼
+ * 조교와 학생 초대 링크를 만드는 폼
  */
 class InviteStudentForm extends Component {
     constructor(props) {
         super(props);
-        this.state = { className: "", classNumber: "", classTime: "" }
+        this.state = { assistantExpireTime: "",  }
     }
 
     handleClassNameChange = (e) => {

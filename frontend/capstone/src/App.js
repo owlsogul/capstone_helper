@@ -13,6 +13,7 @@ import NoticePage from './pages/NoticePage.js';
 import Sidebar from './components/Sidebar';
 
 import DashboardPage from "./pages/DashboardPage"
+import ClassInfoPage from './pages/ClassInfo';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/sign-up" component={SignUp} />
           <Route path="/wait" component={wait} />
           <Route path="/dashboard" component={DashboardPage} />
+          <Route path="/classinfo" component={ClassInfoPage} />
         </Switch>
         {/* <Sidebar></Sidebar> */}
       </div >

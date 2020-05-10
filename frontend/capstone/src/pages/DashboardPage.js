@@ -111,10 +111,7 @@ export default class DashboardPage extends Component {
   render() {
     return (
         <Dashboard initState={[false, true, false]} history={this.props.history}>
-            <Bar></Bar>
-            <container>
-              <ClassList classes={this.state.classes} />
-            </container>
+          <ClassList classes={this.state.classes} />
         </Dashboard>
     );
   }

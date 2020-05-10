@@ -4,7 +4,7 @@ import ClassInfoList from '../components/ClassInfoList.component'
 import { confirmAlert } from 'react-confirm-alert';
 
 class ClassInfoPage extends Component {
-  state = {
+  /*state = {
     information: [
       {
         name: '박상오',
@@ -17,7 +17,24 @@ class ClassInfoPage extends Component {
         email: 'kckim@cau.ac.kr',
       },
     ]
+  }*/
+
+  //
+  constructor(props) {
+    super(props)
+    this.state={
+      information: []
+    }
   }
+
+  componentWillMount() {
+    fetch('/api/class/member')
+    .then(res => res.json())
+    .then(data => this.setState({
+      posts: data
+    }))
+  }
+  //
 
   submit = () => {
     confirmAlert({
@@ -38,6 +55,16 @@ class ClassInfoPage extends Component {
   }
 
   render() {
+    //
+    const {posts} = this.state
+    const postList = posts.map((post) => (
+      <div>
+        <div><b>{post.name}</b></div>
+        <div>{post.status}</div>
+        <div>{post.email}</div>
+      </div>
+    ))
+    //
     return (
       <div>
         <div style={{ height: "5rem" }}>
@@ -55,7 +82,8 @@ class ClassInfoPage extends Component {
           <button class="btn btn-light btn-sm" style={{ marginLeft: "26rem" }}>수정</button>
         </div>
         <div class="adminInfo" style={{ width: "30rem", margin: "auto" }}>
-          <ClassInfoList data={this.state.information} />
+          {/*<ClassInfoList data={this.state.information} />*/}
+          {postList}
         </div>
 
         <br></br><br></br>

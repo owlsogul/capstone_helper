@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ComplexList from '../components/notice.component';
+import ClassTemplate from "../components/ClassTemplate"
 // import './App.css';
 // import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
@@ -36,12 +37,11 @@ export default class NoticePage extends Component {
 
   render() {
     console.log("id는" + this.props.match.params.classId)
+    console.log(this.props.match)
     return (
-      <div className="full-page">
-        <div className="auth-wrapper">
-          <ComplexList list={this.state.notice} />
-        </div>
-      </div>
+      <ClassTemplate match={this.props.match}>
+        <ComplexList list={this.state.notice} />
+      </ClassTemplate>
     );
   }
 

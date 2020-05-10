@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import {Congratulation, CommonRegister, SelectType} from '../components/signup.component';
+import NavigationBar from '../components/NavigationBar'
 
 export default class SignUp extends Component {
   constructor(props) {
@@ -50,13 +51,13 @@ export default class SignUp extends Component {
     }
 
     return (
-      <div className="auth-wrapper">
-        <div className="auth-inner">
-          <div>
-            {content}
-          </div>
+    <div className="auth-wrapper">
+      <div className="auth-inner">
+        <div>
+          {content}
         </div>
       </div>
+    </div>
     );
   }
 }

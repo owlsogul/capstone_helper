@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Dashboard from "../components/Dashboard.component"
+import Bar from "../components/Bar.component"
 
 const style = {
   classListBody: {
@@ -36,8 +37,6 @@ class ClassElement extends Component {
           </p>
           <a href="#" class="btn btn-primary">교실 들어가기</a>
         </div>
-        
-        
       </div>
     )
   }
@@ -111,9 +110,12 @@ export default class DashboardPage extends Component {
 
   render() {
     return (
-      <Dashboard initState={[false, true, false]} history={this.props.history}>
-        <ClassList classes={this.state.classes} />
-      </Dashboard>
+        <Dashboard initState={[false, true, false]} history={this.props.history}>
+            <Bar></Bar>
+            <container>
+              <ClassList classes={this.state.classes} />
+            </container>
+        </Dashboard>
     );
   }
 

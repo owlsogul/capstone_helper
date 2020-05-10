@@ -29,6 +29,7 @@ export default class NoticePage extends Component {
   }
 
   render() {
+    console.log("id는" + this.props.match.params.classId)
     return (
       <div className="full-page">
         <div className="auth-wrapper">

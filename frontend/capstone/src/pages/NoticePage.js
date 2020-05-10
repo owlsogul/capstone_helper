@@ -12,7 +12,7 @@ function notice(sendObj) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ classId: this.state.classId }),
+    body: JSON.stringify({ classId: sendObj.classId }),
   })
 }
 

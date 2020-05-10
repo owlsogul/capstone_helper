@@ -58,6 +58,7 @@ class CreateClassForm extends Component {
     }
 
     createClass() {
+        let tempClassId = ""
         fetch('/api/class/create', {
             method: 'POST',
             headers: {
@@ -74,6 +75,7 @@ class CreateClassForm extends Component {
                 // classId와 className을 저장해준다??
                 console.log(json)
                 console.log(json["classId"])
+                tempClassId = json.classId
                 this.setState({ classId: json["classId"] })
             })
             .then(() => {
@@ -83,7 +85,8 @@ class CreateClassForm extends Component {
                 }
             })
             .then((json) => {
-                this.props.createCallback(this.state.classId)
+                console.log("아니?? "+ tempClassId)
+                this.props.createClassCallback(tempClassId)
                 this.props.changeScene("invite")
             })
             .catch((err) => {
@@ -374,7 +377,7 @@ export default class OpenClass extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { currentScene: /*""*/"class" }
+        this.state = { currentScene: /*""*/"class", classId: "" }
     }
 
     changeScene(newScene) {
@@ -383,8 +386,8 @@ export default class OpenClass extends Component {
 
     render() {
         let form = this.state.currentScene === "class" ?
-            (<CreateClassForm changeScene={this.changeScene.bind(this)} classId={this.state.classId} />) :
-            (<InviteStudentForm changeScene={this.changeScene.bind(this)} />)
+            (<CreateClassForm changeScene={this.changeScene.bind(this)} createClassCallback={(classId)=>{ console.log(`새로 받은 classId는 ${classId}`); this.setState({classId: classId})}} />) :
+            (<InviteStudentForm changeScene={this.changeScene.bind(this)} classId={this.state.classId} />)
 
         return (
             <div>

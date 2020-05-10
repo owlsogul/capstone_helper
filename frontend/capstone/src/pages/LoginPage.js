@@ -45,7 +45,7 @@ export default class Login extends Component {
     render() {
         // 로그인 후 이동 정의
         if (this.state.isLoginFinished) {
-            return <Redirect to='/main' />;
+            return <Redirect to='/dashboard' />;
         } else {
             return(
             <div className="auth-wrapper">

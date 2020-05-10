@@ -93,6 +93,7 @@ module.exports = {
             properties: {
               classId: { type: "integer", description: "수업 코드"},
               user: { type: "string", description: "유저 아이디" },
+              takeStatus: {type: "integer", description: "0이면 수강 대기중, 1이면 수강중"}
             }
           }
         },

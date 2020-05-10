@@ -188,7 +188,7 @@ exports.inviteAssist = (req, res, next) => {
   }
 
   const createManageRelation = (dbAssistant) =>{
-    if (!dbAssistant || dbAssistant.length == 0) throw new Error("Nobody Registered")
+    //if (!dbAssistant || dbAssistant.length == 0) throw new Error("Nobody Registered")
     const records = dbAssistant.map(e=>{ return {classId: targetClass.classId, user: e.userId} })
     console.log("new assistants are " + records)
     addedAssistant = dbAssistant

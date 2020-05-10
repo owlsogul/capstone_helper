@@ -667,8 +667,53 @@ exports.setMatching = (req, res, next)=>{
       if (err.message == "NoAuth") req.Error.noAuthorization(res)
       else req.Error.internal(res)
     })
+}
+
+exports.listNotice = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+
+  if (!classId){
+    req.Error.wrongParameter(res,"classId")
+    return;
+  }
+
+  // TODO: 권한 조회
+  const getNotices = ()=>{
+    return models.Notice.findAll({ where: { classId: classId } })
+  }
+
+  const respond = (resp)=>{
+    res.json(resp)
+  }
+
+  getNotices()
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      req.Error.internal(res)
+    })
 
 
+}
 
+exports.postNotice = (req, res, next)=>{
 
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let title = req.body.title
+  let body = req.body.body
+
+  if (!classId || !title || !body){
+    req.Error.wrongParameter(res,"something")
+    return;
+  }
+
+  // TODO: 권한 조회
+  models.Notice.create({
+    classId: classId,
+    title: title,
+    body: body
+  })
 }

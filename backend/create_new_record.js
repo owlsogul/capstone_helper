@@ -152,6 +152,23 @@ module.exports = ()=>{
         expiredDate: Date.parse("9999-12-31")
       })
     })
+    // 공지 사항 등록
+    .then(()=>{
+      return models.Notice.create({
+        classId: 1,
+        title: "공지사항 1",
+        body: "공지사항 내용입니다.",
+        writtenDate: Date.parse("2020-05-09")
+      })
+    })
+    .then(()=>{
+      return models.Notice.create({
+        classId: 1,
+        title: "공지사항 2",
+        body: "공지사항 내용입니다.",
+        writtenDate: Date.parse("2020-05-10")
+      })
+    })
     .then(()=>{
       console.log("테스트 데이터 생성 완료!")
     })

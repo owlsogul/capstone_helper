@@ -20,4 +20,8 @@ router.post("/member", [serviceUser.checkLogin, cc.listMember])
 
 router.get("/set_matching", [serviceUser.checkLogin, cc.setMatching])
 
+router.post("/list_notice", [serviceUser.checkLogin, cc.listNotice] )
+
+router.post("/post_notice", [serviceUser.checkLogin, cc.postNotice])
+
 module.exports = router

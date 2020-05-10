@@ -12,6 +12,7 @@ function notice(sendObj) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify({ classId: this.state.classId }),
   })
 }
 
@@ -19,6 +20,7 @@ export default class NoticePage extends Component {
   constructor(props) {
     super(props);
     this.state = { classId: this.props.match.params.classId, notice: [] }
+    this.getNotice = this.getNotice.bind(this);
   }
 
   getNotice() {

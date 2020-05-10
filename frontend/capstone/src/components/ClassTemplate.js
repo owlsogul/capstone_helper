@@ -18,7 +18,7 @@ export default class ClassTemplate extends Component {
         <div>
           <Bar match={this.props.match}/>
         </div>
-        <div>
+        <div style={{ padding: 10 }}>
           {this.props.children}
         </div>
       </Dashboard>

@@ -6,19 +6,23 @@ import ComplexList from '../components/notice.component';
 // 공지를 받아오는 함수
 function notice(sendObj) {
   return fetch('/api/class/list_notice', {
-    method: 'GET',
-    credentials: 'include'
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   })
 }
 
 export default class NoticePage extends Component {
   constructor(props) {
     super(props);
-    this.state = { classId: "", notice: [] }
+    this.state = { classId: this.props.match.params.classId, notice: [] }
   }
 
   getNotice() {
-    notice({classId: this.state.classId})
+    notice({ classId: this.state.classId })
       .then((res) => res.json())
       .then((json) => {
         console.log(json)

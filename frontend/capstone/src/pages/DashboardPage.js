@@ -1,8 +1,23 @@
 import React, { Component } from 'react';
 import Dashboard from "../components/Dashboard.component"
 
+const style = {
+  classListBody: {
+    display: "flex",
+    flexFlow: "row wrap",
+  }
+}
+
 const loadClass = ()=>{
   return fetch("/api/class/list")
+}
+
+const createClassType = (classType)=>{
+  if (classType == "take") return "수강 중"
+  else if (classType == "wait") return "수강 대기중"
+  else if (classType == "manage") return "수업 관리중"
+  else if (classType == "own") return "강의 중"
+  else return "알수 없음"
 }
 
 class ClassElement extends Component {
@@ -12,12 +27,14 @@ class ClassElement extends Component {
 
   render(){
     return(
-      <div className="card" style={{ width: "18rem"}}>
-        <img src="..." class="card-img-top" alt="..."/>
+      <div className="card" style={{ width: "18rem", margin: 10 }}>
         <div class="card-body">
           <h5 class="card-title">{this.props.className}</h5>
-          <p class="card-text">{this.props.className} {this.props.classType}</p>
-          <a href="#" class="btn btn-primary">Go somewhere</a>
+          <p class="card-text">{this.props.className} </p>
+          <p className="card-text">
+            {createClassType(this.props.classType)}
+          </p>
+          <a href="#" class="btn btn-primary">교실 들어가기</a>
         </div>
         
         
@@ -41,7 +58,7 @@ class ClassList extends Component{
 
   render(){
     return(
-      <div>
+      <div style={style.classListBody} >
         {
           this.state.classes.map(e=>{
             return (
@@ -70,18 +87,24 @@ export default class DashboardPage extends Component {
       .then(res=>{
         console.log(res)
         let newClasses = []
-        newClasses = newClasses.concat(res.take.map(e=>{ return { 
-          classId: e.classId, 
-          className: e.Class.className, 
-          classType: e.takeStatus == 1 ? "take" : "wait" } }));
-        newClasses = newClasses.concat(res.manage.map(e=>{ return { 
+        if (res.take){
+          newClasses = newClasses.concat(res.take.map(e=>{ return { 
+            classId: e.classId, 
+            className: e.Class.className, 
+            classType: e.takeStatus == 1 ? "take" : "wait" } }));
+        }
+        if (res.manage){
+          newClasses = newClasses.concat(res.manage.map(e=>{ return { 
             classId: e.classId, 
             className: e.Class.className, 
             classType: "manage" } }));
-        newClasses = newClasses.concat(res.own.map(e=>{ return { 
-          classId: e.classId, 
-          className: e.Class.className, 
-          classType: "own" } }));
+        }
+        if (res.own){
+          newClasses = newClasses.concat(res.own.map(e=>{ return { 
+            classId: e.classId, 
+            className: e.Class.className, 
+            classType: "own" } }));
+        }
         this.setState({ classes: newClasses })
       })
   }

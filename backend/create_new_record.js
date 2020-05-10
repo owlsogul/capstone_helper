@@ -7,6 +7,7 @@ function pad(n, width) {
 
 const numStudent = 10
 const numProfessor = 5
+const numAssist = 10
 
 module.exports = ()=>{
 
@@ -58,18 +59,101 @@ module.exports = ()=>{
     })
   }
 
+  const createAssistPromise = (idx)=>{
+    return new Promise((res, rej)=>{
+      models.User.create({ 
+        userId: `assist${ pad(idx, 2) }@cau.ac.kr`,
+        userPw: "e5c000048557d3eb78be91e277aa975a141ea5f97932ffb1823bd857835102fb4e9c9f377fadec68030a9d1c34aa207e7eb752a277072ccbb132bd599d44fb39",
+        salt: "1042274896194",
+        name: "조교"+pad(idx, 2),
+        level: 50
+      })
+      .then((student)=>{
+        return models.StudentMeta.create({
+          user: student.userId,
+          studentCode: pad(idx, 8)
+        })
+      })
+      .then(()=>{
+        res();
+      })
+      .catch((err)=>{
+        rej()
+      })
+    })
+  }
+
   let studentsPromise = []
   let professorPromise = []
+  let assistPromise = []
 
-  for (let idx = 0; idx < numStudent; idx++){
+  for (let idx = 1; idx < numStudent; idx++){
     studentsPromise.push(createStudentPromise(idx))
   }
 
-  for (let idx = 0; idx < numProfessor; idx++){
+  for (let idx = 1; idx < numProfessor; idx++){
     professorPromise.push(createProfessorPromise(idx))
+  }
+
+  for (let idx = 1; idx < numAssist; idx++){
+    assistPromise.push(createAssistPromise(idx))
   }
   
   Promise.all(studentsPromise)
-  Promise.all(professorPromise)
-
+    .then(()=>{
+      return Promise.all(professorPromise)
+    })
+    .then(()=>{
+      return Promise.all(assistPromise)
+    })
+    // 수업1 생성
+    .then(()=>{
+      return models.Class.create({
+        professor: "professor01@cau.ac.kr",
+        className: "19년도 가을 캡스톤 프로젝트",
+        classTime: "월) 9시 ~ 13시"
+      })
+    })
+    // 학생 1~9 수업1 등록
+    .then(()=>{
+      let takes = []
+      for (let idx = 1; idx < numStudent; idx++){
+        takes.push(new Promise((res, rej)=>{
+          models.Take.create({
+            classId: 1,
+            user: `student${ pad(idx, 2) }@cau.ac.kr`,
+            takeStatus: idx <= 6 ? 1 : 0
+          })
+          .then(res)
+          .catch(rej)
+        }))
+      }
+      return Promise.all(takes)
+    })
+    // 조교 1 ~ 3 수업1 등록
+    .then(()=>{
+      let manages = []
+      for (let idx = 1; idx < 4; idx++){
+        manages.push(new Promise((res, rej)=>{
+          models.Manage.create({
+            classId: 1,
+            user: `assist${ pad(idx, 2) }@cau.ac.kr`
+          })
+          .then(res)
+          .catch(rej)
+        }))
+      }
+    })
+    // 수업 코드 생성
+    .then(()=>{
+      models.InvitationCode.create({
+        code: "CLASS01",
+        classId: 1,
+        expiredDate: Date.parse("9999-12-31")
+      })
+    })
+    .then(()=>{
+      console.log("테스트 데이터 생성 완료!")
+    })
+  
 }

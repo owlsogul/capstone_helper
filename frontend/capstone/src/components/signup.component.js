@@ -203,4 +203,3 @@ export class SelectType extends Component {
         )
     }
 }
-// export { Congratulation, CommonRegister, ProfessorRegister, StudentRegister, SelectType }

@@ -16,7 +16,7 @@ router.post("/create_student_invite_code", [serviceUser.checkLogin, cc.createStu
 
 router.get("/invite/:invitationCode", [serviceUser.checkLogin, cc.enterInvitationCode])
 
-router.get("/member", [serviceUser.checkLogin, cc.listMember])
+router.post("/member", [serviceUser.checkLogin, cc.listMember])
 
 router.get("/set_matching", [serviceUser.checkLogin, cc.setMatching])
 

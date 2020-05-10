@@ -44,11 +44,11 @@ exports.listClass = (req, res, next)=>{
   }
 
   const findTake = (user)=>{
-    return models.Take.findAll({ where: { user: userId } })
+    return models.Take.findAll({ include: [ { model: models.Class} ], where: { user: userId } })
   }
 
   const findManage = (user)=>{
-    return models.Manage.findAll({ where: { user: userId } })
+    return models.Manage.findAll({ include: [ { model: models.Class} ], where: { user: userId } })
   }
 
   const findOwn = (user)=>{
@@ -507,8 +507,8 @@ exports.enterInvitationCode = (req, res, next)=>{
 /**
  * @swagger
  *  paths: {
- *    /api/class/listMember: {
- *      get: {
+ *    /api/class/member: {
+ *      post: {
  *        tags: [ Class ],
  *        summary: "수업의 멤버 리스트 확인하는 api",
  *        description: "초대 링크 진입",
@@ -535,6 +535,7 @@ exports.listMember = (req, res, next)=>{
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
 
+  console.log(req.body)
   if (!classId){
     req.Error.wrongParameter(res,"classId")
     return

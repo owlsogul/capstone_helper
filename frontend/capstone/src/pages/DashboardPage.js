@@ -133,7 +133,7 @@ export default class DashboardPage extends Component {
       this.setState({ noAuthAlert: true })
     }
     else{
-      window.location = `/${classId}/list_notice`
+      window.location = `/${classId}/notice`
     }
   }
 

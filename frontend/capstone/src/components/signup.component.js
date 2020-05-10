@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-class Congratulation extends Component {
+export class Congratulation extends Component {
     constructor(props) {
         super(props)
     }
@@ -17,7 +17,7 @@ class Congratulation extends Component {
     }
 }
 
-class CommonRegister extends Component {
+export class CommonRegister extends Component {
 
     constructor(props) {
         super(props)
@@ -41,11 +41,11 @@ class CommonRegister extends Component {
             .then(() => {
                 this.props.onSuccessRegister(this.props.appendix)
             })
-            .catch((err)=>{
+            .catch((err) => {
                 console.log(err)
                 if (err.status == 400) {
                     alert("잘못된 데이터거나 회원가입 할 데이터가 없습니다.")
-                } else if (err.status == 500){
+                } else if (err.status == 500) {
                     alert("서버 내부 오류.")
                 } else {
                     alert("알 수 없는 에러 발생.")
@@ -135,7 +135,7 @@ class CommonRegister extends Component {
     }
 }
 
-class ProfessorRegister extends Component {
+export class ProfessorRegister extends Component {
 
     render() {
         return (
@@ -150,7 +150,7 @@ class ProfessorRegister extends Component {
 }
 
 
-class StudentRegister extends Component {
+export class StudentRegister extends Component {
     render() {
         return (
             <div>
@@ -163,7 +163,7 @@ class StudentRegister extends Component {
     }
 }
 
-class SelectType extends Component {
+export class SelectType extends Component {
 
     static defaultProps = {
         onSelectType: console.log
@@ -203,64 +203,4 @@ class SelectType extends Component {
         )
     }
 }
-
-export default class SignUp extends Component {
-
-    constructor(props) {
-        super(props)
-        this.state = {
-            displayScreen: "Select"
-        }
-        this.handleType = this.handleType.bind(this)
-        this.onBackStep = this.onBackStep.bind(this)
-        this.onSuccessRegister = this.onSuccessRegister.bind(this)
-    }
-
-    handleType(type) {
-        this.setState({
-            displayScreen: type === "PROF" ? "Prof" : "Stud"
-        })
-    }
-
-    onBackStep() {
-        this.setState({
-            displayScreen: "Select"
-        })
-    }
-
-    onSuccessRegister(type) {
-        this.setState({
-            displayScreen: type === "PROF" ? "SucProf" : "SucStud"
-        })
-    }
-
-
-    render() {
-        var content;
-        if (this.state.displayScreen === "Select") {
-            content = <SelectType onSelectType={this.handleType} />
-        }
-        else if (this.state.displayScreen === "Prof") {
-            content = <CommonRegister appendix={"Prof"} onClickBack={this.onBackStep} onSuccessRegister={this.onSuccessRegister} />
-        }
-        else if (this.state.displayScreen === "Stud") {
-            content = <CommonRegister appendix={"Stud"} onClickBack={this.onBackStep} onSuccessRegister={this.onSuccessRegister} />
-        }
-        else if (this.state.displayScreen === "SucProf") {
-            content = <Congratulation target={"교수님"} />
-        }
-        else if (this.state.displayScreen === "SucStud") {
-            content = <Congratulation target={"학생님"} />
-        }
-
-        return (
-            <div className="auth-wrapper">
-                <div className="auth-inner">
-                    <div>
-                        {content}
-                    </div>
-                </div>
-            </div>
-        );
-    }
-}
+// export { Congratulation, CommonRegister, ProfessorRegister, StudentRegister, SelectType }

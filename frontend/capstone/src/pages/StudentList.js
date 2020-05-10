@@ -27,9 +27,10 @@ export default class StudentList extends Component {
         console.log(json)
         this.setState({
           takes: json["takes"],
-          manages: json["manages"],
           targetClass: json["targetClass"]
         })
+        console.log(this.state.takes)
+        console.log(this.state.targetClass)
       })
       .catch((err) => {
         console.log("에러 발생")
@@ -52,7 +53,7 @@ export default class StudentList extends Component {
       <div className="full-page">
         <div className="auth-wrapper">
           <h1>student list 페이지</h1>
-          <Students takes={this.state.takes} manages={this.state.manages} targetClass={this.state.targetClass} />
+          <Students takes={this.state.takes} targetClass={this.state.targetClass} />
           <a class="btn btn-primary btn-lg" href="#" role="button">미승인</a>
           <a class="btn btn-primary btn-lg" href="#" role="button">승인</a>
           <a class="btn btn-primary btn-lg" href="#" role="button">전체 승인</a>

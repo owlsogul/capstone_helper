@@ -4,9 +4,9 @@ import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import NavigationBar from './components/NavigationBar';
-import Login from './components/login.component';
-import SignUp from './components/signup.component';
-import wait from './components/wait';
+import Login from './pages/LoginPage';
+import SignUp from './pages/SignUpPage';
+import wait from './pages/Wait';
 import OpenClass from './pages/OpenClass'
 import RedirectingComponent from './components/RedirectingComponent.js';
 import NoticePage from './pages/NoticePage.js';

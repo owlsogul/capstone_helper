@@ -83,7 +83,7 @@ class CreateClassForm extends Component {
                 }
             })
             .then((json) => {
-                this.props.createCallBack()
+                this.props.createCallback(this.state.classId)
                 this.props.changeScene("invite")
             })
             .catch((err) => {
@@ -192,6 +192,10 @@ class InviteStudentForm extends Component {
     constructor(props) {
         super(props);
         this.state = { assistantExpireTime: "", code: "", studentExpireTime: "", isAutoJoin: false, classId: -1 }
+    }
+
+    componentDidUpdate(prevProps, prevState) { 
+        console.log("컴포넌트업데이트"+ this.props.classId)
     }
 
     handleAssistantExpireTimeChange = (e) => {
@@ -379,9 +383,7 @@ export default class OpenClass extends Component {
 
     render() {
         let form = this.state.currentScene === "class" ?
-            (<CreateClassForm changeScene={this.changeScene.bind(this)} createCallBack={(e)=>
-                this.props.classId = this.state.classId
-            } />) :
+            (<CreateClassForm changeScene={this.changeScene.bind(this)} classId={this.state.classId} />) :
             (<InviteStudentForm changeScene={this.changeScene.bind(this)} />)
 
         return (

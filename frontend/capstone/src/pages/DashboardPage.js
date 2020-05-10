@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import Dashboard from "../components/Dashboard.component"
 
 const style = {
@@ -6,6 +7,10 @@ const style = {
     display: "flex",
     flexFlow: "row wrap",
   }
+}
+
+const getUserInfo = ()=>{
+  return fetch("/api/user/user_info")
 }
 
 const loadClass = ()=>{
@@ -20,6 +25,28 @@ const createClassType = (classType)=>{
   else return "알수 없음"
 }
 
+class ClassCreateButton extends Component {
+  constructor(props){
+    super(props)
+  }
+
+  onClick(){
+
+  }
+
+  render(){
+    return(
+      <div className="card" style={{ width: "18rem", margin: 10 }}>
+        <div className="card-body" style={{ display: "flex", alignItems: "center",  justifyContent: "center"}}>
+          <div className="btn btn-secondary">
+            <Link to="/open-class" style={{ color: "#ffffff"}}>수업 개설하기</Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
 class ClassElement extends Component {
   constructor(props){
     super(props)
@@ -28,13 +55,13 @@ class ClassElement extends Component {
   render(){
     return(
       <div className="card" style={{ width: "18rem", margin: 10 }}>
-        <div class="card-body">
-          <h5 class="card-title">{this.props.className}</h5>
-          <p class="card-text">{this.props.className} </p>
+        <div className="card-body">
+          <h5 className="card-title">{this.props.className}</h5>
+          <p className="card-text">{this.props.className} </p>
           <p className="card-text">
             {createClassType(this.props.classType)}
           </p>
-          <a href="#" class="btn btn-primary">교실 들어가기</a>
+          <a href="#" className="btn btn-primary">교실 들어가기</a>
         </div>
         
         
@@ -47,16 +74,25 @@ class ClassElement extends Component {
 class ClassList extends Component{
   constructor(props){
     super(props)
-    this.state = { classes: [] }
+    this.state = { classes: [], isProfessor: this.props.isProfessor }
   }
 
   componentDidUpdate(prevProps){
     if (prevProps.classes != this.props.classes){
       this.setState({ classes: this.props.classes })
     }
+    if (prevProps.isProfessor != this.props.isProfessor){
+      this.setState({ isProfessor: this.props.isProfessor })
+    }
   }
 
   render(){
+    let btnCreateClass = (<></>)
+    if (this.state.isProfessor){      
+      btnCreateClass = (
+        <ClassCreateButton/>
+      )
+    }
     return(
       <div style={style.classListBody} >
         {
@@ -70,6 +106,7 @@ class ClassList extends Component{
             )
           })
         }
+        {btnCreateClass}
       </div>
     )
   }
@@ -78,7 +115,7 @@ class ClassList extends Component{
 export default class DashboardPage extends Component {
   constructor(props) {
     super(props);
-    this.state = { classes: [] }
+    this.state = { classes: [], isProfessor: false }
   }
 
   componentDidMount(){
@@ -107,12 +144,24 @@ export default class DashboardPage extends Component {
         }
         this.setState({ classes: newClasses })
       })
+    getUserInfo().then(res=>res.json())
+      .then(res=>{
+        if (res.level > 100){
+          this.setState({ isProfessor: true })
+        }
+        else {
+          this.setState({ isProfessor: false })
+        }
+      })
   }
 
   render() {
     return (
       <Dashboard initState={[false, true, false]} history={this.props.history}>
-        <ClassList classes={this.state.classes} />
+        <ClassList 
+          classes={this.state.classes} 
+          isProfessor={this.state.isProfessor} 
+        />
       </Dashboard>
     );
   }

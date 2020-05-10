@@ -1,38 +1,55 @@
 import React, { Component } from 'react';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { Navbar, Nav, Badge } from "react-bootstrap"
+
+const getClassInfo = (classId) => {
+  return fetch("/api/class/info/"+classId).then(res=>res.json())
+}
 
 export default class Bar extends Component {
   constructor(props) {
     super(props);
-    this.state = { }
+    this.state = { 
+      className: "",
+      urlNotice: "#",
+      urlStudentInfo: "#",
+      urlTeamInfo: "#",
+      urlClassInfo: "#",
+    }
   }
 
-  render() {
+  componentDidMount(){
+    let classId = this.props.match.params.classId
+    console.log(classId)
+    getClassInfo(classId)
+      .then(res=>{
+        this.setState({
+          className: res.className,
+          urlNotice: `/${res.classId}/notice`,
+          urlStudentInfo: `/${res.classId}/students`,
+          urlTeamInfo: `/${res.classId}/teams`,
+          urlClassInfo: `/${res.classId}/classinfo`,
+
+        })
+      })
+  }
+
+  render(){
     return (
-      <nav className="navbar navbar-expand-lg navbar-light">
-      <div className="container">
-        <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-          <ul className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link className="nav-link">과목명</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link">수업중 아님</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link">공지사항</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to={"/sign-in"}>조 정보</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to={"/sign-up"}>수업 정보</Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    );
+      <Navbar bg="light" expand="lg">
+        <Navbar.Brand>{this.state.className}</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="mr-auto">
+            <Navbar.Text>수업 <Badge variant="secondary">OFF</Badge></Navbar.Text>
+            <Nav.Link href={this.state.urlNotice}>공지사항</Nav.Link>
+            <Nav.Link href={this.state.urlStudentInfo}>학생 정보</Nav.Link>
+            <Nav.Link href={this.state.urlTeamInfo}>조 정보</Nav.Link>
+            <Nav.Link href={this.state.urlClassInfo}>수업 정보</Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+    )
   }
 }

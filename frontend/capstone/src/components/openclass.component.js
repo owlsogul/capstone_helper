@@ -1,20 +1,5 @@
 import React, { Component } from 'react';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
 import { useState } from 'react';
-
-// 수업 개설 후 조교 초대 API
-function inviteAssist() {
-
-}
-// 조교를 위한 초대링크 생성 API
-function createAssistInviteCode() {
-
-}
-// 학생을 위한 초대링크 생성 API
-function createAssistStudentCode() {
-
-}
 
 class AssistRow extends Component {
 
@@ -30,7 +15,7 @@ class AssistRow extends Component {
         return (
             <div className="container">
                 <strong>{this.props.assistId}</strong>
-                <button onClick={()=>{
+                <button onClick={() => {
                     this.props.deleteCallback()
                 }}
                     type="button" className="btn btn-danger">Delete</button>
@@ -46,7 +31,7 @@ class CreateClassForm extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { className: "", classNumber: "", classTime: "", targetAssist: "", assistList: [] }
+        this.state = { className: "", classNumber: "", classTime: "", targetAssist: "", assistList: [], classId: "" }
     }
 
     handleClassNameChange = (e) => {
@@ -62,8 +47,14 @@ class CreateClassForm extends Component {
     }
 
     handleTargetAssist = (e) => {
-        console.log(e.target.value)
         this.setState({ targetAssist: e.target.value })
+    }
+
+    handleAssistList = (e) => {
+        this.setState({
+            assistList: this.state.assistList.concat(this.state.targetAssist),
+            targetAssist: ""
+        })
     }
 
     createClass() {
@@ -73,31 +64,70 @@ class CreateClassForm extends Component {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ className: this.state.className, classTime: this.state.classTime}),
+            body: JSON.stringify({ className: this.state.className, classTime: this.state.classTime }),
         })
-        .then(res => {
-            if (res.status != 200) throw res.status
-            return res.json()
+            .then(res => {
+                if (res.status != 200) throw res.status
+                return res.json()
+            })
+            .then(json => {
+                // classId와 className을 저장해준다??
+                console.log(json)
+                console.log(json["classId"])
+                this.setState({ classId: json["classId"] })
+            })
+            .then(() => {
+                if (this.state.assistList.length > 0) {
+                    this.inviteAssist()
+                    console.log(JSON.stringify({ classId: this.state.classId, assistants: this.state.assistList }))
+                }
+            })
+            .then((json) => {
+                console.log(json)
+                this.props.changeScene("invite")
+            })
+            .catch((err) => {
+                console.log("에러 발생")
+                if (err.status == 400) {
+                    alert("권한 문제가 발생하였습니다!")
+                } else if (err.status == 500) {
+                    alert("서버 내부 오류가 발생하였습니다.")
+                } else if (err.status == 403) {
+                    alert("로그인이 필요합니다.")
+                } else {
+                    console.log(err.status)
+                    alert("알지 못할 오류가 발생하였습니다.")
+                }
+            })
+    }
+
+    // 수업 개설 후 조교를 초대하는 API
+    inviteAssist() {
+        fetch('/api/class/invite_assist', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ classId: this.state.classId, assistants: this.state.assistList }),
         })
-        .then(json => {
-            // classId와 className을 저장해준다??
-        })
-        .then(()=> {
-            this.props.changeScene("invite")
-        })
-        .catch((err)=> {
-            console.log("에러 발생")
-            if (err.status == 400) {
-                alert("권한 문제가 발생하였습니다!")
-            } else if (err.status == 500) {
-                alert("서버 내부 오류가 발생하였습니다.")
-            } else if (err.status == 403) {
-                alert("로그인이 필요합니다.")
-            } else {
-                console.log(err.status)
-                alert("알지 못할 오류가 발생하였습니다.")
-            }
-        })
+            .then(res => {
+                if (res.status != 200) throw res.status
+                return res.json()
+            })
+            .catch((err) => {
+                console.log("에러 발생")
+                if (err.status == 400) {
+                    alert("잘못된 파라미터가 있습니다.")
+                } else if (err.status == 403) {
+                    alert("권한이 없습니다.")
+                } else if (err.status == 500) {
+                    alert("서버 내부 오류가 발생하였습니다.")
+                } else {
+                    console.log(err.status)
+                    alert("알지 못할 오류가 발생하였습니다.")
+                }
+            })
     }
 
     render() {
@@ -129,13 +159,8 @@ class CreateClassForm extends Component {
                     />
                     <div className="input-group-append">
                         <button className="btn btn-outline-secondary" onClick={(e) => {
-                            console.log("조교 초대하기 버튼 클릭됨")
-                            this.setState({
-                                assistList: this.state.assistList.concat(this.state.targetAssist)
-                            })
-                            this.setState({
-                                targetAssist: ""
-                            })
+                            e.preventDefault()
+                            this.handleAssistList()
                         }}
                             type="button"
                             id="button-addon2">초대하기</button>
@@ -144,14 +169,14 @@ class CreateClassForm extends Component {
 
                 <div>
                     {this.state.assistList.map(item => (
-                        <AssistRow assistId={item} deleteCallback={(e) => 
+                        <AssistRow assistId={item} deleteCallback={(e) =>
                             this.setState({
-                            assistList: this.state.assistList.filter(i => i != item)})}
+                                assistList: this.state.assistList.filter(i => i != item)
+                            })}
                         />
                     ))}
                 </div>
                 <button className="btn btn-primary btn-block" onClick={(e) => {
-                    console.log(this.state.userId, this.state.userPw)
                     e.preventDefault()
                     this.createClass()
                 }}>수업 생성</button>
@@ -166,26 +191,92 @@ class CreateClassForm extends Component {
 class InviteStudentForm extends Component {
     constructor(props) {
         super(props);
-        this.state = { assistantExpireTime: "",  }
+        this.state = { assistantExpireTime: "", code: "", studentExpireTime: "", isAutoJoin: false }
     }
 
-    handleClassNameChange = (e) => {
-        this.setState({ className: e.target.value })
+    handleAssistantExpireTimeChange = (e) => {
+        this.setState({ assistantExpireTime: e.target.value })
     }
 
-    handleClassNumberChange = (e) => {
-        this.setState({ classNumber: e.target.value })
+    handleStudentExpireTimeChange = (e) => {
+        this.setState({ studentExpireTime: e.target.value })
     }
 
-    handleClassTimeChange = (e) => {
-        this.setState({ classTime: e.target.value })
+    handleIsAutoJoinChange = (e) => {
+        this.setState({ isAutoJoin: e.target.value })
     }
+
+    // 조교를 위한 초대링크 생성 API
+    createAssistInviteCode() {
+        fetch('/api/class/create_assist_invite_code', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ classId: this.state.classId, expiredDate: this.state.assistantExpireTime }),
+        })
+            .then(res => {
+                if (res.status != 200) throw res.status
+                return res.json()
+            })
+            .then(json => {
+                console.log(json["code"])
+                this.setState({ code: json["code"] })
+            })
+            .catch((err) => {
+                console.log("에러 발생")
+                if (err.status == 400) {
+                    alert("잘못된 파라메터가 있습니다!")
+                } else if (err.status == 500) {
+                    alert("서버 내부 오류가 발생하였습니다.")
+                } else if (err.status == 403) {
+                    alert("권한이 없습니다.")
+                } else {
+                    console.log(err.status)
+                    alert("알지 못할 오류가 발생하였습니다.")
+                }
+            })
+    }
+
+    // 학생을 위한 초대링크 생성 API
+    createAssistStudentCode() {
+        fetch('/api/class/create_assist_student_code', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ classId: this.state.classId, expiredDate: this.state.studentExpireTime, isAutoJoin: this.state.isAutoJoin }),
+        })
+            .then(res => {
+                if (res.status != 200) throw res.status
+                return res.json()
+            })
+            .then(json => {
+                console.log(json["code"])
+                this.setState({ code: json["code"] })
+            })
+            .catch((err) => {
+                console.log("에러 발생")
+                if (err.status == 400) {
+                    alert("잘못된 파라메터가 있습니다!")
+                } else if (err.status == 500) {
+                    alert("서버 내부 오류가 발생하였습니다.")
+                } else if (err.status == 403) {
+                    alert("권한이 없습니다.")
+                } else {
+                    console.log(err.status)
+                    alert("알지 못할 오류가 발생하였습니다.")
+                }
+            })
+    }
+
 
     render() {
         return (
             <form>
                 <h3>조교 초대링크 만들기</h3>
-
                 <div className="input-group mb-3">
                     <input
                         type="text"
@@ -193,11 +284,13 @@ class InviteStudentForm extends Component {
                         placeholder="만료 날짜를 입력하세요"
                         aria-label="만료 날짜를 입력하세요"
                         aria-describedby="button-addon2"
-                        value={this.state.targetAssist}
-                        onChange={this.handleTargetAssist}
+                        value={this.state.assistantExpireTime}
+                        onChange={this.handleAssistantExpireTimeChange}
                     />
                     <div className="input-group-append">
-                        <button
+                        <button onClick={(e) => {
+                            this.createAssistInviteCode()
+                        }}
                             className="btn btn-outline-secondary"
                             type="button"
                             id="button-addon2"
@@ -240,11 +333,13 @@ class InviteStudentForm extends Component {
                             placeholder="만료 날짜를 입력하세요"
                             aria-label="만료 날짜를 입력하세요"
                             aria-describedby="button-addon2"
-                            value={this.state.targetAssist}
-                            onChange={this.handleTargetAssist}
+                            value={this.state.studentExpireTime}
+                            onChange={this.handleStudentExpireTimeChange}
                         />
                         <div className="input-group-append">
-                            <button
+                            <button onClick={(e) => {
+                                this.createAssistStudentCode()
+                            }}
                                 className="btn btn-outline-secondary"
                                 type="button"
                                 id="button-addon2"
@@ -261,7 +356,6 @@ class InviteStudentForm extends Component {
                 </div>
 
                 <button className="btn btn-primary btn-block" onClick={(e) => {
-                    console.log(this.state.userId, this.state.userPw)
                     e.preventDefault()
                     this.doLogin()
                 }}>메인으로 이동</button>
@@ -288,12 +382,8 @@ export default class OpenClass extends Component {
             (<InviteStudentForm changeScene={this.changeScene.bind(this)} />)
 
         return (
-            <div className="auth-wrapper">
-                <div className="auth-inner">
-                    <div>
-                        {form}
-                    </div>
-                </div>
+            <div>
+                {form}
             </div>
         );
     }

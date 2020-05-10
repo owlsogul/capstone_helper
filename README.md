@@ -28,9 +28,13 @@
 
 ## 테스트 계정
 [학생 계정]
-student00~09@cau.ac.kr
+student01~09@cau.ac.kr
 p@ssword1234
 
 [교수 계정]
-professor00~02@cau.ac.kr
+professor01~02@cau.ac.kr
+p@ssword1234
+
+[조교 계정]- 인증 전에는 학생과 동일함
+assist01~04@cau.ac.kr
 p@ssword1234

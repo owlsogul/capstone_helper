@@ -7,12 +7,11 @@ import NavigationBar from './components/NavigationBar';
 import Login from './components/login.component';
 import SignUp from './components/signup.component';
 import wait from './components/wait';
-import OpenClass from './components/openclass.componet';
+import OpenClass from './pages/OpenClass'
 import RedirectingComponent from './components/RedirectingComponent.js';
 import NoticePage from './pages/NoticePage.js';
-import Sidebar from './components/Sidebar';
-
 import DashboardPage from "./pages/DashboardPage"
+import StudentList from './pages/StudentList';
 
 function App() {
   return (
@@ -27,8 +26,8 @@ function App() {
           <Route path="/sign-up" component={SignUp} />
           <Route path="/wait" component={wait} />
           <Route path="/dashboard" component={DashboardPage} />
+          <Route path="/students" component={StudentList} />
         </Switch>
-        {/* <Sidebar></Sidebar> */}
       </div >
     </Router >
   )

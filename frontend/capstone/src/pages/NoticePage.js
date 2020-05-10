@@ -11,19 +11,20 @@ function notice(sendObj) {
   })
 }
 
-const list = [];
-
 export default class NoticePage extends Component {
   constructor(props) {
     super(props);
-    this.state = { classId: "" }
+    this.state = { classId: "", notice: [] }
   }
 
   getNotice() {
-    notice(this.state)
+    notice({classId: this.state.classId})
       .then((res) => res.json())
       .then((json) => {
         console.log(json)
+        this.setState({
+          notice: json
+        })
       })
   }
 
@@ -31,7 +32,7 @@ export default class NoticePage extends Component {
     return (
       <div className="full-page">
         <div className="auth-wrapper">
-          <ComplexList list={list} />
+          <ComplexList list={this.state.notice} />
         </div>
       </div>
     );

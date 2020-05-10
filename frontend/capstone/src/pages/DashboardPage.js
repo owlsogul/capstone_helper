@@ -132,6 +132,9 @@ export default class DashboardPage extends Component {
     if (classType == "wait"){
       this.setState({ noAuthAlert: true })
     }
+    else{
+      window.location = `/${classId}/list_notice`
+    }
   }
 
   componentDidMount(){

@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import ui from '../ui.png'; 
+
 
 export default class Students extends Component {
   constructor(props) {
@@ -14,7 +16,9 @@ export default class Students extends Component {
   render() {
     return (
       <ul>
-        {this.props.list}
+        <image src={ui}/>
+        <p>{this.props.takes}</p>
+        <p>{this.props.targetClass}</p>
       </ul>
     );
   }

@@ -102,7 +102,7 @@ export default class DashboardPage extends Component {
         if (res.own){
           newClasses = newClasses.concat(res.own.map(e=>{ return { 
             classId: e.classId, 
-            className: e.Class.className, 
+            className: e.className, 
             classType: "own" } }));
         }
         this.setState({ classes: newClasses })

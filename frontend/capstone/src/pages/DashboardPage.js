@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Alert } from "react-bootstrap"
 
 import Dashboard from "../components/Dashboard.component"
+import Bar from "../components/Bar.component"
 
 const style = {
   classListBody: {
@@ -70,8 +71,6 @@ class ClassElement extends Component {
           </p>
           <a href="#" className="btn btn-primary" onClick={this.onClick}>교실 들어가기</a>
         </div>
-        
-        
       </div>
     )
   }

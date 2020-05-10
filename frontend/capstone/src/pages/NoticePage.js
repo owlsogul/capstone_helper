@@ -5,7 +5,7 @@ import ComplexList from '../components/notice.component';
 
 // 공지를 받아오는 함수
 function notice(sendObj) {
-  return fetch('/api/class/notice', {
+  return fetch('/api/class/list_notice', {
     method: 'GET',
     credentials: 'include'
   })
@@ -29,6 +29,7 @@ export default class NoticePage extends Component {
   }
 
   render() {
+    console.log("id는" + this.props.match.params.classId)
     return (
       <div className="full-page">
         <div className="auth-wrapper">

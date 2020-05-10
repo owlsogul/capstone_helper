@@ -11,6 +11,7 @@ import OpenClass from './pages/OpenClass'
 import RedirectingComponent from './components/RedirectingComponent.js';
 import NoticePage from './pages/NoticePage.js';
 import DashboardPage from "./pages/DashboardPage"
+import ClassInfoPage from './pages/ClassInfo';
 import StudentList from './pages/StudentList';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/sign-up" component={SignUp} />
           <Route path="/wait" component={wait} />
           <Route path="/dashboard" component={DashboardPage} />
+          <Route path="/classinfo" component={ClassInfoPage} />
           <Route path="/students" component={StudentList} />
         </Switch>
       </div >

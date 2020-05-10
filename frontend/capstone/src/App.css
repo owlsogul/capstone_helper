@@ -126,3 +126,10 @@ li {
 .show-extension {
   left: 100px;
 }
+
+.classinfo-box {
+  margin: 8px;
+  padding: 8px;
+  background-color: white;
+  border: 1px solid black;
+}

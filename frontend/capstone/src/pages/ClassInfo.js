@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ClassInfo from '../components/ClassInfo.component'
 import ClassInfoList from '../components/ClassInfoList.component'
+import { confirmAlert } from 'react-confirm-alert';
 
 class ClassInfoPage extends Component {
   state = {
@@ -9,15 +10,31 @@ class ClassInfoPage extends Component {
         name: '박상오',
         status: '[교수]',
         email: 'sang_o@cau.ac.kr',
-        address: '제 2공학관 5xx호'
       },
       {
         name: '김경찬',
         status: '[조교]',
         email: 'kckim@cau.ac.kr',
-        address: '제 2공학관 5xx호'
       },
     ]
+  }
+
+  submit = () => {
+    confirmAlert({
+      title: '종강하기',
+      message: '종강 후엔 조회만 가능합니다.종강하시겠습니까?',
+      buttons: [
+        {
+          label: '네!',
+          onClick: () => alert('한 학기동안 수고하셨습니다!')
+        },
+        {
+          label: '아니오!',
+          onClick: () => {}
+        }
+      ]
+      
+    })
   }
 
   render() {
@@ -35,7 +52,7 @@ class ClassInfoPage extends Component {
         <br></br><br></br>
         <div>
           <h2>관리자 정보</h2>
-          <button style={{ marginLeft: "25rem" }}>수정</button>
+          <button class="btn btn-light btn-sm" style={{ marginLeft: "26rem" }}>수정</button>
         </div>
         <div class="adminInfo" style={{ width: "30rem", margin: "auto" }}>
           <ClassInfoList data={this.state.information} />
@@ -43,8 +60,8 @@ class ClassInfoPage extends Component {
 
         <br></br><br></br>
         <div>
-          <button onClick={(e) => this.handleClick(e)}>
-          종강하기
+          <button onClick={this.submit}>
+            종강하기
           </button>
         </div>
       </div>

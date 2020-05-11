@@ -249,7 +249,7 @@ class InviteStudentForm extends Component {
 
     // 학생을 위한 초대링크 생성 API
     createAssistStudentCode() {
-        fetch('/api/class/create_assist_student_code', {
+        fetch('/api/class/create_student_invite_code', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',

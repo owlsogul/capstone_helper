@@ -222,7 +222,7 @@ class InviteStudentForm extends Component {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ classId: this.state.classId, expiredDate: this.state.assistantExpireTime }),
+            body: JSON.stringify({ classId: this.props.classId, expiredDate: this.state.assistantExpireTime }),
         })
             .then(res => {
                 if (res.status != 200) throw res.status
@@ -309,7 +309,7 @@ class InviteStudentForm extends Component {
                 </div>
 
                 <div className="form-group">
-                    <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.classTime} onChange={this.handleClassTimeChange} />
+                    <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.code} onChange={this.handleClassTimeChange} />
                 </div>
 
 

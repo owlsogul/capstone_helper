@@ -26,4 +26,6 @@ router.post("/list_notice", [serviceUser.checkLogin, cc.listNotice] )
 
 router.post("/post_notice", [serviceUser.checkLogin, cc.postNotice])
 
+router.post("/member_oper", [serviceUser.checkLogin, cc.memberOperation])
+
 module.exports = router

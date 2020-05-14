@@ -734,3 +734,43 @@ exports.postNotice = (req, res, next)=>{
     body: body
   })
 }
+
+exports.memberOperation = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let targetUserId = req.body.userId
+  let operType = req.body.operType
+
+  if (!classId || !targetUserId){
+    req.Error.wrongParameter(res)
+  }
+
+  // TODO: 권한 조회
+
+  if (operType == "D"){
+    models.Take.findOne({ where: { user: targetUserId, classId: classId }})
+      .destroy()
+      .then(()=>{
+        res.json({ msg: "success"})
+      })
+      .catch(err=>{
+        console.log(err)
+        req.Error.wrongParameter(res, "userId or classId")
+      })
+  }
+  else if (operType == "A") {
+    models.Take.update({ takeStatus: 1}, { where: { user: targetUserId }})
+      .then(()=>{
+        res.json({ msg: "success"})
+      })
+      .catch(err=>{
+        console.log(err)
+        req.Error.wrongParameter(res, "userId or classId")
+      })
+  }
+  else {
+    req.Error.wrongParameter(res, "operType")
+  }
+
+}

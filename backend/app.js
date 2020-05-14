@@ -10,7 +10,7 @@ app.use(express.json())
 
 // application variable setting
 app.set("port", 80)
-app.set("host", "http://localhost")
+app.set("host", "http://caphelper.owlsogul.com:30080")
 
 
 // middleware
@@ -29,7 +29,7 @@ app.use(settingTransmitter)
 
 // db
 var sequelize = require('./models').sequelize;
-sequelize.sync({ force: false }).then(()=>{
+sequelize.sync({ force: true }).then(()=>{
     console.log("Successfully connect to server")
     require("./create_new_record")()
 }).catch((err)=>{

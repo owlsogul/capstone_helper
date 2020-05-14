@@ -73,6 +73,23 @@ exports.listClass = (req, res, next)=>{
 
 }
 
+exports.getClassInfo = (req, res, next)=>{
+  let userId = req.ServiceUser.userId
+  let classId = req.params.classId
+
+  if (!classId){
+    req.Error.wrongParameter(res, "classId")
+    return;
+  }
+
+  // TODO: 권한
+  models.Class.findOne({where: { classId: classId }})
+    .then(targetClass=>{
+      res.json(targetClass)
+    })
+
+}
+
 /**
  * @swagger
  *  paths: {

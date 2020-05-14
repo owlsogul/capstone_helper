@@ -169,6 +169,30 @@ module.exports = ()=>{
         writtenDate: Date.parse("2020-05-10")
       })
     })
+    // 조 만들기
+    .then(()=>{
+      return models.Team.create({
+        classId: 1,
+        teamName: "1조"
+      })
+      .then(()=>{
+        return models.Team.create({
+          classId: 1,
+          teamName: "2조"
+        })
+      })
+    })
+    // 조 매칭 하기
+    .then(()=>{
+      let matching = [
+        models.Join.create({ user: "student01@cau.ac.kr", classId: 1, teamId: 1, isLeader: true }),
+        models.Join.create({ user: "student02@cau.ac.kr", classId: 1, teamId: 1 }),
+        models.Join.create({ user: "student03@cau.ac.kr", classId: 1, teamId: 1 }),
+        models.Join.create({ user: "student04@cau.ac.kr", classId: 1, teamId: 2, isLeader: true }),
+        models.Join.create({ user: "student05@cau.ac.kr", classId: 1, teamId: 2 }),
+      ]
+      return Promise.all(matching)
+    })
     .then(()=>{
       console.log("테스트 데이터 생성 완료!")
     })

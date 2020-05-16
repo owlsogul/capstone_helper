@@ -1,7 +1,5 @@
-// login 주석 추가
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import NavigationBar from '../components/NavigationBar'
 
 function sendLogin(sendObj) {
     return fetch('/api/user/signin', {

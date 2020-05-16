@@ -372,7 +372,7 @@ class InviteStudentForm extends Component {
 
                 <button className="btn btn-primary btn-block" onClick={(e) => {
                     e.preventDefault()
-                    this.doLogin()
+                    window.location = `/dashboard`
                 }}>메인으로 이동</button>
             </form>
         )

@@ -12,6 +12,7 @@ import DashboardPage from "./pages/DashboardPage"
 import ClassInfoPage from './pages/ClassInfo';
 import StudentList from './pages/StudentList';
 import TeamPage from './pages/TeamPage';
+import ManageLinkPage from './pages/ManageLinkPage';
 
 function App() {
   return (
@@ -28,7 +29,8 @@ function App() {
           <Route path="/:classId/notice" component={NoticePage} />
           <Route path="/:classId/classinfo" component={ClassInfoPage} />
           <Route path="/:classId/students" component={StudentList} />
-          <Route path="/:classId/teams" component={TeamPage} />
+          <Route path="/:classId/teams" component={TeamPage} /> 
+          <Route path="/:classId/manageLink" component={ManageLinkPage} /> 
           
         </Switch>
       </div >

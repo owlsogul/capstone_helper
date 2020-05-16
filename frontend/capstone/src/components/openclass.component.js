@@ -199,7 +199,7 @@ class CreateClassForm extends Component {
 /**
  * 조교와 학생 초대 링크를 만드는 폼
  */
-class InviteStudentForm extends Component {
+export class InviteStudentForm extends Component {
     constructor(props) {
         super(props);
         this.state = { assistantExpireTime: "", codeForAssist: "", codeForStudent:"", studentExpireTime: "", isAutoJoin: false, classId: -1 }

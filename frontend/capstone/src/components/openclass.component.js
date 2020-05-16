@@ -51,10 +51,21 @@ class CreateClassForm extends Component {
     }
 
     handleAssistList = (e) => {
-        this.setState({
-            assistList: this.state.assistList.concat(this.state.targetAssist),
-            targetAssist: ""
-        })
+        // 조교 이메일이 형식에 맞지 않으면 팝업을 띄워서 경고하고, targetAssist에서 제거해준다. 
+        this.validateAssistantEmail(this.state.targetAssist)
+    }
+
+    validateAssistantEmail = emailEntered => {
+        const emailRegExp = /[\d\D]+@cau.ac.kr/;
+        if (emailEntered.match(emailRegExp)){
+            this.setState({
+                assistList: this.state.assistList.concat(this.state.targetAssist),
+                targetAssist: ""
+            })
+        } else {
+            alert("이메일이 형식에 맞지 않습니다. 학교 이메일을 입력해주세요.")
+            this.setState({ targetAssist: "" })
+        }
     }
 
     createClass() {

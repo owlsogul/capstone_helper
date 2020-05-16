@@ -270,6 +270,8 @@ exports.createAssistInviteCode = (req, res, next)=>{
   let classId = req.body.classId
   let expiredDate = Date.parse(req.body.expiredDate) // needed to UTC date string
 
+  console.log(userId)
+  console.log("assist invite code " + JSON.stringify(req.body))
   if (!expiredDate || Date.now() > expiredDate){
     req.Error.wrongParameter(res, "wrong date")
     return;
@@ -347,6 +349,8 @@ exports.createStudentInviteCode = (req, res, next)=>{
   let expiredDate = Date.parse(req.body.expiredDate) // needed to UTC date string
   let isAutoJoin = req.body.isAutoJoin
 
+  console.log(userId)
+  console.log("student invite code " + JSON.stringify(req.body))
   if (!expiredDate || Date.now() > expiredDate){
     req.Error.wrongParameter(res, "wrong date")
     return;

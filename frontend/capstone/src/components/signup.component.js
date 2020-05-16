@@ -199,6 +199,11 @@ export class SelectType extends Component {
                         학생/조교
                     </div>
                 </div>
+                <p className="forgot-password text-right">
+                    <a href="#" onClick={(e) => {
+                        window.location = "/sign-in"
+                    }}>>로그인 화면으로</a>
+                </p>
             </div>
         )
     }

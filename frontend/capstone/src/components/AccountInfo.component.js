@@ -26,21 +26,23 @@ export default class AccountInfo extends Component {
   }
 
   onClickLogout() {
-    fetch("/api/user/signout", {
-      method: "POST",
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      }
-    })
-      .then(res => res.json())
-      .then(res => {
-        window.location = "/"
+    if (window.confirm("정말로 로그아웃 하시겠습니까?")) {
+      fetch("/api/user/signout", {
+        method: "POST",
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        }
       })
+        .then(res => res.json())
+        .then(res => {
+          window.location = "/"
+        })
+    }
   }
 
   onClickExit() {
-    if (window.confirm("정말로 탈퇴하시겠습니까?")){
+    if (window.confirm("정말로 탈퇴하시겠습니까?")) {
       fetch("/api/user/exit", {
         method: "POST",
         headers: {

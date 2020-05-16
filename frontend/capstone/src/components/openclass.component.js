@@ -210,9 +210,16 @@ class InviteStudentForm extends Component {
         this.setState({ studentExpireTime: e.target.value })
     }
 
-    handleIsAutoJoinChange = (e) => {
-        this.setState({ isAutoJoin: e.target.value })
+    handleIsAutoJoinChangeToFalse = (e) => {
+        console.log(false)
+        this.setState({ isAutoJoin: false })
     }
+
+    handleIsAutoJoinChangeToTrue = (e) => {
+        console.log(true)
+        this.setState({ isAutoJoin: true })
+    }
+    
 
     // 조교를 위한 초대링크 생성 API
     createAssistInviteCode() {
@@ -320,7 +327,7 @@ class InviteStudentForm extends Component {
                     <div className="input-group mb-3">
                         <div className="input-group-prepend">
                             <div className="input-group-text">
-                                <input type="radio" aria-label="Checkbox for following text input" />
+                                <input type="radio" name="isEntrable" aria-label="Checkbox for following text input" onChange={this.handleIsAutoJoinChangeToTrue} />
                             </div>
                         </div>
                         <span className="form-control">바로 입장</span>
@@ -328,7 +335,7 @@ class InviteStudentForm extends Component {
                     <div className="input-group mb-3">
                         <div className="input-group-prepend">
                             <div className="input-group-text">
-                                <input type="radio" aria-label="Checkbox for following text input" />
+                                <input type="radio" name="isEntrable" aria-label="Checkbox for following text input" onChange={this.handleIsAutoJoinChangeToFalse} />
                             </div>
                         </div>
                         <span className="form-control">입장 허가 필요</span>

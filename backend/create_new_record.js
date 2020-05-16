@@ -113,16 +113,23 @@ module.exports = ()=>{
         className: "19년도 가을 캡스톤 프로젝트",
         classTime: "월) 9시 ~ 13시"
       })
+      .then(()=>{
+        models.ClassRelation.create({
+          classId: 1,
+          user: "professor01@cau.ac.kr",
+          relationType: 3
+        })
+      })
     })
     // 학생 1~9 수업1 등록
     .then(()=>{
       let takes = []
       for (let idx = 1; idx < numStudent; idx++){
         takes.push(new Promise((res, rej)=>{
-          models.Take.create({
+          models.ClassRelation.create({
             classId: 1,
             user: `student${ pad(idx, 2) }@cau.ac.kr`,
-            takeStatus: idx <= 6 ? 1 : 0
+            relationType: idx <= 6 ? 1 : 0
           })
           .then(res)
           .catch(rej)
@@ -135,9 +142,10 @@ module.exports = ()=>{
       let manages = []
       for (let idx = 1; idx < 4; idx++){
         manages.push(new Promise((res, rej)=>{
-          models.Manage.create({
+          models.ClassRelation.create({
             classId: 1,
-            user: `assist${ pad(idx, 2) }@cau.ac.kr`
+            user: `assist${ pad(idx, 2) }@cau.ac.kr`,
+            relationType: 2
           })
           .then(res)
           .catch(rej)

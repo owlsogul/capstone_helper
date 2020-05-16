@@ -43,24 +43,30 @@ exports.listClass = (req, res, next)=>{
     return models.User.findOne({ where: { userId: userId } })
   }
 
-  const findTake = (user)=>{
-    return models.Take.findAll({ include: [ { model: models.Class} ], where: { user: userId } })
-  }
-
-  const findManage = (user)=>{
-    return models.Manage.findAll({ include: [ { model: models.Class} ], where: { user: userId } })
-  }
-
-  const findOwn = (user)=>{
-    return models.Class.findAll({ where: { professor: userId } })
-  }
-
   const findRelations = (user)=>{
-    return Promise.all([findTake(user), findManage(user), findOwn(user) ])
+    return models.ClassRelation.findAll({ include: [ { model: models.Class} ], where: {user: userId}})
   }
 
   const respond = (values) =>{
-    res.json({ take: values[0], manage: values[1], own: values[2]})
+    let take = []
+    let manage = []
+    let own = []
+
+    for (var i = 0; i < values.length; i++){
+      var type = values[i].relationType
+      if (type == 0 || type == 1) {
+        values[i].takeStatus = type
+        take.push(values[i])
+      }
+      else if (type == 2){
+        manage.push(values[i])
+      }
+      else if (type == 3){
+        own.push(values[i])
+      }
+    }
+
+    res.json({ take: take, manage: manage, own: own})
   }
   
   findUser()
@@ -140,6 +146,14 @@ exports.createClass = (req, res, next) => {
     })
   }
 
+  const createRelation = (newClass)=>{
+    return models.ClassRelation.create({
+      classId: newClass.classId,
+      user: userId,
+      relationType: 3
+    })
+  }
+
   const sendRes = (newClass) => {
     res.json(newClass)
   }
@@ -147,6 +161,7 @@ exports.createClass = (req, res, next) => {
   findUser()
     .then(checkLevel)
     .then(createClass)
+    .then(createRelation)
     .then(sendRes)
     .catch((err) => {
       console.log(err)
@@ -206,10 +221,10 @@ exports.inviteAssist = (req, res, next) => {
 
   const createManageRelation = (dbAssistant) =>{
     //if (!dbAssistant || dbAssistant.length == 0) throw new Error("Nobody Registered")
-    const records = dbAssistant.map(e=>{ return {classId: targetClass.classId, user: e.userId} })
+    const records = dbAssistant.map(e=>{ return {classId: targetClass.classId, user: e.userId, relationType: 2} })
     console.log("new assistants are " + JSON.stringify(records))
     addedAssistant = dbAssistant
-    return models.Manage.bulkCreate(records)
+    return models.ClassRelation.bulkCreate(records)
   }
 
   const updateAssistantLevel = ()=>{
@@ -490,9 +505,10 @@ exports.enterInvitationCode = (req, res, next)=>{
       // TODO: transaction
       return models.User.update({ level: 50 }, { where: { userId: userId } })
               .then(()=>{
-                return models.Manage.create({
+                return models.ClassRelation.create({
                   classId: invitationCode.classId,
-                  user: userId
+                  user: userId,
+                  relationType: 2
                 })
               })
     }
@@ -501,7 +517,7 @@ exports.enterInvitationCode = (req, res, next)=>{
       return models.Take.create({
         classId: invitationCode.classId,
         user: userId,
-        takeStatus: takeStatus
+        relationType: takeStatus
       })
     }
   }
@@ -562,29 +578,38 @@ exports.listMember = (req, res, next)=>{
     return
   }
 
-  const findTakes = ()=>{
-    return models.Take.findAll({ where: { classId: classId } })
-  }
-
-  const findManage = ()=>{
-    return models.Manage.findAll({ where: { classId: classId } })
-  }
-
-  const findClass = () =>{
-    return models.Class.findOne({ where: { classId: classId } })
-  }
-
-  const mergeData = ()=>{
-    return Promise.all([ findTakes(), findManage(), findClass()])
+  const findRelations = ()=>{
+    return models.ClassRelation.findAll({ where: { classId: classId } })
   }
 
   const respond = (result) =>{
+
+    let take = []
+    let manages = []
+    let targetClass = {}
+
+    for (var i = 0; i < result.length; i++){
+      var e = result[i]
+      var type = e.relationType
+      if (type == 0 || type == 1){
+        e.takeStatus = type
+        take.push(e)
+      }
+      else if (type == 2){
+        manages.push(e)
+      }
+      else if (type == 3){
+        targetClass.classId = e.classId
+        targetClass.professor = e.user
+      }
+    }
+
     return res.json({
-      takes: result[0], manages: result[1], "targetClass": result[2]
+      takes: take, manages: manages, "targetClass": targetClass
     })
   }
 
-  mergeData()
+  findRelations()
     .then(respond)
     .catch(err=>{
       console.log(err)
@@ -629,20 +654,8 @@ exports.setMatching = (req, res, next)=>{
     return;
   }
 
-  const findUser = ()=>{
-    return models.User.findOne({ where: { userId: userId }})
-  }
-
-  const chkPermission = (user)=>{
-    if (!user) {
-      throw new Error("NoAuth")
-    }
-    if (user.level == 50){
-      return models.Manage.findOne({ where: { user: userId, classId: classId} })
-    }
-    else {
-      return models.Class.findOne({ where: { professor: userId, classId: classId } })
-    }
+  const chkPermission = ()=>{
+    return models.ClassRelation.findOne({ where: { user: userId, classId: classId, [Op.gte]:{ relationType: 2 } } })
   }
 
   const setMatching = (result)=>{
@@ -678,8 +691,7 @@ exports.setMatching = (req, res, next)=>{
     res.json({ msg: "success" })
   }
 
-  findUser()
-    .then(chkPermission)
+  chkPermission()
     .then(setMatching)
     .then(sortTeam)
     .then(respond)

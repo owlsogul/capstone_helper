@@ -10,11 +10,11 @@ ResponseCode
         err: "Wrong Parameter",
         data: "Parameter Name" // 디버그 시에만 전달
       }
-    - 401 : 토큰이 만료됨
+    - 401 : 토큰이 만료되었거나, 로그인이 안되어있음.
       {
         err:"Token is invalid"
       }
-    - 403 : 인증이 안되어있음
+    - 403 : 로그인은 되어 있으나, 권한이 없음.
       {
         err: "No Authorization"
       }

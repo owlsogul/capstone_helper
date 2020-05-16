@@ -27,13 +27,12 @@ module.exports = {
     // 데이터 파싱
     let token = req.signedCookies.token
     let [ user, err ] = parseToken(token)
-    console.log(user + ", " + err)
 
     // 에러 처리
     if (err){
       if (err.name == "TokenExpiredError") { req.Error.tokenExpired(res) }
-      else if (err.name = "JsonWebTokenError") { req.Error.noAuthorization(res) }
-      else if (err.name = "NoAuthorizationError") { req.Error.noAuthorization(res) }
+      else if (err.name = "JsonWebTokenError") { req.Error.tokenExpired(res) }
+      else if (err.name = "NoAuthorizationError") { req.Error.tokenExpired(res) }
       else { req.Error.internal(res) }
       return;
     }

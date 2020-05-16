@@ -20,12 +20,12 @@ const style = {
  */
 export default class AccountInfo extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props)
     this.onClickLogout = this.onClickLogout.bind(this)
   }
 
-  onClickLogout(){
+  onClickLogout() {
     fetch("/api/user/signout", {
       method: "POST",
       headers: {
@@ -33,15 +33,31 @@ export default class AccountInfo extends Component {
         'Content-Type': 'application/json',
       }
     })
-      .then(res=>res.json())
-      .then(res=>{
-        window.location = "/"    
+      .then(res => res.json())
+      .then(res => {
+        window.location = "/"
       })
+  }
+
+  onClickExit() {
+    if (window.confirm("정말로 탈퇴하시겠습니까?")){
+      fetch("/api/user/exit", {
+        method: "POST",
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        }
+      })
+        .then(res => res.json())
+        .then(res => {
+          window.location = "/"
+        })
+    }
   }
 
   render() {
     return (
-      <div className="container" style={ style.container }>
+      <div className="container" style={style.container}>
         <button className="btn btn-primary btn-block" onClick={this.onClickLogout}>로그아웃</button>
         <button className="btn btn-primary btn-block" onClick={this.onClickExit}>회원탈퇴</button>
       </div>

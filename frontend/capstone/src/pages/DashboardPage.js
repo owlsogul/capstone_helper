@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Alert } from "react-bootstrap"
 
 import Dashboard from "../components/Dashboard.component"
-import Bar from "../components/Bar.component"
 
 const style = {
   classListBody: {

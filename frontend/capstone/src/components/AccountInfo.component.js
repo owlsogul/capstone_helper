@@ -42,9 +42,8 @@ export default class AccountInfo extends Component {
   render() {
     return (
       <div className="container" style={ style.container }>
-        <div>{this.props.userId}</div>
-        <div onClick={this.onClickLogout}>로그아웃</div>
-        <div>회원탈퇴</div>
+        <button className="btn btn-primary btn-block" onClick={this.onClickLogout}>로그아웃</button>
+        <button className="btn btn-primary btn-block" onClick={this.onClickExit}>회원탈퇴</button>
       </div>
     )
   }

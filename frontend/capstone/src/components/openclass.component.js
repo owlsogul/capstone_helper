@@ -209,7 +209,6 @@ class InviteStudentForm extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) { 
-        console.log("컴포넌트업데이트"+ this.props.classId)
     }
 
     handleAssistantExpireTimeChange = (e) => {
@@ -273,7 +272,7 @@ class InviteStudentForm extends Component {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ classId: this.state.classId, expiredDate: this.state.studentExpireTime, isAutoJoin: this.state.isAutoJoin }),
+            body: JSON.stringify({ classId: this.props.classId, expiredDate: this.state.studentExpireTime, isAutoJoin: this.state.isAutoJoin }),
         })
             .then(res => {
                 if (res.status != 200) throw res.status

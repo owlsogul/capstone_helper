@@ -133,4 +133,21 @@ module.exports = {
     }
   },
 
+  ResGetInviteCode: {
+    description: "초대 링크들을 반환한다.",
+    schema: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          code: { type: "string", description: "초대링크" },
+          classId: { type: "integer", description: "수업 아이디" },
+          expiredDate: { type: "string", description: "날짜 스트링" },
+          isAutoJoin: { type: "boolean", description: "success" },
+          isAssist: { type: "boolean", description: "success" },
+        }
+      }
+      
+    }
+  }
 }

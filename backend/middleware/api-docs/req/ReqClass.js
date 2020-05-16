@@ -1,4 +1,11 @@
 module.exports = {
+  ReqClassBasic: {
+    type: "object",
+    required: [ "classId" ],
+    properties: {
+      classId: { type: "integer", description: "대상" },
+    }
+  },
   RecListClass: {
     type: "object",
     required: [],

@@ -9,6 +9,19 @@ const models = require("../../models")
 const Sequelize = require("Sequelize")
 const Op = Sequelize.Op;
 
+/**
+ * 
+ * @param {integer} type 0, 1 은 수강생, 2는 조교, 3은 교수
+ */
+const chkPermissionWithType = (userId, classId, type)=>{
+  return models.ClassRelation.findOne({ 
+    where: { 
+      user: userId, 
+      classId: classId, 
+      relationType:{ [Op.gte]: type } 
+    } 
+  })
+}
 
 /**
  * @swagger
@@ -789,4 +802,60 @@ exports.memberOperation = (req, res, next)=>{
     req.Error.wrongParameter(res, "operType")
   }
 
+}
+
+
+/**
+ * @swagger
+ *  paths: {
+ *    /api/class/get_invite_codes: {
+ *      post: {
+ *        tags: [ Class ],
+ *        summary: "초대링크를 가져오는 api",
+ *        description: "초대링크를 가져오는 API 입니다..",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "body",
+ *          name: "body",
+ *          description: "수업 코드",
+ *          schema: { $ref: "#/components/req/ReqClassBasic" }
+*         }],
+ *        responses: {
+ *          200: { $ref: "#/components/res/ResGetInviteCode" },
+ *          400: { $ref: "#/components/res/ResWrongParameter" },
+ *          403: { $ref: "#/components/res/ResNoAuthorization" },
+ *          500: { $ref: "#/components/res/ResInternal" },
+ *        }
+ *      }
+ *    }
+ *  }
+ */
+exports.getInviteCodes = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  if (!classId){
+    req.Error.wrongParameter(res, "classId")
+    return;
+  }
+  
+  const getInvites = (permResult)=>{
+    if (!permResult) throw new Error("NoPermission")
+    return models.InvitationCode.findAll({where: {classId: classId} })
+  }
+
+  const respond = (result)=>{
+    console.log(result)
+    res.json(result)
+  }
+
+  chkPermissionWithType(userId, classId, 2)
+    .then(getInvites)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoPermission") req.Error.noAuthorization(res)
+      else req.Error.internal(res)
+    })
 }

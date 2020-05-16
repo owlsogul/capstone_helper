@@ -28,4 +28,6 @@ router.post("/post_notice", [serviceUser.checkLogin, cc.postNotice])
 
 router.post("/member_oper", [serviceUser.checkLogin, cc.memberOperation])
 
+router.post("/get_invite_codes", [serviceUser.checkLogin, cc.getInviteCodes])
+
 module.exports = router

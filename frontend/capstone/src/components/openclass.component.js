@@ -83,9 +83,6 @@ class CreateClassForm extends Component {
                 return res.json()
             })
             .then(json => {
-                // classId와 className을 저장해준다??
-                console.log(json)
-                console.log(json["classId"])
                 tempClassId = json.classId
                 this.setState({ classId: json["classId"] })
             })
@@ -205,14 +202,13 @@ class CreateClassForm extends Component {
 class InviteStudentForm extends Component {
     constructor(props) {
         super(props);
-        this.state = { assistantExpireTime: "", code: "", studentExpireTime: "", isAutoJoin: false, classId: -1 }
+        this.state = { assistantExpireTime: "", codeForAssist: "", codeForStudent:"", studentExpireTime: "", isAutoJoin: false, classId: -1 }
     }
 
     componentDidUpdate(prevProps, prevState) { 
     }
 
     handleAssistantExpireTimeChange = (e) => {
-        console.log(e.target.value)
         this.setState({ assistantExpireTime: e.target.value })
     }
 
@@ -221,12 +217,10 @@ class InviteStudentForm extends Component {
     }
 
     handleIsAutoJoinChangeToFalse = (e) => {
-        console.log(false)
         this.setState({ isAutoJoin: false })
     }
 
     handleIsAutoJoinChangeToTrue = (e) => {
-        console.log(true)
         this.setState({ isAutoJoin: true })
     }
     
@@ -246,8 +240,7 @@ class InviteStudentForm extends Component {
                 return res.json()
             })
             .then(json => {
-                console.log(json["code"])
-                this.setState({ code: json["code"] })
+                this.setState({ codeForAssist: json["code"] })
             })
             .catch((err) => {
                 console.log("에러 발생")
@@ -279,8 +272,7 @@ class InviteStudentForm extends Component {
                 return res.json()
             })
             .then(json => {
-                console.log(json["code"])
-                this.setState({ code: json["code"] })
+                this.setState({ codeForStudent: json["code"] })
             })
             .catch((err) => {
                 console.log("에러 발생")
@@ -296,7 +288,6 @@ class InviteStudentForm extends Component {
                 }
             })
     }
-
 
     render() {
         return (
@@ -326,7 +317,7 @@ class InviteStudentForm extends Component {
                 </div>
 
                 <div className="form-group">
-                    <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.code} onChange={this.handleClassTimeChange} />
+                    <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.codeForAssist} onChange={this.handleClassTimeChange} />
                 </div>
 
 
@@ -375,7 +366,7 @@ class InviteStudentForm extends Component {
                     </div>
 
                     <div className="form-group">
-                        <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.classTime} onChange={this.handleClassTimeChange} />
+                        <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.codeForStudent} onChange={this.handleClassTimeChange} />
                     </div>
 
                 </div>

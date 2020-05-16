@@ -317,7 +317,7 @@ exports.createAssistInviteCode = (req, res, next)=>{
 /**
  * @swagger
  *  paths: {
- *    /api/class/create_student_code: {
+ *    /api/class/create_student_invite_code: {
  *      post: {
  *        tags: [ Class ],
  *        summary: "학생을 위한 초대링크를 생성하는 API",

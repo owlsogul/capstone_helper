@@ -744,6 +744,42 @@ exports.listNotice = (req, res, next)=>{
 
 }
 
+/**
+ * @swagger
+ *  paths: {
+ *    /api/class/post_notice: {
+ *      post: {
+ *        tags: [ Class ],
+ *        summary: "공지를 작성하는 API",
+ *        description: "공지 작성 API입니다.",
+ *        consumes: [ "application/json" ],
+ *        produces: [ "application/json" ],
+ *        parameters : [{
+ *          in: "body",
+ *          name: "body",
+ *          description: "공지사항 내용",
+ *          schema: { $ref: "#/components/req/ReqPostNotice" }
+ *         }],
+ *        responses: {
+            200: {
+              description: "생성된 공지사항을 리턴해준다.",
+              schema: {
+                type: "object",
+                properties: {
+                    classId: { type: "integer", description: "수업 아이디" },
+                    title: { type: "string", description: "공지사항 제목" },
+                    body: { type: "string", description: "공지사항 내용" },
+                }
+              }
+            },
+ *          400: { $ref: "#/components/res/ResWrongParameter" },
+ *          403: { $ref: "#/components/res/ResNoAuthorization" },
+ *          500: { $ref: "#/components/res/ResInternal" },
+ *        }
+ *      }
+ *    }
+ *  }
+ */
 exports.postNotice = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId
@@ -756,12 +792,27 @@ exports.postNotice = (req, res, next)=>{
     return;
   }
 
-  // TODO: 권한 조회
-  models.Notice.create({
-    classId: classId,
-    title: title,
-    body: body
-  })
+  const createNotice = (chkPerm)=>{
+    if(!chkPerm) throw new Error("NoPermission")
+    return models.Notice.create({
+      classId: classId,
+      title: title,
+      body: body
+    })
+  }
+
+  const respond= (notice)=>{
+    res.json(notice)
+  }
+
+  chkPermissionWithType(userId, classId, 2)
+    .then(createNotice)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoPermission") req.Error.noAuthorization(res)
+      else req.Error.internal(res)
+    })
 }
 
 exports.memberOperation = (req, res, next)=>{

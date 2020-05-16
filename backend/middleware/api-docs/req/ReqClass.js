@@ -66,4 +66,14 @@ module.exports = {
     }
   },
 
+  ReqPostNotice: {
+    type: "object",
+    required: [ "classId", "title", "body" ],
+    properties: {
+      classId: { type: "integer", description: "수업 코드" },
+      title: { type: "string", description: "공지사항 제목" },
+      body: { type: "string", description: "공지사항 내용" },
+    }
+  }
+
 }

@@ -16,6 +16,8 @@ router.post("/signup_prof", uc.signupProf)
 
 router.get("/user_info", [serviceUser.checkLogin, uc.getUserInfo])
 
+router.post("/exit", [serviceUser.checkLogin, uc.exit])
+
 // for test
 router.post("/checkToken", [serviceUser.checkLogin, uc.checkToken])
 

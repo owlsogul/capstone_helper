@@ -641,3 +641,57 @@ exports.getUserInfo = (req, res, next) => {
     })
 
 }
+
+/**
+ * @swagger
+ *  paths:
+ *    /api/user/exit:
+ *      get:
+ *        tags:
+ *        - "User"
+ *        summary: "회원탈퇴 하는 API"
+ *        description: "성공 실패만 리턴함"
+ *        consumes:
+ *        - "application/json"
+ *        produces:
+ *        - "application/json"
+ *        parameters:
+ *        - in: "body"
+ *          name: "body"
+ *          description: "아무것도 없다."
+ *          required: true
+ *          schema:
+ *            $ref: "#/definitions/ReqBasic"
+ *        responses:
+ *          200:
+ *            description: "유저 정보"
+ *            schema:
+ *              $ref: "#/components/res/ResUserExit"
+ *          401:
+ *            description: "로그인이 만료되어있을 때 반환"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ *          403:
+ *            description: "로그인이 안되어 있을 때 반환"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ *          500:
+ *            description: "서버 오류일 때 반환"
+ *            schema:
+ *              $ref: "#/definitions/ResError"
+ * 
+ */
+exports.exit = (req, res, next)=>{
+  
+  let userId = req.ServiceUser.userId
+
+  models.User.destroy({where: {userId: userId}})
+  .then(result => {
+    res.json({msg:"success"})
+  })
+  .catch(err => {
+     console.error(err);
+     res.status(500).json({ msg: "internal" })
+  });
+  
+}

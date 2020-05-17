@@ -32,7 +32,7 @@ class Network {
       sendObj.method = "POST"
     }
 
-    if ((typeof sendObj.body) != "string"){
+    if (sendObj.body && (typeof sendObj.body) != "string"){
       sendObj.body = JSON.stringify(sendObj.body)
     }    
     console.log(sendObj)

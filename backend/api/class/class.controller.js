@@ -532,7 +532,7 @@ exports.enterInvitationCode = (req, res, next)=>{
     }
     else { // 학생
       let takeStatus = invitationCode.isAutoJoin ? 1 : 0
-      return models.Take.create({
+      return models.ClassRelation.create({
         classId: invitationCode.classId,
         user: userId,
         relationType: takeStatus

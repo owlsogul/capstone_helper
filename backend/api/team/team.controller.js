@@ -158,8 +158,9 @@ exports.getTeam = (req, res, next)=>{
   const findTeam = ()=>{
     return models.Team.findOne({
       include: [{
-        model: models.Join
-      }],
+        model: models.Join,
+        include: [ models.User ]
+       }],
       where: { classId: classId, teamId: teamId }
     })
   }

@@ -17,6 +17,8 @@ import TeamInfoPage from './pages/TeamInfoPage';
 
 import ManageLinkPage from './pages/ManageLinkPage';
 
+import JoinPage from './pages/JoinPage';
+
 function App() {
   return (
     <Router>
@@ -36,6 +38,8 @@ function App() {
           <Route path="/:classId/manageLink" component={ManageLinkPage} /> 
 
           <Route path="/:classId/teams/:teamId" component={TeamInfoPage} /> 
+
+          <Route path="/join/:code" component={JoinPage} /> 
           
         </Switch>
       </div >

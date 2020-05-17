@@ -25,7 +25,7 @@ const Op = Sequelize.Op;
  *          description: "팀 목록",
  *          schema: {
  *            type: "object",
- *            propertise: {
+ *            properties: {
  *              classId: { type: "integer", description: "조회할 수업의 코드" }
  *            }
  *          }
@@ -38,19 +38,22 @@ const Op = Sequelize.Op;
                   required: [ "teams" ],
                   properties: {
                     teams: { 
-                      type: "object", 
+                      type: "array", 
                       description: "팀 목록",
-                      propertise: {
-                        teamId: { type: "integer", description: "팀 아이디" },
-                        classId: { type: "integer", description: "수업 아이디" },
-                        Joins: {
-                          type: "array",
-                          description: "팀에 가입한 사람",
-                          items: {
-                            type: "object",
-                            propertise: {
-                              user: { type: "string", description: "user id"},
-                              joinStatus: { type: "integer", description: "0이면 대기중, 1이면 등록 완료" }
+                      items: {
+                        type: "object",
+                        properties: {
+                          teamId: { type: "integer", description: "팀 아이디" },
+                          classId: { type: "integer", description: "수업 아이디" },
+                          Joins: {
+                            type: "array",
+                            description: "팀에 가입한 사람",
+                            items: {
+                              type: "object",
+                              properties: {
+                                user: { type: "string", description: "user id"},
+                                joinStatus: { type: "integer", description: "0이면 대기중, 1이면 등록 완료" }
+                              }
                             }
                           }
                         }

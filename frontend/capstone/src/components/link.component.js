@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import {Table, Button} from "react-bootstrap"
+import Moment from 'react-moment';
 export class AssistLinkList extends Component {
   constructor(props) {
     super(props)
@@ -26,7 +27,7 @@ export class AssistLinkList extends Component {
             this.props.list.map((takes, idx)=>(
               <tr key={idx}>
                 <td>{takes.code}</td>
-                <td>{takes.expiredDate}</td>
+                <td><Moment format={"YYYY.MM.DD"}>{takes.expiredDate}</Moment> (<Moment fromNow>{takes.expiredDate}</Moment>)</td>
                 <td><a class="btn btn-primary btn-lg" href="#" role="button">삭제</a></td>
               </tr>
             ))
@@ -100,9 +101,7 @@ export default class Link extends Component {
         <td>
           {this.props.code}
         </td>
-        <td>
-          {this.props.expiredDate}
-        </td>
+        <td><Moment format={"YYYY.MM.DD"}>{this.props.expiredDate}</Moment> (<Moment fromNow>{this.props.expiredDate}</Moment>)</td>
         <td> 
           {this.props.isAutoJoin}
         </td>

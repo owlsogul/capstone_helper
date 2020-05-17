@@ -2,12 +2,13 @@ import React, { Component } from 'react';
 import ClassTemplate from "../components/ClassTemplate";
 import { StudentLinkList, AssistLinkList } from "../components/link.component";
 import InviteStudentForm from "../components/openclass.component";
+import network from "../network"
 // import './App.css';
 // import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 // 링크 데이터를 받아오는 함수
 function getLinks(sendObj) {
-  return fetch('/api/class/get_invite_codes', {
+  return network.network('/api/class/get_invite_codes', {
     method: 'POST',
     credentials: 'include',
     headers: {
@@ -28,7 +29,6 @@ export default class ManageLinkPage extends Component {
 
   setData() {
     getLinks({ classId: this.state.classId })
-      .then((res) => res.json())
       .then((json) => {
         json.filter(obj => {
           if (obj["isAssist"] == true){
@@ -45,6 +45,9 @@ export default class ManageLinkPage extends Component {
       .then(()=>{
         console.log(this.state.generatedAssistLinks)
         console.log(this.state.generatedStudentLinks)
+      })
+      .catch(err=>{
+          console.log(err)
       })
   }
 

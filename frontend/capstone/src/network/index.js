@@ -1,0 +1,47 @@
+class Network {
+
+  constructor(){
+    this.commonErrorHandler = this.commonErrorHandler.bind(this)
+  }
+
+  commonErrorHandler(res){
+    if (res.status == 401){
+      if (window){
+        window.location = "/sign-in"
+      }
+    }
+  }
+
+  network(url, sendObj){
+    if (!sendObj.headers){
+      sendObj.headers= {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      }
+    }
+
+    if (!sendObj.method) {
+      sendObj.method = "POST"
+    }
+
+    if ((typeof sendObj.body) != "string"){
+      sendObj.body = JSON.stringify(sendObj.body)
+    }    
+
+
+    return new Promise((resolve, reject)=>{
+      fetch(url, sendObj)
+        .then(res=>{
+          if (res.status != 200) {
+            this.commonErrorHandler(res)
+            reject(res)
+          }
+          resolve(res.json())
+        })
+        .catch(reject)
+    })
+  }
+
+}
+const network = new Network()
+export default network

@@ -1,22 +1,44 @@
 import React, { Component } from 'react';
 import TeamTemplate from "../components/TeamTemplate"
-// import './App.css';
-// import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import network from "../network"
 
 export default class TeamInfoPage extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      classId: this.props.match.params.classId,
-      teamId: this.props.match.params.teamId
+      teamName: "",
+      joins: []
     }
+  }
+
+  componentDidMount(){
+    let classId = this.props.match.params.classId
+    let teamId = this.props.match.params.teamId
+    if (!classId || !teamId){
+      window.location = "/dashboard"
+    }
+    network.network("/api/team/get_team", {
+      body: { classId: classId, teamId: teamId }
+    })
+    .then(team=>{
+      this.setState({
+        teamName: team.teamName,
+        joins: team.Joins
+      })
+    })
+    .catch(err=>{
+      if (err.status == 400){
+        window.location = "/dashboard"
+      }
+    })
   }
 
   render() {
     return (
       <TeamTemplate match={this.props.match} history={this.props.history}>
         <div>
-          
+          <h1>{this.state.teamName}</h1>
+          <h5>{this.state.joins.reduce((p, c)=>p+c.user+" ", "")}</h5>
         </div>
       </TeamTemplate>
     );

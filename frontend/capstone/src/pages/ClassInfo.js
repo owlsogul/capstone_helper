@@ -22,17 +22,21 @@ class ClassInfoPage extends Component {
   //
   constructor(props) {
     super(props)
-    this.state={
+    this.state = {
       information: []
     }
   }
 
-  componentWillMount() {
-    fetch('/api/class/member')
-    .then(res => res.json())
-    .then(data => this.setState({
-      posts: data
-    }))
+  getAdminList() {
+    fetch('http://localhost:3000/classinfo', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/jason',
+      },
+      body: JSON.stringify({
+      "classId" : 0
+      })
+    })
   }
   //
 
@@ -47,16 +51,16 @@ class ClassInfoPage extends Component {
         },
         {
           label: '아니오!',
-          onClick: () => {}
+          onClick: () => { }
         }
       ]
-      
+
     })
   }
 
   render() {
-    //
-    const {posts} = this.state
+    
+    const { posts } = this.state
     const postList = posts.map((post) => (
       <div>
         <div><b>{post.name}</b></div>
@@ -64,7 +68,7 @@ class ClassInfoPage extends Component {
         <div>{post.email}</div>
       </div>
     ))
-    //
+    
     return (
       <div>
         <div style={{ height: "5rem" }}>
@@ -82,8 +86,8 @@ class ClassInfoPage extends Component {
           <button class="btn btn-light btn-sm" style={{ marginLeft: "26rem" }}>수정</button>
         </div>
         <div class="adminInfo" style={{ width: "30rem", margin: "auto" }}>
-          {/*<ClassInfoList data={this.state.information} />*/}
-          {postList}
+          { postList
+          /*<ClassInfoList data={this.state.information} />*/}
         </div>
 
         <br></br><br></br>

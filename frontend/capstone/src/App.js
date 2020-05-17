@@ -13,6 +13,8 @@ import NoticePage from './pages/NoticePage.js';
 import DashboardPage from "./pages/DashboardPage"
 import ClassInfoPage from './pages/ClassInfo';
 import StudentList from './pages/StudentList';
+import WriteNoticePage from './pages/WriteNoticePage';
+import TeamInfoPage from './pages/TeamInfoPage';
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
           <Route path="/dashboard" component={DashboardPage} />
           <Route path="/classinfo" component={ClassInfoPage} />
           <Route path="/students" component={StudentList} />
+          <Route path="/writenotice" component={WriteNoticePage} />
+          <Route path="/teaminfo" component={TeamInfoPage} />
         </Switch>
       </div >
     </Router >

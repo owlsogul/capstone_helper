@@ -133,3 +133,111 @@ li {
   background-color: white;
   border: 1px solid black;
 }
+
+.Write {
+  padding: 20px;
+  padding-left: 20px;
+}
+
+.Write div{
+  margin-top: 30px;
+  margin-left: 50px;
+}
+
+#title_txt {
+  width: 91%;
+  padding-bottom: 30px;
+  border: none;
+  font-size: 22px;
+  border-bottom: solid 1px #ababab;
+  font-weight: bold;
+}
+
+#title_txt:focus { outline : none; }
+
+
+#content_txt {
+  width: 91%;
+  resize: none;
+  border: none;
+  height: 500px
+}
+
+#content_txt:focus { outline : none; }
+
+
+#post_submit {
+  text-align: center;
+  margin-top: 30px;
+}
+
+#post_submit button {
+  width: 120px;
+  padding: 5px;
+  border-radius: 5px;
+  border: solid 1px #ababab;
+  cursor: pointer;
+  background-color: white;
+}
+
+.myteam {
+    position: relative; top:4rem;left:25rem;
+    margin: 2rem;
+    text-align: center;
+    padding-top: 2.5rem;
+    background-color: white;
+    border: 1px solid black;
+    height: 7rem;
+    width: 7rem;
+}
+
+.teamname {
+  margin: 2rem;
+  background-color: white;
+  border: 1px solid black;
+  width: 30rem;
+  padding-top: 10px;
+  position: relative; top: -5rem; left: 33rem;
+  height: 3rem;
+}
+
+.teamaddress {
+  margin: 2rem;
+  background-color: white;
+  border: 1px solid black;
+  width: 30rem;
+  padding-top: 10px;
+  position: relative; top: -6rem; left: 33rem;
+  height: 3rem;
+}
+
+.teambutton {
+  position: relative; top: -13rem; left: 22rem;
+}
+
+.teambuttonmargin {
+  margin: 3px;
+}
+
+.pptdocument {
+  margin: 1rem auto;
+  background-color: white;
+  border: 1px solid black;
+  width: 30rem;
+  height: 2rem;
+  padding-top: 3px;
+}
+
+.teaminvitebtn {
+  position: relative; top: -9rem; left: 21rem;
+}
+
+.teammake_name {
+  margin: 2rem;
+  background-color: white;
+  border: 1px solid black;
+  width: 30rem;
+  padding-top: 2.5rem;
+  position: relative; top: -5rem; left: 33rem;
+  height: 7rem;
+}

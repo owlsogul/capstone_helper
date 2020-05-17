@@ -7,8 +7,8 @@ import {Table} from "react-bootstrap"
 
 const filterStudent = (e, filter, id)=>{ 
   return  (filter == "ALL") || // ALL 필터면 다 통과
-          (filter == "WAIT" && e.takeStatus == 0) || // 대기자 필터면 대기자만 통과
-          (filter == "TAKE" && e.takeStatus == 1) // 수강자 필터면 수강자 통과
+          (filter == "WAIT" && e.relationType == 0) || // 대기자 필터면 대기자만 통과
+          (filter == "TAKE" && e.relationType == 1) // 수강자 필터면 수강자 통과
           (filter == "NAME" && e.user.includes(id)) // 이름 필터
 }
 

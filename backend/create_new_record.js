@@ -177,6 +177,14 @@ module.exports = ()=>{
         writtenDate: Date.parse("2020-05-10")
       })
     })
+    .then(()=>{
+      return models.Notice.create({
+        classId: 1,
+        title: "공지사항 3",
+        body: "공지사항 내용입니다.",
+        writtenDate: Date.parse("2020-05-11")
+      })
+    })
     // 조 만들기
     .then(()=>{
       return models.Team.create({

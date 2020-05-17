@@ -103,7 +103,7 @@ paths: {
     post: {
       tags: [ Team ],
       summary: "팀을 만드는 API",
-      description: "",
+      description: "팀이 이미 있거나 팀 매칭 기간이 아니면 400 오류가 난다.",
       consumes: [ "application/json" ],
       produces: [ "application/json" ],
       parameters : [{
@@ -163,10 +163,16 @@ exports.createTeam = (req, res, next)=>{
   const chkPerm = (targetClass)=>{
     if (!targetClass) throw new Error("NoClass")
     if (!targetClass.Class.isMatching) throw new Error("NoPeriod")
-
+    return models.Join.findAll({
+      where: {
+        user: userId,
+        classId: classId
+      }
+    })
   }
 
-  const createTeam = ()=>{
+  const createTeam = (joins)=>{
+    if (joins.length != 0) throw new Error("AlreadyTeam")
     return models.Team.create({
       classId: classId,
       teamName: "TEMP_TEAM"
@@ -191,6 +197,16 @@ exports.createTeam = (req, res, next)=>{
     .then(chkPerm)
     .then(createTeam)
     .then(createRelation)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoClass") req.Error.wrongParameter(res, "Wron Class")
+      else if (err.message == "AlreadyTeam") req.Error.noAuthorization(req)
+      else if (err.message == "NoPeriod") req.Error.noAuthorization(req)
+      else req.Error.internal(res)
+    })
+
+}
     .then(respond)
     .catch(err=>{
       console.log(err)

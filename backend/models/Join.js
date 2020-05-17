@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes){
             type: DataTypes.STRING(50),
             allowNull: false
         },
-        takeStatus: {
+        joinStatus: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0

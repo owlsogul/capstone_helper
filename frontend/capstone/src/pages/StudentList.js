@@ -114,7 +114,7 @@ export default class StudentList extends Component {
                   <People
                     key={idx}
                     userId={takes.user}
-                    takeStatus={takes.takeStatus}
+                    takeStatus={takes.relationType}
                     handleOper={this.handleStudentOper}
                   />
                 ))

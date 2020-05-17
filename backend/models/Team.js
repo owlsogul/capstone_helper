@@ -13,6 +13,10 @@ module.exports = function(sequelize, DataTypes){
         teamName: {
             type: DataTypes.STRING(50),
             allowNull: false
+        },
+        githubUrl: {
+          type: DataTypes.STRING(100),
+          allowNull: true
         }
     }, {
         underscored: true,

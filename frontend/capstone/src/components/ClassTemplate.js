@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Dashboard from "../components/Dashboard.component";
-import Bar from '../components/Bar.component';
+import Bar from './Bar.component';
 
 /**
  * required props:
  *  - history
- *  - classId
+ *  - match
  */
 export default class ClassTemplate extends Component {
   constructor(props) {

@@ -4,7 +4,11 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import { Navbar, Nav, Badge } from "react-bootstrap"
 
 const getClassInfo = (classId) => {
-  return fetch("/api/class/info/"+classId).then(res=>res.json())
+  return fetch("/api/class/info/"+classId)
+  .then(res=>{
+      if (res.status != 200) throw new Error(res)
+      return res.json()
+  })
 }
 
 export default class Bar extends Component {
@@ -32,6 +36,9 @@ export default class Bar extends Component {
           urlClassInfo: `/${res.classId}/classinfo`,
 
         })
+      })
+      .catch(err=>{
+        console.log(err)
       })
   }
 

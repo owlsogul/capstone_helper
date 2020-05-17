@@ -105,6 +105,7 @@ export default class StudentList extends Component {
             <thead>
               <tr>
                 <th>학생 아이디</th>
+                <th>이름</th>
                 <th>작업</th>
               </tr>
             </thead>
@@ -114,6 +115,7 @@ export default class StudentList extends Component {
                   <People
                     key={idx}
                     userId={takes.user}
+                    userName={takes.User.name}
                     takeStatus={takes.relationType}
                     handleOper={this.handleStudentOper}
                   />

@@ -46,6 +46,9 @@ export default class People extends Component {
         <td>
           {this.props.userId} {badge}
         </td>
+        <td>
+          {this.props.userName}
+        </td>
         {btns}
       </tr>
     );

@@ -429,6 +429,7 @@ paths: {
  */
 exports.inviteMember = (req, res, next)=>{
 
+  // TODO: 초대할 멤버 팀 가입 확인하기
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
   let teamId = req.body.teamId
@@ -773,3 +774,344 @@ exports.getRequests = (req, res, next)=>{
   }
 }
 
+
+/**
+@swagger
+paths: {
+  /api/team/join:{
+    post: {
+      tags: [ Team ],
+      summary: "팀에 가입 신청하는 API",
+      description: "",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "팀에 가입 신청을 한다.",
+        schema: {
+          type: "object",
+          required: [ "classId", "teamId"],
+          properties: {
+            classId: { type: "integer", description: "수업 아이디"},
+            teamId: { type: "integer", description: "팀 아이디"},
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "생성된 가입 신청 모델이 리턴됨",
+          schema: {
+            type: "object",
+            properties: {
+              targetTeam: { type: "integer", description: "신청한 팀의 코드"},
+              user: { type: "string", description: "신청한 유저"},              
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+ */
+exports.joinTeam = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let teamId = req.body.teamId
+
+  if (!classId || !teamId){
+    req.Error.wrongParameter(res, "")
+    return
+  }
+
+  // 내가 수업을 듣고 있니?
+  const findTake = ()=>{
+    return models.Take.findOne({
+      where: {
+        classId: classId,
+        user: userId,
+        takeStatus: 1
+      }
+    })
+  }
+
+  // 이 팀이 클래스에 포함되어 있니?
+  const findTeam = ()=>{
+    return models.Team.findOne({
+      where: {
+        teamId: teamId,
+        classId: classId
+      }
+    })
+  }
+
+  // 내가 팀에 이미 들어가있니?
+  const findJoin = ()=>{
+    return models.Join.findOne({
+      where: {
+        classId: classId,
+        user: userId
+      }
+     })
+  }
+
+  const checkCondition = ()=>{
+    return Promise.all([ findTake(), findTeam(), findJoin() ])
+  }
+
+  const joinTeam = (cond)=>{
+    if (!cond[0]) throw new Error("NoTake")
+    if (!cond[1]) throw new Error("NoTeam")
+    if (!cond[2]) throw new Error("AlreadyJoin")
+    return models.TeamRequestJoin.create({
+      targetTeam: join.teamId,
+      user: targetUser
+    })
+  }
+
+  const respond = (invite)=>{
+    console.log(invite)
+    res.json(invite)
+  }
+
+  checkCondition()
+    .then(joinTeam)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoTake") req.Error.wrongParameter(res, "NoTake")
+      else if (err.message == "NoTeam") req.Error.wrongParameter(res, "NoTeam")
+      else if (err.message == "AlreadyJoin") req.Error.wrongParameter(res, "AlreadyJoin")
+      else req.Error.internal(res)
+    })
+}
+
+/**
+@swagger
+paths: {
+  /api/team/accept_join:{
+    post: {
+      tags: [ Team ],
+      summary: "가입 신청을 수락하는 API",
+      description: "",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "body",
+        schema: {
+          type: "object",
+          required: [ "requestId" ],
+          properties: {
+            requestId: { type: "integer", description: "신청 수락할 아이디"},
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "팀이 리턴됨",
+          schema: {
+            type: "object",
+            properties: {
+              teamId: { type: "integer", description: "해당 팀의 코드"},
+              targetMember: { type: "string", description: "초대된 유저"},              
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+ */
+exports.acceptJoin = (req, res, next)=>{
+  
+  let userId = req.ServiceUser.userId
+  let requestId = req.body.requestId
+
+  let targetTeam = null
+  let targetRequest = null
+
+  if (!requestId) {
+    req.Error.wrongParameter(res, "requestId")
+    return
+  }
+
+  // 해당 리퀘스트가 있는가?
+  const findRequestJoin = ()=>{
+    return models.TeamRequestJoin.findOne({
+      where: {
+        requestId: requestId
+      }
+    })
+  }
+
+  // 해당 팀의 팀장인지 확인
+  const findTeamLeader = (request)=>{
+    if (!request) throw new Error("WrongRequest")
+    targetRequest = request
+    return models.Join.findOne({
+      where: { 
+        teamId: request.targetTeam, 
+        user: userId ,
+        isLeader: true
+      }
+    })
+  }
+
+  const findTeam = (join)=>{
+    if (!join) throw new Error("NoPermission")
+    return models.Team.findOne({
+      where: { teamId: join.teamId }
+    })
+  }
+
+  // 해당 사람이 이미 가입했는지 확인
+  const checkAlreadyJoin = (team)=>{
+    if (!team) throw new Error("NoTeam")
+    targetTeam = team
+    return models.Join.findOne({
+      user: targetRequest.user,
+      classId: team.classId,
+    })
+  }
+
+  const createJoin = (join)=>{
+    if (join) throw new Error("AlreadyJoin")
+    return models.Join.create({
+      classId: targetTeam.classId,
+      teamId: targetTeam.teamId,
+      user: targetRequest.user,
+      joinStatus: 1
+    })
+  }
+
+  const deleteRequest =()=>{
+    return models.TeamInvite.destroy({
+      where: { inviteId: inviteId }
+    })
+  }
+
+  const respond = ()=>{
+    res.json(targetTeam)
+  }
+
+  findRequestJoin()
+    .then(findTeamLeader)
+    .then(findTeam)
+    .then(checkAlreadyJoin)
+    .then(createJoin)
+    .then(deleteRequest)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "WrongRequest") req.Error.wrongParameter(res, "request")
+      else if (err.message == "NoPermission") req.Error.noAuthorization(res)
+      else if (err.message == "AlreadyJoin") req.Error.wrongParameter(res, "already")
+      else req.Error.internal(res)
+    })
+
+}
+/**
+@swagger
+paths: {
+  /api/team/deny_join:{
+    post: {
+      tags: [ Team ],
+      summary: "가입 신청을 거절하는 API",
+      description: "",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "body",
+        schema: {
+          type: "object",
+          required: [ "requestId" ],
+          properties: {
+            requestId: { type: "integer", description: "신청 거절할 아이디"},
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "팀이 리턴됨",
+          schema: {
+            type: "object",
+            properties: {
+              teamId: { type: "integer", description: "해당 팀의 코드"},
+              targetMember: { type: "string", description: "초대된 유저"},              
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+ */
+exports.denyJoin = (req, res, next)=>{
+  
+  let userId = req.ServiceUser.userId
+  let requestId = req.body.requestId
+
+  let targetTeam = null
+  let targetRequest = null
+
+  if (!requestId) {
+    req.Error.wrongParameter(res, "requestId")
+    return
+  }
+
+  // 해당 리퀘스트가 있는가?
+  const findRequestJoin = ()=>{
+    return models.TeamRequestJoin.findOne({
+      where: {
+        requestId: requestId
+      }
+    })
+  }
+
+  // 해당 팀의 팀장인지 확인
+  const findTeamLeader = (request)=>{
+    if (!request) throw new Error("WrongRequest")
+    targetRequest = request
+    return models.Join.findOne({
+      where: { 
+        teamId: request.targetTeam, 
+        user: userId ,
+        isLeader: true
+      }
+    })
+  }
+
+  const deleteRequest =(join)=>{
+    if (!join) throw new Error("NoPermission")
+    return models.TeamInvite.destroy({
+      where: { inviteId: inviteId }
+    })
+  }
+
+  const respond = ()=>{
+    res.json(targetTeam)
+  }
+
+  findRequestJoin()
+    .then(findTeamLeader)
+    .then(deleteRequest)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "WrongRequest") req.Error.wrongParameter(res, "request")
+      else if (err.message == "NoPermission") req.Error.noAuthorization(res)
+      else req.Error.internal(res)
+    })
+
+}

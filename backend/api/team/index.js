@@ -21,10 +21,13 @@ router.post("/deny_invite", [serviceUser.checkLogin, tc.denyInvite])
 
 
 
+router.post("/get_request_joins", [serviceUser.checkLogin, tc.getRequests])
 
-router.post("/join", (req, res, next)=>{
-  res.json({ msg: "success"})
-})
+router.post("/join", [serviceUser.checkLogin, tc.joinTeam])
+
+router.post("/accept_join", [serviceUser.checkLogin, tc.acceptJoin])
+
+router.post("/deny_join", [serviceUser.checkLogin, tc.denyJoin])
 
 router.post("/quit", (req, res, next)=>{
   res.json({ msg: "success"})

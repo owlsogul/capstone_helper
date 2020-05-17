@@ -8,6 +8,7 @@ router.post("/list", [serviceUser.checkLogin, tc.listTeam])
 
 router.post("/create", [serviceUser.checkLogin, tc.createTeam])
 
+router.post("/get_myteam", [serviceUser.checkLogin, tc.getMyTeam])
 
 router.post("/invite", (req, res, next)=>{
   res.json({ msg: "success"})

@@ -207,6 +207,87 @@ exports.createTeam = (req, res, next)=>{
     })
 
 }
+
+
+/**
+@swagger
+paths: {
+  /api/team/get_myteam:{
+    post: {
+      tags: [ Team ],
+      summary: "내 팀 정보를 가져오는  API",
+      description: "",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "내 팀 정보를 가져온다.",
+        schema: {
+          type: "object",
+          required: [ "classId" ],
+          properties: {
+            classId: { type: "integer", description: "수업 아이디"},
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "없으면 빈 값으로 온다.",
+          schema: {
+            type: "object",
+            properties: {
+              classId: { type: "integer", description: "해당 수업의 코드"},
+              teamId: { type: "integer", description: "만들어진 팀의 코드"},
+              Joins: {
+                type: "array",
+                description: "팀에 가입한 사람",
+                items: {
+                  type: "object",
+                  properties: {
+                    user: { type: "string", description: "user id"},
+                    joinStatus: { type: "integer", description: "0이면 대기중, 1이면 등록 완료" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+ */
+exports.getMyTeam = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  
+  if (!classId){
+    req.Error.wrongParameter(res, "classId")
+    return;
+  }
+
+  const getTeam = ()=>{
+    return models.Join.findOne({
+      include: [{
+        model: models.Team,
+        include: [ models.Join ]
+       }],
+      where: {
+        user: userId,
+        classId: classId,
+      }
+    })
+  }
+
+  const respond = (join)=>{
+    res.json(join ? join.Team : {})
+  }
+
+  getTeam()
     .then(respond)
     .catch(err=>{
       console.log(err)

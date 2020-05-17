@@ -30,7 +30,7 @@ export default class NoticePage extends Component {
       .then((json) => {
         console.log(json)
         this.setState({
-          notice: json
+          notice: json.reverse()
         })
       })
   }

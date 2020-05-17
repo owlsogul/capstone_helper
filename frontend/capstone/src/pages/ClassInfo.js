@@ -55,8 +55,8 @@ class ClassInfoPage extends Component {
     
     const postList = this.state.member.map((post) => (
       <div>
-        <div><b>{post.user}</b></div>
-        <div>{post.status}</div>
+        <div><b>{post.User.name}</b></div>
+        <div>{post.user}</div>
         <div>{post.email}</div>
       </div>
     ))
@@ -78,6 +78,7 @@ class ClassInfoPage extends Component {
             <h2>관리자 정보</h2>
           </div>
           <div>
+            <div><b>{this.state.professor.professorName}</b></div>
             {this.state.professor.professor}
           </div>
           <div class="adminInfo" style={{ width: "30rem", margin: "auto" }}>

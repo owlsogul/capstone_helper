@@ -10,6 +10,8 @@ export class Congratulation extends Component {
                 <div className="auth-inner">
                     <div>
                         회원가입을 축하드립니다. {this.props.target}
+                        <br/>
+                        <a href="/sign-in">로그인하러가기</a>
                     </div>
                 </div>
             </div>

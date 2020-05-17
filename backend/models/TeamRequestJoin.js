@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes){
-  let model = sequelize.define("Join", {
+  let model = sequelize.define("TeamRequestJoin", {
     requestId: {
       type: DataTypes.INTEGER,
       autoIncrement: true,

@@ -29,7 +29,7 @@ app.use(settingTransmitter)
 
 // db
 var sequelize = require('./models').sequelize;
-sequelize.sync({ force: true }).then(()=>{
+sequelize.sync({ force: false }).then(()=>{
     console.log("Successfully connect to server")
     require("./create_new_record")()
 }).catch((err)=>{

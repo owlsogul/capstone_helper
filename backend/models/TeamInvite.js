@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes){
-  let model = sequelize.define("Join", {
+  let model = sequelize.define("TeamInvite", {
     inviteId: {
       type: DataTypes.INTEGER,
       autoIncrement: true,

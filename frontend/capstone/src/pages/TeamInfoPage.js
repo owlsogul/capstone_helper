@@ -26,11 +26,6 @@ export default class TeamInfoPage extends Component {
         joins: team.Joins
       })
     })
-    .catch(err=>{
-      if (err.status == 400){
-        window.location = "/dashboard"
-      }
-    })
   }
 
   render() {

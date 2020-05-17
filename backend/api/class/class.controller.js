@@ -592,7 +592,7 @@ exports.listMember = (req, res, next)=>{
   }
 
   const findRelations = ()=>{
-    return models.ClassRelation.findAll({ where: { classId: classId } })
+    return models.ClassRelation.findAll({ include:[ models.User], where: { classId: classId } })
   }
 
   const respond = (result) =>{
@@ -605,7 +605,6 @@ exports.listMember = (req, res, next)=>{
       var e = result[i]
       var type = e.relationType
       if (type == 0 || type == 1){
-        e.takeStatus = type
         take.push(e)
       }
       else if (type == 2){
@@ -614,6 +613,7 @@ exports.listMember = (req, res, next)=>{
       else if (type == 3){
         targetClass.classId = e.classId
         targetClass.professor = e.user
+        targetClass.professorName = e.User.name
       }
     }
 

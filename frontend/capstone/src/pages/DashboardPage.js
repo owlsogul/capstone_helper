@@ -145,7 +145,7 @@ export default class DashboardPage extends Component {
           newClasses = newClasses.concat(res.take.map(e=>{ return { 
             classId: e.classId, 
             className: e.Class.className, 
-            classType: e.takeStatus == 1 ? "take" : "wait" } }));
+            classType: e.relationType == 1 ? "take" : "wait" } }));
         }
         if (res.manage){
           newClasses = newClasses.concat(res.manage.map(e=>{ return { 

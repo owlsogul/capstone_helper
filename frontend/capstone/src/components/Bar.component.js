@@ -20,6 +20,7 @@ export default class Bar extends Component {
       urlStudentInfo: "#",
       urlTeamInfo: "#",
       urlClassInfo: "#",
+      urlManageLinks: "#",
     }
   }
 
@@ -34,7 +35,7 @@ export default class Bar extends Component {
           urlStudentInfo: `/${res.classId}/students`,
           urlTeamInfo: `/${res.classId}/teams`,
           urlClassInfo: `/${res.classId}/classinfo`,
-
+          urlManageLinks: `/${res.classId}/manageLink`,
         })
       })
       .catch(err=>{
@@ -53,6 +54,7 @@ export default class Bar extends Component {
             <Nav.Link href={this.state.urlNotice}>공지사항</Nav.Link>
             <Nav.Link href={this.state.urlStudentInfo}>학생 정보</Nav.Link>
             <Nav.Link href={this.state.urlTeamInfo}>조 정보</Nav.Link>
+            <Nav.Link href={this.state.urlManageLinks}>초대링크 관리</Nav.Link>
             <Nav.Link href={this.state.urlClassInfo}>수업 정보</Nav.Link>
           </Nav>
         </Navbar.Collapse>

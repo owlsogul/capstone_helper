@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Alert } from "react-bootstrap"
 
+import network from "../network"
 import Dashboard from "../components/Dashboard.component"
 
 const style = {
@@ -16,7 +17,7 @@ const getUserInfo = ()=>{
 }
 
 const loadClass = ()=>{
-  return fetch("/api/class/list")
+  return network.network("/api/class/list",{ method: "GET" })
 }
 
 const createClassType = (classType)=>{
@@ -137,7 +138,7 @@ export default class DashboardPage extends Component {
   }
 
   componentDidMount(){
-    loadClass().then(res=>res.json())
+    loadClass()
       .then(res=>{
         console.log(res)
         let newClasses = []
@@ -160,6 +161,11 @@ export default class DashboardPage extends Component {
             classType: "own" } }));
         }
         this.setState({ classes: newClasses })
+      })
+      .catch(err=>{
+        if(err.status == 403){
+          alert("이메일 인증을 완료해주세요")
+        }
       })
     getUserInfo().then(res=>res.json())
       .then(res=>{

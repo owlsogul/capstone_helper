@@ -53,7 +53,6 @@ class ClassInfoPage extends Component {
 
   render() {
     
-    const { posts } = this.state
     const postList = this.state.member.map((post) => (
       <div>
         <div><b>{post.user}</b></div>

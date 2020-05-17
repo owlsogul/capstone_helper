@@ -35,7 +35,7 @@ class Network {
     if ((typeof sendObj.body) != "string"){
       sendObj.body = JSON.stringify(sendObj.body)
     }    
-
+    console.log(sendObj)
 
     return new Promise((resolve, reject)=>{
       fetch(url, sendObj)

@@ -6,6 +6,8 @@ const serviceUser = require("../../middleware/serviceuser")
 
 router.post("/list", [serviceUser.checkLogin, tc.listTeam])
 
+router.post("/get_team", [serviceUser.checkLogin, tc.getTeam])
+
 router.post("/create", [serviceUser.checkLogin, tc.createTeam])
 
 router.post("/get_myteam", [serviceUser.checkLogin, tc.getMyTeam])

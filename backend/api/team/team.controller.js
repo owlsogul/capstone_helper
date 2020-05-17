@@ -99,6 +99,89 @@ exports.listTeam = (req, res, next)=>{
 /**
 @swagger
 paths: {
+  /api/team/get_team:{
+    post: {
+      tags: [ Team ],
+      summary: "팀 정보를 가져오는 API",
+      description: "팀이 이미 있거나 팀 매칭 기간이 아니면 400 오류가 난다.",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "팀",
+        schema: {
+          type: "object",
+          required: [ "classId", "teamId" ],
+          properties: {
+            classId: { type: "integer", description: "수업 아이디"},
+            teamId: { type: "integer", description: "수업 아이디"},
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "개설된 팀 join에 관한 정보",
+          schema: {
+            type: "object",
+            required: [ "classId", "teamId" ],
+            properties: {
+              classId: { type: "integer", description: "해당 수업의 코드"},
+              teamId: { type: "integer", description: "만들어진 팀의 코드"},
+              Joins: {
+                type: "array",
+                description: "팀에 가입한 사람",
+                items: {
+                  type: "object",
+                  properties: {
+                    user: { type: "string", description: "user id"},
+                    joinStatus: { type: "integer", description: "0이면 대기중, 1이면 등록 완료" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+ */
+exports.getTeam = (req, res, next)=>{
+  
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let teamId = req.body.teamId
+
+  const findTeam = ()=>{
+    return models.Team.findOne({
+      include: [{
+        model: models.Join
+      }],
+      where: { classId: classId, teamId: teamId }
+    })
+  }
+
+  const respond = (team)=>{
+    if (!team) throw new Error("WrongTeam")
+    res.json(team)
+  }
+
+  findTeam()
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "WrongTeam") req.Error.wrongParameter(res, "team")
+      else req.Error.internal(res)
+    })
+
+}
+
+/**
+@swagger
+paths: {
   /api/team/create:{
     post: {
       tags: [ Team ],

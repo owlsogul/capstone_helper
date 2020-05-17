@@ -51,12 +51,15 @@ const chkPermissionWithType = (userId, classId, type)=>{
 exports.listClass = (req, res, next)=>{
   
   let userId = req.ServiceUser.userId
+  console.log(userId)
 
   const findUser = () => {
     return models.User.findOne({ where: { userId: userId } })
   }
 
   const findRelations = (user)=>{
+    if (!user) throw new Error("NoUser")
+    if (user.level == 0) throw new Error("NoConfirmed")
     return models.ClassRelation.findAll({ include: [ { model: models.Class} ], where: {user: userId}})
   }
 
@@ -87,7 +90,9 @@ exports.listClass = (req, res, next)=>{
     .then(respond)
     .catch(err=>{
       console.log(err)
-      req.Error.internal(res)
+      if (err.message == "NoConfirmed") req.Error.noAuthorization(res)
+      else if (err.message =="NoUser") req.Error.tokenExpired(res)
+      else req.Error.internal(res)
     })
 
 }

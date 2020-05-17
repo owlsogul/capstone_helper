@@ -831,32 +831,50 @@ exports.memberOperation = (req, res, next)=>{
     req.Error.wrongParameter(res)
   }
 
-  // TODO: 권한 조회
+  models.ClassRelation.findOne({ where: {
+    classId: classId,
+    user: userId,
+    relationType: {
+      [Op.gte]: 2
+    }
+  }})
+  .then(relation=>{
+    if (!relation) {
+      req.Error.noAuthorization(res)
+      return
+    }
+    else {
+      if (operType == "D"){
+        models.ClassRelation.destroy({ where: { user: targetUserId, classId: classId }})
+          .then(()=>{
+            res.json({ msg: "success"})
+          })
+          .catch(err=>{
+            console.log(err)
+            req.Error.wrongParameter(res, "userId or classId")
+          })
+      }
+      else if (operType == "A") {
+        models.ClassRelation.update({ relationType: 1}, { where: { user: targetUserId, classId: classId }})
+          .then(()=>{
+            res.json({ msg: "success"})
+          })
+          .catch(err=>{
+            console.log(err)
+            req.Error.wrongParameter(res, "userId or classId")
+          })
+      }
+      else {
+        req.Error.wrongParameter(res, "operType")
+      }
+    }
+  })
+  .catch(err=>{
+    console.log(err)
+    req.Error.internal(res)
+  })
 
-  if (operType == "D"){
-    models.Take.findOne({ where: { user: targetUserId, classId: classId }})
-      .destroy()
-      .then(()=>{
-        res.json({ msg: "success"})
-      })
-      .catch(err=>{
-        console.log(err)
-        req.Error.wrongParameter(res, "userId or classId")
-      })
-  }
-  else if (operType == "A") {
-    models.Take.update({ takeStatus: 1}, { where: { user: targetUserId }})
-      .then(()=>{
-        res.json({ msg: "success"})
-      })
-      .catch(err=>{
-        console.log(err)
-        req.Error.wrongParameter(res, "userId or classId")
-      })
-  }
-  else {
-    req.Error.wrongParameter(res, "operType")
-  }
+  
 
 }
 

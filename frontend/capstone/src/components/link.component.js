@@ -13,17 +13,26 @@ export class AssistLinkList extends Component {
 
   render() {
     return (
-      <ul>
-        {this.props.list.map(item => (
-          <div class="jumbotron">
-            <h1 class="display-6">{item.code}</h1>
-            <hr class="my-4"></hr>
-            <h3>{item.expiredDate}</h3>
-            <h3>{item.isAutoJoin}</h3>
-            <a class="btn btn-primary btn-lg" href="#" role="button">삭제</a>
-          </div>
-        ))}
-      </ul>
+      <Table striped>
+        <thead>
+          <tr>
+            <th>초대 코드</th>
+            <th>만료 일자</th>
+            <th>삭제하기</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            this.props.list.map((takes, idx)=>(
+              <tr key={idx}>
+                <td>{takes.code}</td>
+                <td>{takes.expiredDate}</td>
+                <td><a class="btn btn-primary btn-lg" href="#" role="button">삭제</a></td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </Table>
     )
   }
 }

@@ -10,6 +10,9 @@ class Network {
         window.location = "/sign-in"
       }
     }
+    if (res.status == 403){
+      alert("권한이 없습니다.")
+    }
   }
 
   network(url, sendObj){

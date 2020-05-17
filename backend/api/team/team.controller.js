@@ -13,9 +13,9 @@ const Op = Sequelize.Op;
  * @swagger
  *  paths: {
  *    /api/team/list:{
- *      get: {
+ *      post: {
  *        tags: [ Team ],
- *        summary: "팀 목룍을 호출하는 API",
+ *        summary: "해당 수업의 팀 목룍을 호출하는 API",
  *        description: "",
  *        consumes: [ "application/json" ],
  *        produces: [ "application/json" ],
@@ -23,10 +23,42 @@ const Op = Sequelize.Op;
  *          in: "body",
  *          name: "body",
  *          description: "팀 목록",
- *          schema: { $ref: "#/components/req/ReqListClass" }
- *            }],
- *          responses: {
- *            200: { $ref: "#/components/res/ResListClass" },
+ *          schema: {
+ *            type: "object",
+ *            propertise: {
+ *              classId: { type: "integer", description: "조회할 수업의 코드" }
+ *            }
+ *          }
+ *        }],
+ *        responses: {
+ *            200: {
+                description: "개설된 팀 join에 관한 정보",
+                schema: {
+                  type: "object",
+                  required: [ "teams" ],
+                  properties: {
+                    teams: { 
+                      type: "object", 
+                      description: "팀 목록",
+                      propertise: {
+                        teamId: { type: "integer", description: "팀 아이디" },
+                        classId: { type: "integer", description: "수업 아이디" },
+                        Joins: {
+                          type: "array",
+                          description: "팀에 가입한 사람",
+                          items: {
+                            type: "object",
+                            propertise: {
+                              user: { type: "string", description: "user id"},
+                              joinStatus: { type: "integer", description: "0이면 대기중, 1이면 등록 완료" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+ *            },
  *            400: { $ref: "#/components/res/ResNoAuthorization" },
  *            500: { $ref: "#/components/res/ResInternal" },
  *          }

@@ -3,29 +3,10 @@ import React, { Component } from 'react';
 import ClassTemplate from "../components/ClassTemplate"
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import { TeamNameMembers, Teams } from '../components/team.component';
+import network from "../network"
 
 const getTeamList = (classId) => {
-  return fetch('/api/team/list', {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-    credentials: 'include',
-    body: JSON.stringify(classId),
-  })
-    .then(res => {
-      if (res.status != 200) throw res.status
-      return res.json()
-    })
-}
-
-// 가입 신청, 가입 취소, 가입 대기중
-const createClassType = (classType)=>{
-  if (classType == "take") return "가입 산청"
-  else if (classType == "wait") return "가입 취소"
-  else if (classType == "manage") return "가입 대기중"
-  else return "알수 없음"
+  return network.network('/api/team/list', { body: classId })
 }
 
 export default class TeamPage extends Component {
@@ -46,6 +27,7 @@ export default class TeamPage extends Component {
         console.log(res["teams"])
         this.setState({teams: res["teams"]})
       })
+      .catch(console.log)
   }
 
   componentWillMount() {

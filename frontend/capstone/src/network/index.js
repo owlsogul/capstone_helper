@@ -20,6 +20,11 @@ class Network {
       }
     }
 
+    if (!sendObj.credentials){
+      sendObj.credentials= 'include'
+    }
+    
+
     if (!sendObj.method) {
       sendObj.method = "POST"
     }

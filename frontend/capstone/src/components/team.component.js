@@ -73,11 +73,9 @@ export class Teams extends Component {
             return (
               <TeamElement
                 teamName={e.teamName}
-                /* 여기
-                teamMembers = {e.Joins.forEach(element => {
-                  element.user
+                teamMembers = {e.Joins.map(element => {
+                  return element.user + "\n"
                 })}
-                */
               />
             )
           })

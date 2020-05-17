@@ -189,7 +189,8 @@ module.exports = ()=>{
     .then(()=>{
       return models.Team.create({
         classId: 1,
-        teamName: "1조"
+        teamName: "1조",
+        githubUrl: "https://github.com/owlsogul/capstone_helper"
       })
       .then(()=>{
         return models.Team.create({

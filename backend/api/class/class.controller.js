@@ -380,7 +380,7 @@ exports.createStudentInviteCode = (req, res, next)=>{
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
   let expiredDate = Date.parse(req.body.expiredDate) // needed to UTC date string
-  let isAutoJoin = req.body.isAutoJoin
+  let isAutoJoin = req.body.isAutoJoin ? req.body.isAutoJoin : false
 
   console.log(userId)
   console.log("student invite code " + JSON.stringify(req.body))
@@ -400,41 +400,25 @@ exports.createStudentInviteCode = (req, res, next)=>{
     return randomstring;
   }
 
-  const findManagedClass = () => {
-    return new Promise((res, rej)=>{
-      models.User.findOne( {where: { userId: userId }})
-      .then(user=>{
-        if (!user) throw new Error("NoUser")
-        if (user.level == 50) {
-          models.Manage
-            .findOne({ where: { user: userId, classId: classId }, include: [ { model: models.Class } ] })
-            .then(manage=>{
-              if (!manage) rej(new Error("WrongClass"))
-              res(manage.Class)
-            })
-            .catch(rej)
+  const checkPermission = ()=>{
+    return models.ClassRelation.findOne({
+      where: {
+        classId: classId,
+        user: userId,
+        relationType: {
+          [Op.gte]: 2
         }
-        else if (user.level == 101){
-          models.Class
-            .findOne({ where: { professor: userId, classId: classId }})
-            .then(res)
-            .catch(rej)
-        }
-        else {
-          throw new Error("LowLevel")
-        }
-      })
-      .catch(rej)
+      }
     })
   }
 
-  const createInviteCode = (targetClass)=>{
-    console.log("target class? " + JSON.stringify(targetClass))
-    if (!targetClass) throw new Error("WrongClass")
+  const createInviteCode = (relation)=>{
+    if (!relation) throw new Error("NoPermission")
     return models.InvitationCode.create({
       code: makeRandomString(false, false),
-      classId: targetClass.classId,
+      classId: classId,
       expiredDate: expiredDate,
+      isAutoJoin: isAutoJoin
     })
   }
 
@@ -442,12 +426,11 @@ exports.createStudentInviteCode = (req, res, next)=>{
     res.json(invitationCode)
   }
 
-  findManagedClass()
+  checkPermission()
     .then(createInviteCode)
     .then(respond)
     .catch((err)=>{
-      if (err.message == "NoUser" || err.message == "LowLevel") req.Error.noAuthorization(res)
-      else if (err.message == "WrongClass") req.Error.wrongParameter(res,"wrong class")
+      if (err.message == "NoPermission") req.Error.noAuthorization(res)
       else req.Error.internal(res)
       console.log(err)
     })

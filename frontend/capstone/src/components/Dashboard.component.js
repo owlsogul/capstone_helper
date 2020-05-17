@@ -25,8 +25,8 @@ export default class Dashboard extends Component {
     if (item === "User") this.toggleAccountInfo()
     else {
       this.toggleAccountInfo(false)
-      if (item === "Dashboard") this.props.history.push('/dashboard')
-      else if (item === "Message") this.props.history.push('/message')
+      if (item === "Dashboard") window.location = ('/dashboard')
+      else if (item === "Message") window.location = ('/message')
     }
   }
 
@@ -51,5 +51,4 @@ export default class Dashboard extends Component {
       </div>
     );
   }
-
 }

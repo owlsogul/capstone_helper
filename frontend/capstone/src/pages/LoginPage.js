@@ -1,4 +1,3 @@
-// login 주석 추가
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -76,7 +75,12 @@ export default class Login extends Component {
                             this.doLogin()
                         }}>로그인</button>
                         <p className="forgot-password text-right">
-                            <a href="#">비밀번호 찾기</a>
+                            <a href="#" onClick={(e=>{
+                                // TODO:
+                            })}> 비밀번호 찾기  </a>
+                            <a href="#" onClick={(e) => {
+                                window.location="/sign-up"
+                            }}>회원가입 하기</a>
                         </p>
                     </form>
                 </div>

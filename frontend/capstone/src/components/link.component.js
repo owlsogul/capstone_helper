@@ -56,7 +56,7 @@ export class StudentLinkList extends Component {
                     key={idx}
                     code={takes.code}
                     expiredDate={takes.expiredDate}
-                    isAutoJoin={takes.isAutoJoin}
+                    isAutoJoin={takes.isAutoJoin.toString()}
                   />
                 ))
               }
@@ -90,7 +90,11 @@ export default class Link extends Component {
       <tr>
         <td>
           {this.props.code}
+        </td>
+        <td>
           {this.props.expiredDate}
+        </td>
+        <td> 
           {this.props.isAutoJoin}
         </td>
         {btns}

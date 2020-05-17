@@ -24,18 +24,12 @@ export default class ManageLinkPage extends Component {
     this.state = { classId: this.props.match.params.classId,
                    generatedStudentLinks: [],
                    generatedAssistLinks: [] }
-    // this.getNotice = this.getNotice.bind(this);
   }
 
   setData() {
     getLinks({ classId: this.state.classId })
       .then((res) => res.json())
       .then((json) => {
-        // this.setState({
-        //   generatedStudentLinks: json["something"],
-        //   generatedAssistLinks: json["something"]
-        // })
-        console.log("여기")
         json.filter(obj => {
           if (obj["isAssist"] == true){
             this.setState({

@@ -31,8 +31,4 @@ router.post("/accept_join", [serviceUser.checkLogin, tc.acceptJoin])
 
 router.post("/deny_join", [serviceUser.checkLogin, tc.denyJoin])
 
-router.post("/quit", (req, res, next)=>{
-  res.json({ msg: "success"})
-})
-
 module.exports = router

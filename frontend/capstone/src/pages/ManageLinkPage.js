@@ -116,11 +116,11 @@ export class LinksForm extends Component {
           })
           .catch((err) => {
               console.log("에러 발생")
-              if (err.status == 400) {
-                  alert("잘못된 파라메터가 있습니다!")
-              } else if (err.status == 500) {
+              if (err == 400) {
+                  alert("권한이 부족합니다")
+              } else if (err == 500) {
                   alert("서버 내부 오류가 발생하였습니다.")
-              } else if (err.status == 403) {
+              } else if (err == 403) {
                   alert("권한이 없습니다.")
               } else {
                   console.log(err.status)

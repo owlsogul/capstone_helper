@@ -41,7 +41,7 @@ export default class TeamInfoPage extends Component {
 
           <InputGroup className="mb-3">
             <FormControl
-              placeholder="Recipient's username"
+              placeholder="Github Url"
               aria-label="Recipient's username"
               aria-describedby="basic-addon2"
               value={this.state.githubUrl}

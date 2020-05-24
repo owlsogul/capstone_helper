@@ -19,6 +19,8 @@ import ManageLinkPage from './pages/ManageLinkPage';
 
 import JoinPage from './pages/JoinPage';
 
+import WebRTCTest from './pages/WebRTCTest';
+
 function App() {
   return (
     <Router>
@@ -40,6 +42,9 @@ function App() {
           <Route path="/:classId/teams/:teamId" component={TeamInfoPage} /> 
 
           <Route path="/join/:code" component={JoinPage} /> 
+
+          
+          <Route path="/webrtctest" component={WebRTCTest} /> 
           
         </Switch>
       </div >

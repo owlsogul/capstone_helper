@@ -44,7 +44,7 @@ app.use(express.static('public'));
 
 // open
 app.listen(app.get("port"), () => {
-        console.log(`Example app listening on port ${port}!`)
+        console.log(`Example app listening on port ${app.get("port")}!`)
     }
 )
 

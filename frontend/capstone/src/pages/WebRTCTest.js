@@ -74,7 +74,8 @@ componentDidUpdate() {
     this.stream = stream
     this.forceUpdate() // we have stream
     //this.socket = io("http://caphelper.owlsogul.com:30081")
-    this.socket = io("http://192.168.0.110:4000")
+    //this.socket = io("http://192.168.0.110:4000")
+    this.socket = io("https://caphelper.owlsogul.com/socket.io")
     this.socket.on('peer', msg => {
       const peerId = msg.peerId
       this.debug('new peer poof!', peerId)

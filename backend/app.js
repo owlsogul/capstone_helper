@@ -9,7 +9,7 @@ app.use(cookieParser(serverConfig.cookieKey));
 app.use(express.json())
 
 // application variable setting
-app.set("port", 30080)
+app.set("port", 80)
 app.set("host", "http://caphelper.owlsogul.com:30080")
 
 
@@ -47,3 +47,43 @@ app.listen(app.get("port"), () => {
         console.log(`Example app listening on port ${port}!`)
     }
 )
+
+// websocekt
+const socketio = require("socket.io")
+const socketserver = require("http").createServer(app)
+const io = socketio.listen(socketserver)
+
+socketserver.listen(30081, function(){
+    console.log("New server")
+})
+
+io.on("connection", (socket)=>{
+    console.log('a user connected');
+    
+    io.emit('peer', {
+        peerId: socket.id
+    })
+
+    socket.on('disconnect', reason => {
+        io.emit('unpeer', {
+        peerId: socket.id,
+        reason
+        })
+    })
+
+    socket.on('signal', msg => {
+        console.log('signal received', msg)
+        const receiverId = msg.to
+        const receiver = io.sockets.connected[receiverId]
+        if (receiver) {
+        const data = {
+            from: socket.id,
+            ...msg
+        }
+        console.log('sending signal to', receiverId)
+            io.to(receiverId).emit('signal', data);
+        } else {
+            console.log('no receiver found', receiverId)
+        }
+    })
+})

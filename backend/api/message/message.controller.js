@@ -6,7 +6,7 @@
  */
 
 const models = require("../../models")
-const Sequelize = require("Sequelize")
+const Sequelize = require("sequelize")
 const Op = Sequelize.Op;
 
 /**

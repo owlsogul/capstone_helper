@@ -9,7 +9,7 @@ app.use(cookieParser(serverConfig.cookieKey));
 app.use(express.json())
 
 // application variable setting
-app.set("port", 80)
+app.set("port", 30080)
 app.set("host", "http://caphelper.owlsogul.com:30080")
 
 

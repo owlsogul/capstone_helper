@@ -55,7 +55,7 @@ exports.startLecture = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
-  let lectureName = req.body.lecutureName
+  let lectureName = req.body.lectureName
 
   if (!classId){
     req.Error.wrongParameter(res, "classId")

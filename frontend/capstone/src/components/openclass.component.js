@@ -86,6 +86,7 @@ class CreateClassForm extends Component {
                 console.log(json)
                 this.props.changeScene("invite")
             })
+            
             .catch((err) => {
                 console.log("에러 발생")
                 if (err.status == 400) {

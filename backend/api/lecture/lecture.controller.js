@@ -195,6 +195,10 @@ exports.endLecture = (req, res, next)=>{
     return models.Lecture.update({ endedAt: Date.now() }, { where: { classId: classId, endedAt: null }})
   }
 
+  const endPresentation = ()=>{
+    return models.Presentation.update({ endedAt: Date.now() }, { where: { classId: classId, endedAt: null }})
+  }
+
   const respond = ()=>{
     res.json({ message: "success" })
   }
@@ -203,6 +207,7 @@ exports.endLecture = (req, res, next)=>{
     .then(findLatestLecture)
     .then(checkStart)
     .then(endLecture)
+    .then(endPresentation)
     .then(respond)
     .catch(err=>{
       console.log(err)

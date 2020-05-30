@@ -25,7 +25,7 @@ paths: {
         description: "",
         schema: {
           type: "object",
-          required: [ "classId", teamId" ],
+          required: [ "classId", "teamId" ],
           properties: {
             classId: { type: "integer", description: "classId" },
             teamId: { type: "integer", description: "classId" },
@@ -169,7 +169,7 @@ paths: {
           required: [ "classId", teamId" ],
           properties: {
             classId: { type: "integer", description: "classId" },
-            teamId: { type: "integer", description: "classId" },
+            teamId: { type: "integer", description: "teamId" },
           }
         }
       }],

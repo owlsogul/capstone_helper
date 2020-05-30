@@ -4,7 +4,7 @@ const router = express.Router();
 const serviceUser = require("../../middleware/serviceuser")
 const pc = require("./presentation.controller")
 
-router.post("/start_presentation", [serviceUser.checkLogin, pc.startLecture])
+router.post("/start_presentation", [serviceUser.checkLogin, pc.startPresentation])
 
 router.post("/end_presentation", [serviceUser.checkLogin, pc.endPresentation])
 

@@ -42,6 +42,7 @@ const options = {
     "./api/team/team.controller.js",
     "./api/message/message.controller.js",
     "./api/lecture/lecture.controller.js",
+    "./api/presentation/presentation.controller.js",
   ]
 };
 

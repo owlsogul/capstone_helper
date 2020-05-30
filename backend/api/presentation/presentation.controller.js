@@ -445,6 +445,11 @@ exports.listPresentation = (req, res, next)=>{
   let classId = req.body.classId
   let lectureId = req.body.lectureId
 
+  if (!classId || !lectureId){
+    req.Error.wrongParameter(res, "classId lectureId")
+    return;
+  }
+
   const checkPermission = ()=>{
     return models.ClassRelation.findOne({
       where: {
@@ -461,6 +466,104 @@ exports.listPresentation = (req, res, next)=>{
     if (!relation) throw new Error("NoPermission")
     return models.Presentation.findAll({
       where: { classId: classId, lectureId: lectureId },
+      order: [ ["startedAt", "DESC"] ]
+    })
+  }
+
+  const respond = (presentation) =>{
+    res.json(presentation)
+  }
+
+  checkPermission()
+    .then(findPresentation)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoPermission") req.Error.noAuthorization(res)
+      else req.Error.internal(res)
+    })
+  
+}
+
+
+/**
+@swagger
+paths: {
+  /api/presentation/list_user_presentation:{
+    post: {
+      tags: [ Presentation ],
+      summary: "대상의 발표 목록을 다 가져오는 APIs",
+      description: "targetId 가 없을 경우 자신의 발표 목록을 가져온다.",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+          in: "body",
+          name: "body",
+          description: "",
+          schema: {
+            type: "object",
+            required: [ "classId" ],
+            properties: {
+              classId: { type: "integer", description: "classId" },
+              targetId: { type: "string", description: "userId" },
+            }
+          }
+      }],
+      responses: {
+          200: {
+            description: "",
+            schema: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  presentationId: { type: "integer", description: ""},
+                  startedAt: { type: "string", description: "" },
+                  endedAt: { type: "string", description: "null 인 경우 수업 진행중인 것이다" },
+                }
+              }
+            }
+          },
+          400: { $ref: "#/components/res/ResWrongParameter" },
+          401: { $ref: "#/components/res/ResNoAuthorization" },
+          409: { $ref: "#/components/res/ResConflict" },
+          500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+ */
+exports.listUserPresentation = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let targetId = req.body.targetId
+
+  if (!classId){
+    req.Error.wrongParameter(res, "classId")
+    return;
+  }
+
+  const checkPermission = ()=>{
+    return models.ClassRelation.findOne({
+      where: {
+        user: userId,
+        classId: classId,
+        relationType: {
+          [Op.gte]: 1
+        }
+      }
+    })
+  }
+
+
+  
+  const findPresentation = (relation)=>{
+    if (!relation) throw new Error("NoPermission")
+    if (targetId && relation.relationType < 2) throw new Error("NoPermission")
+    if (!targetId) targetId = userId
+    return models.Presentation.findAll({
+      where: { classId: classId, userId: targetId },
       order: [ ["startedAt", "DESC"] ]
     })
   }

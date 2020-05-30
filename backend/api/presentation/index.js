@@ -12,4 +12,6 @@ router.post("/get_current_presentation", [serviceUser.checkLogin, pc.getCurrentP
 
 router.post("/list_presentation", [serviceUser.checkLogin, pc.listPresentation])
 
+router.post("/list_user_presentation", [serviceUser.checkLogin, pc.listUserPresentation])
+
 module.exports = router

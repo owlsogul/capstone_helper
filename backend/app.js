@@ -36,12 +36,14 @@ sequelize.sync({ force: false }).then(()=>{
     console.log(err)
 });
 
+
+// github webhook
+app.use("/api/push", require("./push"))
+
 // router
 app.use("/api", require("./api"))
 app.get('/test', (req, res) => res.send('Hello World!'))
 
-// github webhook
-app.use("/push", require("./push"))
 
 app.use(express.static('public'));
 

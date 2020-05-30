@@ -6,5 +6,6 @@ router.use("/class", require("./class"))
 router.use("/team", require("./team"))
 router.use("/message", require("./message"))
 router.use("/lecture", require("./lecture"))
+router.use("/presentation", require("./presentation"))
 
 module.exports = router 

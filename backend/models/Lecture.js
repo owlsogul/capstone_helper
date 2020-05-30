@@ -15,6 +15,10 @@ module.exports = function(sequelize, DataTypes){
         allowNull: false,
         defaultValue: "nst lecture"
       },
+      lectureLink: {
+        type: DataTypes.STRING(50),
+        allowNull: true
+      },
       startedAt: {
         type: DataTypes.DATE,
         allowNull: false,

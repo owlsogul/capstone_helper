@@ -51,13 +51,25 @@ class CreateClassForm extends Component {
     }
 
     handleAssistList = (e) => {
-        this.setState({
-            assistList: this.state.assistList.concat(this.state.targetAssist),
-            targetAssist: ""
-        })
+        // 조교 이메일이 형식에 맞지 않으면 팝업을 띄워서 경고하고, targetAssist에서 제거해준다. 
+        this.validateAssistantEmail(this.state.targetAssist)
+    }
+
+    validateAssistantEmail = emailEntered => {
+        const emailRegExp = /[\d\D]+@cau.ac.kr/;
+        if (emailEntered.match(emailRegExp)){
+            this.setState({
+                assistList: this.state.assistList.concat(this.state.targetAssist),
+                targetAssist: ""
+            })
+        } else {
+            alert("이메일이 형식에 맞지 않습니다. 학교 이메일을 입력해주세요.")
+            this.setState({ targetAssist: "" })
+        }
     }
 
     createClass() {
+        let tempClassId = ""
         fetch('/api/class/create', {
             method: 'POST',
             headers: {
@@ -71,9 +83,7 @@ class CreateClassForm extends Component {
                 return res.json()
             })
             .then(json => {
-                // classId와 className을 저장해준다??
-                console.log(json)
-                console.log(json["classId"])
+                tempClassId = json.classId
                 this.setState({ classId: json["classId"] })
             })
             .then(() => {
@@ -83,7 +93,8 @@ class CreateClassForm extends Component {
                 }
             })
             .then((json) => {
-                console.log(json)
+                console.log("아니?? "+ tempClassId)
+                this.props.createClassCallback(tempClassId)
                 this.props.changeScene("invite")
             })
             
@@ -189,10 +200,13 @@ class CreateClassForm extends Component {
 /**
  * 조교와 학생 초대 링크를 만드는 폼
  */
-class InviteStudentForm extends Component {
+export class InviteStudentForm extends Component {
     constructor(props) {
         super(props);
-        this.state = { assistantExpireTime: "", code: "", studentExpireTime: "", isAutoJoin: false }
+        this.state = { assistantExpireTime: "", codeForAssist: "", codeForStudent:"", studentExpireTime: "", isAutoJoin: false, classId: -1 }
+    }
+
+    componentDidUpdate(prevProps, prevState) { 
     }
 
     handleAssistantExpireTimeChange = (e) => {
@@ -203,9 +217,14 @@ class InviteStudentForm extends Component {
         this.setState({ studentExpireTime: e.target.value })
     }
 
-    handleIsAutoJoinChange = (e) => {
-        this.setState({ isAutoJoin: e.target.value })
+    handleIsAutoJoinChangeToFalse = (e) => {
+        this.setState({ isAutoJoin: false })
     }
+
+    handleIsAutoJoinChangeToTrue = (e) => {
+        this.setState({ isAutoJoin: true })
+    }
+    
 
     // 조교를 위한 초대링크 생성 API
     createAssistInviteCode() {
@@ -215,15 +234,14 @@ class InviteStudentForm extends Component {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ classId: this.state.classId, expiredDate: this.state.assistantExpireTime }),
+            body: JSON.stringify({ classId: this.props.classId, expiredDate: this.state.assistantExpireTime }),
         })
             .then(res => {
                 if (res.status != 200) throw res.status
                 return res.json()
             })
             .then(json => {
-                console.log(json["code"])
-                this.setState({ code: json["code"] })
+                this.setState({ codeForAssist: json["code"] })
             })
             .catch((err) => {
                 console.log("에러 발생")
@@ -242,21 +260,20 @@ class InviteStudentForm extends Component {
 
     // 학생을 위한 초대링크 생성 API
     createAssistStudentCode() {
-        fetch('/api/class/create_assist_student_code', {
+        fetch('/api/class/create_student_invite_code', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ classId: this.state.classId, expiredDate: this.state.studentExpireTime, isAutoJoin: this.state.isAutoJoin }),
+            body: JSON.stringify({ classId: this.props.classId, expiredDate: this.state.studentExpireTime, isAutoJoin: this.state.isAutoJoin }),
         })
             .then(res => {
                 if (res.status != 200) throw res.status
                 return res.json()
             })
             .then(json => {
-                console.log(json["code"])
-                this.setState({ code: json["code"] })
+                this.setState({ codeForStudent: json["code"] })
             })
             .catch((err) => {
                 console.log("에러 발생")
@@ -272,7 +289,6 @@ class InviteStudentForm extends Component {
                 }
             })
     }
-
 
     render() {
         return (
@@ -302,7 +318,7 @@ class InviteStudentForm extends Component {
                 </div>
 
                 <div className="form-group">
-                    <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.classTime} onChange={this.handleClassTimeChange} />
+                    <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.codeForAssist} onChange={this.handleClassTimeChange} />
                 </div>
 
 
@@ -313,7 +329,7 @@ class InviteStudentForm extends Component {
                     <div className="input-group mb-3">
                         <div className="input-group-prepend">
                             <div className="input-group-text">
-                                <input type="radio" aria-label="Checkbox for following text input" />
+                                <input type="radio" name="isEntrable" aria-label="Checkbox for following text input" onChange={this.handleIsAutoJoinChangeToTrue} />
                             </div>
                         </div>
                         <span className="form-control">바로 입장</span>
@@ -321,7 +337,7 @@ class InviteStudentForm extends Component {
                     <div className="input-group mb-3">
                         <div className="input-group-prepend">
                             <div className="input-group-text">
-                                <input type="radio" aria-label="Checkbox for following text input" />
+                                <input type="radio" name="isEntrable" aria-label="Checkbox for following text input" onChange={this.handleIsAutoJoinChangeToFalse} />
                             </div>
                         </div>
                         <span className="form-control">입장 허가 필요</span>
@@ -351,14 +367,14 @@ class InviteStudentForm extends Component {
                     </div>
 
                     <div className="form-group">
-                        <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.classTime} onChange={this.handleClassTimeChange} />
+                        <input type="classTime" className="form-control" placeholder="생성된 링크" value={this.state.codeForStudent} onChange={this.handleClassTimeChange} />
                     </div>
 
                 </div>
 
                 <button className="btn btn-primary btn-block" onClick={(e) => {
                     e.preventDefault()
-                    this.doLogin()
+                    window.location = `/dashboard`
                 }}>메인으로 이동</button>
             </form>
         )
@@ -370,7 +386,7 @@ export default class OpenClass extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { currentScene: /*""*/"class" }
+        this.state = { currentScene: /*""*/"class", classId: "" }
     }
 
     changeScene(newScene) {
@@ -379,8 +395,8 @@ export default class OpenClass extends Component {
 
     render() {
         let form = this.state.currentScene === "class" ?
-            (<CreateClassForm changeScene={this.changeScene.bind(this)} />) :
-            (<InviteStudentForm changeScene={this.changeScene.bind(this)} />)
+            (<CreateClassForm changeScene={this.changeScene.bind(this)} createClassCallback={(classId)=>{ console.log(`새로 받은 classId는 ${classId}`); this.setState({classId: classId})}} />) :
+            (<InviteStudentForm changeScene={this.changeScene.bind(this)} classId={this.state.classId} />)
 
         return (
             <div>

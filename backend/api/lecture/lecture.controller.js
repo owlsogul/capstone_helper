@@ -140,7 +140,7 @@ paths: {
           schema: {
             type: "object",
             properties: {
-              message: { type: "integer", description: "success"},
+              message: { type: "string", description: "success"},
             }
           }
         },

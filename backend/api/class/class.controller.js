@@ -790,6 +790,7 @@ exports.postNotice = (req, res, next)=>{
   }
 
   const respond= (notice)=>{
+    console.log(notice)
     res.json(notice)
   }
 

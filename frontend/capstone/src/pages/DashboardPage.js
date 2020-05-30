@@ -77,6 +77,7 @@ class ClassElement extends Component {
 
 }
 
+
 class ClassList extends Component{
   constructor(props){
     super(props)
@@ -99,12 +100,28 @@ class ClassList extends Component{
         <ClassCreateButton/>
       )
     }
-    return(
-      <div style={style.classListBody} >
+    let classList = (
+      <div style={{ 
+        width: "100%", 
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center"
+      }}>
+        <div style={{ color: "#888888"}}>
+          아직 수업이 없습니다!<br/>
+          교수님께 문의하여 초대링크를 받아보세요!
+        </div>
+      </div>
+    )
+    if (this.state.classes && this.state.classes.length > 0){
+      classList = (
+        <>
         {
-          this.state.classes.map(e=>{
+          this.state.classes.map((e, idx)=>{
             return (
               <ClassElement
+                key={idx}
                 classId={e.classId}
                 className={e.className}
                 classType={e.classType}
@@ -113,6 +130,12 @@ class ClassList extends Component{
             )
           })
         }
+        </>
+      )
+    }
+    return(
+      <div style={style.classListBody} >
+        {classList}
         {btnCreateClass}
       </div>
     )

@@ -8,15 +8,15 @@ const style = {
     position: "fixed",
     left: 0,
     right: 0,
-    height: "50vh",
+    height: "40vh",
     top: 0,
   },
   you: {
     position: "fixed",
     left: 0,
     right: 0,
-    height: "50vh",
-    bottom: 0,
+    height: "40vh",
+    top: "50vh",
   }
 }
 
@@ -74,8 +74,8 @@ componentDidUpdate() {
     this.stream = stream
     this.forceUpdate() // we have stream
     //this.socket = io("http://caphelper.owlsogul.com:30081")
-    //this.socket = io("http://192.168.0.110:4000")
-    this.socket = io("https://caphelper.owlsogul.com/socket.io")
+    this.socket = io("http://localhost:4000")
+    //this.socket = io("https://caphelper.owlsogul.com/socket.io")
     this.socket.on('peer', msg => {
       const peerId = msg.peerId
       this.debug('new peer poof!', peerId)
@@ -184,7 +184,7 @@ componentDidUpdate() {
       const [peerId, peer] = entry
       this.debug('render peer', peerId, peer, entry)
       return <div key={peerId}>
-        <video ref={video => peer.video = video} style={style.you}></video>
+        <video ref={video => peer.video = video} autoPlay style={style.you}></video>
       </div>
     })
   }
@@ -199,7 +199,7 @@ componentDidUpdate() {
           <p className="error">{this.state.mediaErr}</p>
         )}
         <div id="me">
-          <video id="myVideo" ref={video => this.video = video} controls style={style.me}></video>
+          <video id="myVideo" ref={video => this.video = video} autoPlay controls style={style.me}></video>
         </div>
         <div id="peers">{this.renderPeers()}</div>
       </div>

@@ -19,6 +19,7 @@ ResponseCode
         err: "No Authorization"
       }
     - 404 : 찾을 수 없음
+    - 409 : 충돌
   실패 - 서버 측
     - 500 : 알 수 없는 에러
       {
@@ -36,7 +37,8 @@ initRouter.use((req, res, next) => {
     noAuthorization: (res) => res.status(403).json({ err: "No Authorization" }),
     tokenExpired: (res) => res.status(401).json({err:"Token is invalid"}),
     internal: (res) => res.status(500).json({ err: "Internal Server Error" }),
-    duplicatedUser: (res) => res.status(400).json({ err: "Duplicated User" })
+    duplicatedUser: (res) => res.status(400).json({ err: "Duplicated User" }),
+    conflict: (res) => res.status(409).json({ err: "Conflict" })
   }
   next()
 })

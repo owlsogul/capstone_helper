@@ -18,5 +18,10 @@ module.exports = {
   ResWrongParameter: {
     description: "잘못된 파라메터가 있을 경우 호출",
     schema: { $ref: "#/components/res/ResError" }
+  },
+  ResConflict: {
+    description: "중복되었을 경우",
+    schema: { $ref: "#/components/res/ResError" }
   }
+
 }

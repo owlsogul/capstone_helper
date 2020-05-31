@@ -210,7 +210,7 @@ exports.endLecture = (req, res, next)=>{
   }
 
   const stopLectureServer = ()=>{
-    return socketServer.stopLectureServer(targetLecture.lectureId)
+    return socketServer.stopLecture(targetLecture.lectureId)
   }
 
   const respond = ()=>{

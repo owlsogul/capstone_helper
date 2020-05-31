@@ -75,7 +75,6 @@ class MessageList extends Component {
         </div>
       )
     } else {
-      console.log(this.props.classId)
       return (
         <div style={style.rightHalf}>
           <div className="input-group mb-3">
@@ -90,8 +89,8 @@ class MessageList extends Component {
             />
             <button onClick={this.onClickButton}>메세지 보내기</button>
           </div>
-          {this.props.messages.map((message) => (
-            <h6>{message.body}</h6>
+          {this.props.messages.map((message, index) => (
+            <h1> { message["body"] } </h1>
           ))}
         </div>
       )

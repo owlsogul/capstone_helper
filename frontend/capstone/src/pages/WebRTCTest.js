@@ -40,7 +40,7 @@ export default class WebRTCTest extends Component {
 
   }
 
-componentDidUpdate() {
+  componentDidUpdate() {
     if (this.stream && this.video && !this.video.srcObject) {
       this.debug('set video stream', this.video, this.stream)
       this.video.srcObject = this.stream
@@ -74,7 +74,7 @@ componentDidUpdate() {
     this.stream = stream
     this.forceUpdate() // we have stream
     //this.socket = io("http://caphelper.owlsogul.com:30081")
-    this.socket = io("http://localhost:4000")
+    this.socket = io("http://localhost:30081")
     //this.socket = io("https://caphelper.owlsogul.com/socket.io")
     this.socket.on('peer', msg => {
       const peerId = msg.peerId

@@ -6,7 +6,7 @@ const cc = require("./class.controller")
 
 router.get("/list", [serviceUser.checkLogin, cc.listClass])
 
-router.post("/get_permission", [serviceUser.checkLogin, cc.listClass])
+router.post("/get_permission", [serviceUser.checkLogin, cc.getUserPermission])
 
 router.get("/info/:classId", [serviceUser.checkLogin, cc.getClassInfo])
 

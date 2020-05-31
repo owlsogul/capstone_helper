@@ -8,6 +8,7 @@ tags:
 const models = require("../../models")
 const Sequelize = require("sequelize")
 const Op = Sequelize.Op;
+const socketServer = require("../../websocket")
 
 /**
 @swagger
@@ -95,14 +96,21 @@ exports.startLecture = (req, res, next)=>{
     })
   }
 
-  const respond = (lecture)=>{
-    res.json(lecture)
+  let retLecture = false
+  const startLectureServer = (lecture)=>{
+    retLecture = lecture
+    return socketServer.startLecture(lecture.lectureId)
+  }
+
+  const respond = ()=>{
+    res.json(retLecture)
   }
   
   checkPermission()
     .then(findLatestLecture)
     .then(checkAlreadyStart)
     .then(createLecture)
+    .then(startLectureServer)
     .then(respond)
     .catch(err=>{
       console.log(err)
@@ -157,6 +165,7 @@ exports.endLecture = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
+  let targetLecture = false
 
   if (!classId){
     req.Error.wrongParameter(res, "classId")
@@ -187,6 +196,7 @@ exports.endLecture = (req, res, next)=>{
 
 
   const checkStart = (lecture)=>{
+    targetLecture = lecture
     if (lecture) return
     else throw new Error("NoStart")
   }
@@ -199,6 +209,10 @@ exports.endLecture = (req, res, next)=>{
     return models.Presentation.update({ endedAt: Date.now() }, { where: { classId: classId, endedAt: null }})
   }
 
+  const stopLectureServer = ()=>{
+    return socketServer.stopLectureServer(targetLecture.lectureId)
+  }
+
   const respond = ()=>{
     res.json({ message: "success" })
   }
@@ -208,11 +222,110 @@ exports.endLecture = (req, res, next)=>{
     .then(checkStart)
     .then(endLecture)
     .then(endPresentation)
+    .then(stopLectureServer)
     .then(respond)
     .catch(err=>{
       console.log(err)
       if (err.message == "NoPermission") req.Error.noAuthorization(res)
       else if (err.message == "NoStart") req.Error.conflict(res)
+      else req.Error.internal(res)
+    })
+
+}
+
+/**
+@swagger
+paths: {
+  /api/lecture/join_lecture: {
+    post: {
+      tags: [ Lecture ],
+      summary: "수업을 들어가는 API",
+      description: "수업을 시작하는 API. 409면 수업이 시작하지 않은것.",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "object",
+          required: [ "classId" ],
+          properties: {
+            classId: { type: "integer", description: "classId" },
+            lectureName: { type: "string", description: "수업 내용"}
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "수업이 시작되었을 경우.",
+          schema: {
+            type: "object",
+            properties: {
+              lectureId: { type: "integer", description: "시작된 수업 id"},
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        409: { $ref: "#/components/res/ResConflict" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
+exports.joinLecture = (req, res)=>{
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let socketId = req.body.socketId
+
+  if (!classId || !socketId){
+    req.Error.wrongParameter(res, "classId socketId")
+    return;
+  }
+
+  const checkPermission = ()=>{
+    return models.ClassRelation.findOne({
+      where: {
+        user: userId,
+        classId: classId,
+        relationType: {
+          [Op.gte]: 1
+        }
+      }
+    })
+  }
+
+  const findLatestLecture = (relation)=>{
+    if (!relation) throw new Error("NoPermission")
+    return models.Lecture.findOne({
+      where: {
+        classId: classId,
+        endedAt: null
+      }
+    })
+  }
+
+  const setSocketJoined = (lecture)=>{
+    if (!lecture) throw new Error("NoClass")
+    return socketServer.joinLecture(lecture.lectureId, socketId)
+  }
+
+  const respond = (lectureId)=>{
+    res.json({ lectureId: lectureId })
+  }
+
+  checkPermission()
+    .then(findLatestLecture)
+    .then(setSocketJoined)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoPermission") req.Error.noAuthorization(res)
+      else if (err.message =="WrongLectureId") req.Error.wrongParameter(res, "No Lecture Open")
+      else if (err.message =="WrongSocketId") req.Error.wrongParameter(res, "Not Connected Socket")
+      else if (err.message == "NoClass") req.Error.conflict(res)
       else req.Error.internal(res)
     })
 

@@ -54,41 +54,5 @@ app.listen(app.get("port"), () => {
 )
 
 // websocekt
-const socketio = require("socket.io")
-const socketserver = require("http").createServer(app)
-const io = socketio.listen(socketserver)
-
-socketserver.listen(30081, function(){
-    console.log("New server")
-})
-
-io.on("connection", (socket)=>{
-    console.log('a user connected');
-    
-    io.emit('peer', {
-        peerId: socket.id
-    })
-
-    socket.on('disconnect', reason => {
-        io.emit('unpeer', {
-        peerId: socket.id,
-        reason
-        })
-    })
-
-    socket.on('signal', msg => {
-        console.log('signal received', msg)
-        const receiverId = msg.to
-        const receiver = io.sockets.connected[receiverId]
-        if (receiver) {
-        const data = {
-            from: socket.id,
-            ...msg
-        }
-        console.log('sending signal to', receiverId)
-            io.to(receiverId).emit('signal', data);
-        } else {
-            console.log('no receiver found', receiverId)
-        }
-    })
-})
+const socketServer = require("./websocket")
+socketServer.listen(app, 30081)

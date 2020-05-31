@@ -8,6 +8,8 @@ router.post("/start_lecture", [serviceUser.checkLogin, lc.startLecture])
 
 router.post("/end_lecture", [serviceUser.checkLogin, lc.endLecture])
 
+router.post("/join_lecture", [serviceUser.checkLogin, lc.joinLecture])
+
 router.post("/get_current_lecture", [serviceUser.checkLogin, lc.getCurrentLecture])
 
 router.post("/list_lecture", [serviceUser.checkLogin, lc.listLecture])

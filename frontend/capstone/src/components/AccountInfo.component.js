@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 const style = {
-
   container: {
     width: "100%",
     backgroundColor: "#ffffff",
@@ -12,7 +11,6 @@ const style = {
     display: "flex-box",
     flexDirection: "row"
   },
-
 }
 
 /**

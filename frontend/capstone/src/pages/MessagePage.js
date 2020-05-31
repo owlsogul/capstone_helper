@@ -33,14 +33,11 @@ const loadClass = () => {
   return network.network("/api/class/list", { method: "GET" })
 }
 
-const getUserInfo = () => {
-  return fetch("/api/user/user_info")
-}
-
 export default class MessagePage extends Component {
   constructor(props) {
     super(props);
     this.state = { classId: -1, takeClassList: [], manageClassList: [], messages: [] }
+    this.myCallBack = this.myCallBack.bind(this)
   }
 
   componentDidMount() {
@@ -78,9 +75,6 @@ export default class MessagePage extends Component {
         }
         this.setState({ takeClassList: takeClassList, manageClassList: manageClassList })
       })
-      .then(() => {
-        return getMessage().classId
-      })
       .then(json => {
         console.log(json)
       })
@@ -89,11 +83,19 @@ export default class MessagePage extends Component {
       })
   }
 
+  myCallBack(classId) {
+    this.setState({ classId: classId })
+    getMessage().then((res) => {
+      this.setState({ message: res[classId] })
+      console.log(this.state.message)
+    })
+  }
+
   render() {
     return (
       <Dashboard initState={[false, false, true]} history={this.props.history}>
-        <MessageClassList takeClassList={this.state.takeClassList} manageClassList={this.state.manageClassList} listGroupClickedCallBack={(classId) =>
-          this.setState({ classId: classId })
+        <MessageClassList takeClassList={this.state.takeClassList} manageClassList={this.state.manageClassList} listGroupClickedCallBack={
+          this.myCallBack
         }></MessageClassList>
         <MessageList classId={this.state.classId} messages={this.state.messages} sendMsg={sendMessage}></MessageList>
       </Dashboard>

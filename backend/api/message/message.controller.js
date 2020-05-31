@@ -153,7 +153,7 @@ paths: {
     }
 }
  */
-exports.getClassMessage = ()=>{
+exports.getClassMessage = (req, res)=>{
 
     let userId = req.ServiceUser.userId
     let classId = req.body.classId
@@ -270,7 +270,7 @@ paths: {
     }
 }
  */
-exports.sendMessage = ()=>{
+exports.sendMessage = (req, res)=>{
 
     let userId = req.ServiceUser.userId
     let classId = req.body.classId
@@ -356,7 +356,7 @@ paths: {
     }
 }
  */
-exports.sendReply = ()=>{
+exports.sendReply = (req, res)=>{
 
     let userId = req.ServiceUser.userId
     let classId = req.body.classId

@@ -5,7 +5,7 @@ function pad(n, width) {
   return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
 }
 
-const numStudent = 10
+const numStudent = 20
 const numProfessor = 5
 const numAssist = 10
 
@@ -124,7 +124,7 @@ module.exports = ()=>{
     // 학생 1~9 수업1 등록
     .then(()=>{
       let takes = []
-      for (let idx = 1; idx < numStudent; idx++){
+      for (let idx = 1; idx < 10; idx++){
         takes.push(new Promise((res, rej)=>{
           models.ClassRelation.create({
             classId: 1,

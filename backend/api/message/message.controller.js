@@ -166,7 +166,7 @@ exports.getClassMessage = (req, res)=>{
     const checkPermission = ()=>{
         return models.ClassRelation.findOne({ where: { 
             classId: classId,
-            userId: userId,
+            user: userId,
             relationType: {
                 [Op.gte]: 2
             }
@@ -284,7 +284,7 @@ exports.sendMessage = (req, res)=>{
     const checkPermission = ()=>{
         return models.ClassRelation.findOne({ where: { 
             classId: classId,
-            userId: userId,
+            user: userId,
             relationType: {
                 [Op.gte]: 1
             }
@@ -308,6 +308,7 @@ exports.sendMessage = (req, res)=>{
         .then(send)
         .then(respond)
         .catch(err=>{
+            console.log(err)  
             if (err.message == "NoPermission") req.Error.noAuthorization(res)
             else req.Error.internal(res)
         })
@@ -371,7 +372,7 @@ exports.sendReply = (req, res)=>{
     const checkPermission = ()=>{
         return models.ClassRelation.findOne({ where: { 
             classId: classId,
-            userId: userId,
+            user: userId,
             relationType: {
                 [Op.gte]: 2
             }

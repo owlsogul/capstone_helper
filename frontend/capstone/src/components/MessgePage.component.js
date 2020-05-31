@@ -63,7 +63,7 @@ class MessageList extends Component {
   onClickButton = (e) => {
     console.log("메세지가 보내짐@@")
     this.props.sendMsg(this.props.classId, this.state.writingMessage)
-      .then(res => console.log("나의 결과는" + res))
+      .then(res => console.log("나의 결과는" + JSON.stringify(res, null, 2)))
       .then(console.log("결과를 알려줘...."))
   }
 

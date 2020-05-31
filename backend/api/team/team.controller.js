@@ -77,7 +77,8 @@ exports.listTeam = (req, res, next)=>{
   const findTeam = ()=>{
     return models.Team.findAll({
       include: [{
-        model: models.Join
+        model: models.Join,
+        include: models.User
       }],
       where: { classId: classId }
     })

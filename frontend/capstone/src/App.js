@@ -14,6 +14,7 @@ import StudentList from './pages/StudentList';
 import WriteNoticePage from './pages/WriteNoticePage';
 import TeamPage from './pages/TeamPage';
 import TeamInfoPage from './pages/TeamInfoPage';
+import MessagePage from './pages/MessagePage';
 
 import ManageLinkPage from './pages/ManageLinkPage';
 
@@ -38,12 +39,9 @@ function App() {
           <Route path="/:classId/students" component={StudentList} />
           <Route exact path="/:classId/teams" component={TeamPage} /> 
           <Route path="/:classId/manageLink" component={ManageLinkPage} /> 
-
+          <Route path="/message" component={MessagePage} />
           <Route path="/:classId/teams/:teamId" component={TeamInfoPage} /> 
-
           <Route path="/join/:code" component={JoinPage} /> 
-
-          
           <Route path="/webrtctest" component={WebRTCTest} /> 
           
         </Switch>

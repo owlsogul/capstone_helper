@@ -27,7 +27,6 @@ class Network {
       sendObj.credentials= 'include'
     }
     
-
     if (!sendObj.method) {
       sendObj.method = "POST"
     }
@@ -43,6 +42,7 @@ class Network {
           if (res.status != 200) {
             this.commonErrorHandler(res)
             reject(res)
+            return
           }
           resolve(res.json())
         })

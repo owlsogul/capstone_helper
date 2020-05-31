@@ -74,7 +74,7 @@ export class Teams extends Component {
               <TeamElement
                 teamName={e.teamName}
                 teamMembers = {e.Joins.map(element => {
-                  return element.user + "\n"
+                  return `${element.User.name}(${element.user})`
                 })}
               />
             )
@@ -120,7 +120,7 @@ class TeamElement extends Component {
       <div className="card" style={{ width: "18rem", margin: 10 }}>
         <div className="card-body">
           <h5 className="card-title">{this.props.teamName}</h5>
-          <p className="card-text">{this.props.teamMembers} </p>
+          <p className="card-text">{this.props.teamMembers.join(", ")} </p>
           <a href="#" className="btn btn-primary" onClick={this.onClick}>가입 신청</a>
         </div>
       </div>

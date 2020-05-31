@@ -21,6 +21,7 @@ import ManageLinkPage from './pages/ManageLinkPage';
 import JoinPage from './pages/JoinPage';
 
 import WebRTCTest from './pages/WebRTCTest';
+import InLecturePage from './pages/InLecturePage';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/writenotice" component={WriteNoticePage} />
           <Route path="/:classId/notice" component={NoticePage} />
           <Route path="/:classId/classinfo" component={ClassInfoPage} />
+          <Route path="/:classId/lecture" component={InLecturePage} />
           <Route path="/:classId/students" component={StudentList} />
           <Route exact path="/:classId/teams" component={TeamPage} /> 
           <Route path="/:classId/manageLink" component={ManageLinkPage} /> 

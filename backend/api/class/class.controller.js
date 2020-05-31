@@ -114,6 +114,73 @@ exports.getClassInfo = (req, res, next)=>{
 
 }
 
+
+
+/**
+@swagger
+paths: {
+  /api/class/get_permission: {
+    post: {
+      tags: [ Class ],
+      summary: "해당 클래스에서 유저의 권한을 확인하는 API",
+      description: "relationType 이 0이면 미승인, 1이면 승인, 2이면 조교, 3이면 교수 ",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "object",
+          required: [ "classId" ],
+          properties: {
+            classId: { type: "integer", description: "classId" },
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "권한 결과.",
+          schema: {
+            type: "object",
+            properties: {
+              relationType: { type: "integer", description: "0, 1, 2, 3"},
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
+exports.getUserPermission = (req, res)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.params.classId
+
+  if (!classId){
+    req.Error.wrongParameter(res, "classId")
+    return;
+  }
+
+  models.ClassRelation.findOne({ where: { user: userId, classId: classId } })
+  .then(relation=>{
+    if (!relation) throw new Error("NoJoin")
+    res.json(relation)
+  })
+  .catch(err=>{
+    console.log(err)
+    if (err.message == "NoJoin") req.Error.wrongParameter(res, "classId")
+    else req.Error.internal(res)
+  })
+
+}
+
+
+
 /**
  * @swagger
  *  paths: {

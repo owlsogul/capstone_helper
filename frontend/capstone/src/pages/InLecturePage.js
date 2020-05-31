@@ -8,6 +8,7 @@ import network from "../network"
 import { ErrorPage, LecturePage } from "../components/InLecture.component"
 
 const requestSocketLectureJoin = (classId, socketId)=>{
+  console.log("requestSocketLectureJoin")
   return network.network("/api/lecture/join_lecture", { body: { classId: classId, socketId: socketId } })
 }
 
@@ -54,12 +55,24 @@ export default class InLecturePage extends Component {
   createWebRTCSocket(){
     return new Promise((res, rej)=>{
       //this.socket = io("http://localhost:30081")
-      this.socket = io("https://caphelper.owlsogul.com/socket.io")
+      this.socket = io.connect("https://caphelper.owlsogul.com/socket.io/")
       this.setState({ error: "연결 대기중입니다."})
       this.socket.on("connect", ()=>{
+        console.log("client nsp->%s", this.socket.nsp);  
         console.log(this.socket.id)
         res()
       })
+      this.socket.on('connect_failed', function(err) {
+        console.log(err);
+      })
+      this.socket.on('error', function(err) {
+        console.log(err);
+      })
+      this.socket.on('reconnect_failed', function(err) {
+        console.log(err);
+      })
+
+
     })
   }
 
@@ -90,7 +103,7 @@ export default class InLecturePage extends Component {
       this.socket.close()
       Object.entries(this.state.peers).forEach(entry=>{
         const [ id, peer ] = entry
-        peer.destry()
+        peer.destroy()
       })
       this.setState({ error: "수업이 끝났습니다.", peers: {}, mySocketId: false })
     })

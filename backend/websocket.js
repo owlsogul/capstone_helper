@@ -24,7 +24,7 @@ class SocketServer {
    */
   listen(expressApp, port){
     this.socketserver = http.createServer(expressApp)
-    this.io = socketio.listen(this.socketserver)
+    this.io = socketio.listen(this.socketserver).of("/socket.io/")
     this.socketserver.listen(port, function(){ console.log("Socket Server on") })
     this.io.on("connection", this.handleConnection)
   }

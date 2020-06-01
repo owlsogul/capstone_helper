@@ -54,7 +54,7 @@ export default class InLecturePage extends Component {
 
   createWebRTCSocket(){
     return new Promise((res, rej)=>{
-      //this.socket = io("http://localhost:30081")
+      //this.socket = io("http://localhost:30081/socket.io")
       this.socket = io.connect("https://caphelper.owlsogul.com/socket.io")
       this.setState({ error: "연결 대기중입니다."})
       this.socket.on("connect", ()=>{

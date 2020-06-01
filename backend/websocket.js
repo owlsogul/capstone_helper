@@ -57,7 +57,7 @@ class SocketServer {
     console.log(socketId)
     let io = this.io
     let nsp = this.nsp
-    let socket = io.sockets.connected[socketId]
+    let socket = io.sockets.connected[socketId.toSocketId()]
     let lectureRooms = this.lectureRooms
     let lectureId = String(_lectureId)
 
@@ -71,7 +71,7 @@ class SocketServer {
 
         socket.joinedLecture = lectureId
         console.log(`${socket.joinedLecture}에 ${socket.id}가 들어갔습니다.`)
-        nsp.to(lectureId).emit('peer', { peerId: socket.id })
+        nsp.to(lectureId).emit('peer', { peerId: socket.id.toSocketId() })
         res(lectureId)
 
       })
@@ -91,13 +91,13 @@ class SocketServer {
       if (socket.joinedLecture){
         console.log(`${socket.joinedLecture}에서 ${socket.id}이 나갔습니다.`)
         nsp.to(socket.joinedLecture).emit('unpeer', {
-          peerId: socket.id,
+          peerId: socket.id.toSocketId(),
           reason
         })
       }
       else {
         io.emit('unpeer', {
-          peerId: socket.id,
+          peerId: socket.id.toSocketId(),
           reason
         })
       }
@@ -106,10 +106,10 @@ class SocketServer {
 
     socket.on('signal', msg => {
         const receiverId = msg.to
-        const receiver = io.sockets.connected[receiverId]
+        const receiver = io.sockets.connected[receiverId.toSocketId()]
         if (receiver) {
         const data = {
-            from: socket.id,
+            from: socket.id.toSocketId(),
             ...msg
         }
         console.log('sending signal to', receiverId)

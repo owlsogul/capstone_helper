@@ -58,23 +58,20 @@ class SocketServer {
    */
   joinLecture(_lectureId, socketId){
 
-    console.log(socketId)
     let io = this.io
     let nsp = this.nsp
-    let socket = io.sockets.connected[socketId.toSocketId()]
+    let socket = nsp.connected[socketId]
     let lectureRooms = this.lectureRooms
     let lectureId = String(_lectureId)
 
     return new Promise((res, rej)=>{
       if (!lectureRooms.includes(lectureId)) { rej(new Error("WrongLectureId")); return; }
       if (!socket){ rej(new Error("WrongSocketId")); return; }
-      
+      console.log("joinLecture", lectureId)
       socket.join(lectureId, (err)=>{
-
-        if (err) {rej(err); return; }
-
+        if (err) console.log(err)
         socket.joinedLecture = lectureId
-        console.log(`${socket.joinedLecture}에 ${socket.id.toNspId()}가 들어갔습니다.`)
+        console.log(`${socket.joinedLecture}에 ${socket.id}가 들어갔습니다.`)
         nsp.to(lectureId).emit('peer', { peerId: socket.id })
         res(lectureId)
 
@@ -93,7 +90,7 @@ class SocketServer {
 
     socket.on('disconnect', reason => {
       if (socket.joinedLecture){
-        console.log(`${socket.joinedLecture}에서 ${socket.id}이 나갔습니다.`)
+        console.log(`${socket.joinedLecture}에서 ${socket.id}이 나갔습니다. ${reason}`)
         nsp.to(socket.joinedLecture).emit('unpeer', {
           peerId: socket.id,
           reason

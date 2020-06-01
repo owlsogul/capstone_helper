@@ -2,6 +2,10 @@
 const socketio = require("socket.io")
 const http = require("http")
 
+String.prototype.toSocketId = function() {
+  return this.split("/socket.io#").join("");
+}
+
 /**
  * WEB RTC 디자인
  * 1. lecture 시작을 하면 방이 등록이 된다.
@@ -25,15 +29,16 @@ class SocketServer {
   listen(expressApp, port){
     this.socketserver = http.createServer(expressApp)
     this.io = socketio.listen(this.socketserver)
+    this.nsp = this.io.of("/socket.io/")
     this.socketserver.listen(port, function(){ console.log("Socket Server on") })
-    this.io.on("connection", this.handleConnection)
+    this.nsp.on("connection", this.handleConnection)
   }
 
   stopLecture(_lectureId) {
     let lectureId = String(_lectureId)
     let idx = this.lectureRooms.findIndex(e=>e==lectureId)
     if (idx >= 0) this.lectureRooms = this.lectureRooms.splice(idx, 1)
-    this.io.to(lectureId).emit("end", { lectureId: lectureId })
+    this.nsp.to(lectureId).emit("end", { lectureId: lectureId })
   }
 
   startLecture(_lectureId){
@@ -49,7 +54,9 @@ class SocketServer {
    */
   joinLecture(_lectureId, socketId){
 
+    console.log(socketId)
     let io = this.io
+    let nsp = this.nsp
     let socket = io.sockets.connected[socketId]
     let lectureRooms = this.lectureRooms
     let lectureId = String(_lectureId)
@@ -64,7 +71,7 @@ class SocketServer {
 
         socket.joinedLecture = lectureId
         console.log(`${socket.joinedLecture}에 ${socket.id}가 들어갔습니다.`)
-        io.to(lectureId).emit('peer', { peerId: socket.id })
+        nsp.to(lectureId).emit('peer', { peerId: socket.id })
         res(lectureId)
 
       })
@@ -77,12 +84,13 @@ class SocketServer {
    */
   handleConnection(socket){
     let io = this.io
+    let nsp = this.nsp
     console.log('a user connected');
 
     socket.on('disconnect', reason => {
       if (socket.joinedLecture){
         console.log(`${socket.joinedLecture}에서 ${socket.id}이 나갔습니다.`)
-        io.to(socket.joinedLecture).emit('unpeer', {
+        nsp.to(socket.joinedLecture).emit('unpeer', {
           peerId: socket.id,
           reason
         })
@@ -105,7 +113,7 @@ class SocketServer {
             ...msg
         }
         console.log('sending signal to', receiverId)
-            io.to(receiverId).emit('signal', data);
+          nsp.to(receiverId).emit('signal', data);
         } else {
             console.log('no receiver found', receiverId)
         }

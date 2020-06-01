@@ -6,6 +6,10 @@ String.prototype.toSocketId = function() {
   return this.split("/socket.io#").join("");
 }
 
+String.prototype.toNspId = function() {
+  return "/socket.io#" + this;
+}
+
 /**
  * WEB RTC 디자인
  * 1. lecture 시작을 하면 방이 등록이 된다.
@@ -70,8 +74,8 @@ class SocketServer {
         if (err) {rej(err); return; }
 
         socket.joinedLecture = lectureId
-        console.log(`${socket.joinedLecture}에 ${socket.id}가 들어갔습니다.`)
-        nsp.to(lectureId).emit('peer', { peerId: socket.id })
+        console.log(`${socket.joinedLecture}에 ${socket.id.toNspId()}가 들어갔습니다.`)
+        nsp.to(lectureId).emit('peer', { peerId: socket.id.toNspId() })
         res(lectureId)
 
       })
@@ -91,7 +95,7 @@ class SocketServer {
       if (socket.joinedLecture){
         console.log(`${socket.joinedLecture}에서 ${socket.id}이 나갔습니다.`)
         nsp.to(socket.joinedLecture).emit('unpeer', {
-          peerId: socket.id,
+          peerId: socket.id.toNspId(),
           reason
         })
       }
@@ -109,7 +113,7 @@ class SocketServer {
         const receiver = io.sockets.connected[receiverId.toSocketId()]
         if (receiver) {
         const data = {
-            from: socket.id,
+            from: socket.id.toNspId(),
             ...msg
         }
         console.log('sending signal to', receiverId)

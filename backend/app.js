@@ -1,6 +1,5 @@
 const express = require('express')
 const app = express()
-const port = 80
 
 const serverConfig = require("./config/config.json")
 

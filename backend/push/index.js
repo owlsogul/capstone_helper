@@ -16,7 +16,7 @@ router.use("/", (req, res, next)=>{
   console.log("push arrive")
   let commands = [
     doCmd("git pull").then(console.log),
-    doCmd("npm i").then(console.log),
+    doCmd("pm2 restart app").then(console.log),
     doCmd("cd ../frontend/capstone && npm i && npm run-script build").then(console.log),
   ]
   commands.reduce((prev, item)=>{

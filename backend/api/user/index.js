@@ -1,16 +1,24 @@
 const express = require('express');
-const router = express.Router(); 
+const router = express.Router();
 
-router.get('/', function(req, res) {
-  res.send("test");
-});
+const serviceUser = require("../../middleware/serviceuser")
+const uc = require("./user.controller")
 
-router.post("login", (req, res, next)=>{
+router.get("/auth_check/:authLink", uc.authCheck)
 
-})
+router.post("/signin", uc.signin)
 
-router.post("register", (req, res, next)=>{
+router.post("/signout", [serviceUser.checkLogin, uc.signout])
 
-})
+router.post("/signup", uc.signup)
+
+router.post("/signup_prof", uc.signupProf)
+
+router.get("/user_info", [serviceUser.checkLogin, uc.getUserInfo])
+
+router.post("/exit", [serviceUser.checkLogin, uc.exit])
+
+// for test
+router.post("/checkToken", [serviceUser.checkLogin, uc.checkToken])
 
 module.exports = router

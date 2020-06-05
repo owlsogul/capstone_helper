@@ -4,6 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "nodemon ./app.js",
+    "server_start":"pm2 start ./app.config.js && pm2 start ./webhook_deamon.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +23,14 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.1.0",
-    "sequelize": "^5.21.6"
+    "node-cmd": "^3.0.0",
+    "nodemailer": "^6.4.6",
+    "sequelize": "^5.21.6",
+    "socketio": "^1.0.0"
+  },
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "swagger-jsdoc": "^4.0.0",
+    "swagger-ui-express": "^4.1.4"
   }
 }

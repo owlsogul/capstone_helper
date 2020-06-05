@@ -72,7 +72,7 @@ export default class Bar extends Component {
 
     let lectureBadge = <Badge variant="secondary">OFF</Badge>
     if (this.state.lectureStatus){
-      lectureBadge = <Badge variant="primary">ON <Moment fromNow>{this.state.lectureStatus.startedAt}</Moment></Badge>
+      lectureBadge = <Badge variant="primary" onClick={()=>{window.location=`/${this.state.lectureStatus.classId}/lecture`}}>ON <Moment fromNow>{this.state.lectureStatus.startedAt}</Moment></Badge>
     }
 
     return (

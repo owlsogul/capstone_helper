@@ -48,13 +48,13 @@ class UserVideo extends Component {
       video.srcObject = this.props.stream
       this.video = video
     }
-    
   }
 
   render(){
     return (
       <div style={{ width: 300, height: 300, margin: 10 }}>
-        <video ref={this.handleRef} autoPlay style={{ width: "100%", height: "100%"}}/>
+        <video ref={this.handleRef} autoPlay style={{ width: "100%", height: "100%"}}/><br/>
+        {this.props.userId}
       </div>
     )
   }
@@ -98,16 +98,15 @@ class LecturePage extends Component {
       const [peerId, peer] = entry
       if (peer.stream) {
         console.log('setting peer video stream', peerId, peer.stream)
-        //peer.video.setAttribute('data-peer-id', peerId)
-        //peer.video.srcObject = peer.stream
         newVideoState[peerId] = peer.stream
       }
     })
   }
 
-  renderMapping(entry){
+  renderMapping([key, value]){
+    let userId = this.props.userMap[key]
     return (
-      <UserVideo id={entry[0]} stream={entry[1]}/>
+      <UserVideo key={key} id={key} stream={value} userId={userId}/>
     )
   }
 

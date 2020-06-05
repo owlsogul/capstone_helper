@@ -21,7 +21,8 @@ export default class InLecturePage extends Component {
       peers: {},
       myVideoStream: false,
       mySocketId: false,
-      error: false
+      error: false,
+      userMap: {}
     }
     this.getMedia = this.getMedia.bind(this)
     this.onMedia = this.onMedia.bind(this)
@@ -54,8 +55,8 @@ export default class InLecturePage extends Component {
 
   createWebRTCSocket(){
     return new Promise((res, rej)=>{
-      //this.socket = io("http://localhost:30081/socket.io")
-      this.socket = io.connect("https://caphelper.owlsogul.com/socket.io")
+      this.socket = io("http://localhost:30081/socket.io")
+      //this.socket = io.connect("https://caphelper.owlsogul.com/socket.io")
       this.setState({ error: "연결 대기중입니다."})
       this.socket.on("connect", ()=>{
         console.log("client nsp->%s", this.socket.nsp);  
@@ -76,16 +77,28 @@ export default class InLecturePage extends Component {
     })
   }
 
-  connectWebRTCSocket(){
-    
+  connectWebRTCSocket(data){
+    this.setState({ lectureId: data.lectureId })
+    // user on connect
     this.socket.on('peer', msg => {
       const peerId = msg.peerId
-      this.debug('new peer poof!', peerId)
+      console.log('new peer poof!', peerId)
       if (peerId === this.socket.id) {
         return this.debug('Peer is me :D', peerId)
       }
       this.createPeer(peerId, true, this.state.myVideoStream)
+      console.log("send member request")
     })
+
+    this.socket.on("member", msg=>{
+      let result = msg.result
+      console.log("MEMBER EVENT", result)
+      if (result){
+        this.setState({ userMap: result})
+      }      
+    })
+
+    // user on signal
     this.socket.on('signal', data => {
       const peerId = data.from
       const peer = this.state.peers[peerId]
@@ -95,10 +108,14 @@ export default class InLecturePage extends Component {
       this.debug('Setting signal', peerId, data)
       this.signalPeer(this.state.peers[peerId], data.signal)
     })
+
+    // user on disconnected
     this.socket.on('unpeer', msg => {
       this.debug('Unpeer', msg)
       this.destroyPeer(msg.peerId)
     })
+
+    // lecture is ended
     this.socket.on("end", msg=>{
       this.socket.close()
       Object.entries(this.state.peers).forEach(entry=>{
@@ -168,13 +185,7 @@ export default class InLecturePage extends Component {
       this.debug('Connected to peer', peerId)
       //peer.connected = true
       this.setPeerState(peerId, peer)
-      peer.send(this.serialize({
-        msg: 'hey man!'
-      }))
-    })
-
-    peer.on('data', data => {
-      this.debug('Data from peer', peerId, this.unserialize(data))
+      this.socket.emit("member", { lectureId: this.state.lectureId })
     })
 
     peer.on('error', (e) => {
@@ -232,7 +243,7 @@ export default class InLecturePage extends Component {
       page = <ErrorPage msg={this.state.error}/>
     }
     else {
-      page = <LecturePage mySocketId={this.state.mySocketId } myVideoStream={this.state.myVideoStream} peers={this.state.peers}/>
+      page = <LecturePage mySocketId={this.state.mySocketId } myVideoStream={this.state.myVideoStream} peers={this.state.peers} userMap={this.state.userMap}/>
     }
     return (
       <ClassTemplate match={this.props.match}>

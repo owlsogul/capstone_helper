@@ -19,7 +19,7 @@ String.prototype.toNspId = function() {
  */
 class SocketServer {
   constructor(){
-    this.lectureRooms = [ "1" ]
+    this.lectureRooms = []
 
     this.listen = this.listen.bind(this)
     this.handleConnection = this.handleConnection.bind(this)
@@ -48,6 +48,7 @@ class SocketServer {
   startLecture(_lectureId){
     let lectureId = String(_lectureId)
     this.lectureRooms.push(lectureId)
+    console.log("current lecture rooms are " + JSON.stringify(lectureRooms, null, 2))
   }
 
   /**
@@ -56,7 +57,7 @@ class SocketServer {
    * @param {*} _lectureId 
    * @param {*} socketId 
    */
-  joinLecture(_lectureId, socketId){
+  joinLecture(_lectureId, socketId, userId){
 
     let io = this.io
     let nsp = this.nsp
@@ -71,7 +72,8 @@ class SocketServer {
       socket.join(lectureId, (err)=>{
         if (err) console.log(err)
         socket.joinedLecture = lectureId
-        console.log(`${socket.joinedLecture}에 ${socket.id}가 들어갔습니다.`)
+        socket.userId = userId
+        console.log(`${socket.joinedLecture}에 ${socket.id}:${userId}가 들어갔습니다.`)
         nsp.to(lectureId).emit('peer', { peerId: socket.id })
         res(lectureId)
 
@@ -107,7 +109,7 @@ class SocketServer {
 
     socket.on('signal', msg => {
         const receiverId = msg.to
-        const receiver = io.sockets.connected[receiverId.toSocketId()]
+        const receiver = nsp.connected[receiverId]
         if (receiver) {
         const data = {
             from: socket.id,
@@ -119,7 +121,27 @@ class SocketServer {
             console.log('no receiver found', receiverId)
         }
     })
+    
+    socket.on("member", msg=>{
+      let lectureId = msg.lectureId
+      if (!lectureId || lectureId != socket.joinedLecture) {
+        console.log("not in lecture :", lectureId, socket.joinedLecture)
+        socket.emit({ result: false })
+        return
+      }
+
+      let userMap = {}
+      Object.entries(nsp.in(lectureId).connected).forEach(([key, value])=>{
+        userMap[key] = value.userId
+      })
+      socket.emit("member", { result: userMap })
+      console.log(socket.userId, "request", userMap)
+
+    })
+
   }
+
+  
 }
 
 const _socketServer = new SocketServer()

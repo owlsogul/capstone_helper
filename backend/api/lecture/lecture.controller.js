@@ -309,7 +309,7 @@ exports.joinLecture = (req, res)=>{
 
   const setSocketJoined = (lecture)=>{
     if (!lecture) throw new Error("NoClass")
-    return socketServer.joinLecture(lecture.lectureId, socketId)
+    return socketServer.joinLecture(lecture.lectureId, socketId, userId)
   }
 
   const respond = (lectureId)=>{

@@ -159,7 +159,7 @@ exports.editForm = (req, res, next)=>{
   const checkBody = ()=>{
     try {
       JSON.parse(body)
-    } catch {
+    } catch(err) {
       throw new Error("WrongBody")
     }
   }

@@ -210,6 +210,15 @@ module.exports = ()=>{
       ]
       return Promise.all(matching)
     })
+    // 테스트 메시지 만들기
+    .then(()=>{
+      let msgs = [
+        models.Message.create({ classId: 1, sender: "student01@cau.ac.kr", body: "조교님 저희 조 주제가 오토바이 자율 주행에 관한 건데 힌트좀 주실 수 있으실까요?" }),
+        models.Message.create({ classId: 1, sender: "student02@cau.ac.kr", body: "잘 부탁드립니다." }),
+        models.Message.create({ classId: 1, sender: "student03@cau.ac.kr", body: "저 지금 찾아뵈도 될까요?" }),
+      ]
+      return Promise.all(msgs)
+    })
     .then(()=>{
       console.log("테스트 데이터 생성 완료!")
     })

@@ -507,3 +507,129 @@ exports.listLecture = (req, res, next)=>{
     })
   
 }
+
+
+/**
+@swagger
+paths: {
+  /api/lecture/get_user_map: {
+    post: {
+      tags: [ Lecture ],
+      summary: "온라인 수업에서 유저들에 대한 정보를 제공하는 API",
+      description: "현재 lectureId와 socketId로 진짜 들어가있는지 확인하는 과정을 거친다.",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "object",
+          required: [ "lectureId", "classId" ],
+          properties: {
+            classId: { type: "string", description: "classId"},
+            lectureId: { type: "string", description: "lectureId"}
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "수업이 시작되었을 경우.",
+          schema: {
+            type: "object",
+            properties: {
+              lectureId: { type: "integer", description: "시작된 수업 id"},
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
+exports.getUserMap = (req, res)=>{
+  
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let lectureId = req.body.lectureId
+  
+  //if (!classId || !lectureId){
+  if (!classId){
+    req.Error.wrongParameter(res)
+    return
+  }
+
+  const checkPermission = ()=>{
+    return models.ClassRelation.findOne({
+      where: {
+        user: userId,
+        classId: classId,
+        relationType: {
+          [Op.gte]: 1
+        }
+      }
+    })
+  }
+
+  const checkLectureOnline = (relation)=>{
+    if (!relation) throw new Error("NoPermission")
+    return models.Lecture.findOne({
+      where:{
+        classId: classId,
+        lectureId: lectureId,
+        endedAt: null
+      }
+    })
+  }
+
+  const getUserData = (lecture)=>{
+    if (!lecture) throw new Error("NoLecture")
+    return models.ClassRelation.findAll({
+      where:{
+        classId: classId,
+      },
+      include: [{
+        model: models.User,
+        attributes: ["userId", "level"],
+        include: [
+          {
+            model: models.Join,
+            include: [ models.Team ],
+          },
+          {
+            model: models.Presentation
+          }
+        ]
+      }]
+    })
+  }
+
+  const respond = (data)=>{
+    let returnObj = {}
+    data.forEach(e => {
+      var user = {
+        level: e.User.level,
+        team: e.User.Joins.length > 0 ? e.User.Joins.map(join=>join.Team) : [],
+        presentation: e.User.Presentations
+      }
+      returnObj[e.user] = user
+    });
+    res.json(returnObj)
+  }
+
+  checkPermission()
+    //.then(checkLectureOnline)
+    .then(getUserData)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoPermission") req.Error.noAuthorization(res)
+      else if (err.message == "NoLecture") req.Error.wrongParameter(res,"no class")
+      else req.Error.internal(res)
+    })
+
+
+}

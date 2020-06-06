@@ -14,4 +14,6 @@ router.post("/get_current_lecture", [serviceUser.checkLogin, lc.getCurrentLectur
 
 router.post("/list_lecture", [serviceUser.checkLogin, lc.listLecture])
 
+router.post("/get_user_map", [serviceUser.checkLogin, lc.getUserMap])
+
 module.exports = router

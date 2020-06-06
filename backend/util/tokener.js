@@ -24,7 +24,7 @@ function signToken(data, expiresIn){
 module.exports = {
 
   signLoginToken: (userId) =>{
-    return signToken({ type: "login", userId: userId }, "2h")
+    return signToken({ type: "login", userId: userId }, "12h")
   },
 
   verifyToken: (token) => {

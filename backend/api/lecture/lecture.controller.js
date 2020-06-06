@@ -593,7 +593,7 @@ exports.getUserMap = (req, res)=>{
       },
       include: [{
         model: models.User,
-        attributes: ["userId", "level"],
+        attributes: ["userId", "level", "name"],
         include: [
           {
             model: models.Join,
@@ -612,6 +612,7 @@ exports.getUserMap = (req, res)=>{
     data.forEach(e => {
       var user = {
         level: e.User.level,
+        name: e.User.name,
         team: e.User.Joins.length > 0 ? e.User.Joins.map(join=>join.Team) : [],
         presentation: e.User.Presentations
       }

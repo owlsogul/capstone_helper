@@ -5,7 +5,7 @@ const style = {
 
   container: {
     backgroundColor: "rgb(1, 116, 183)",
-    height: "100%",
+    minHeight: "100%",
     padding: 10,
   },
 

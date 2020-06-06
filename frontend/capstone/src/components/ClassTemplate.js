@@ -18,7 +18,7 @@ export default class ClassTemplate extends Component {
         <div>
           <Bar match={this.props.match}/>
         </div>
-        <div style={{ padding: 10 }}>
+        <div style={{ padding: 10, overflow: 'scroll'}}>
           {this.props.children}
         </div>
       </Dashboard>

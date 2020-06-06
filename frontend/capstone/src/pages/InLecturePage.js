@@ -22,7 +22,8 @@ export default class InLecturePage extends Component {
       myVideoStream: false,
       mySocketId: false,
       error: false,
-      userMap: {},
+      userMap: {}, // socketId 와 userId의 매핑 정보
+      userDataMap: {}, // userId와 userData의 매핑 정보
       lectureId: false
     }
     this.getMedia = this.getMedia.bind(this)
@@ -139,6 +140,7 @@ export default class InLecturePage extends Component {
 
   handleUserMap(res){
     console.log("USER MAP", res)
+    this.setState({ userDataMap: res })
   }
 
   componentDidMount(){
@@ -253,7 +255,7 @@ export default class InLecturePage extends Component {
       page = <ErrorPage msg={this.state.error}/>
     }
     else {
-      page = <LecturePage mySocketId={this.state.mySocketId } myVideoStream={this.state.myVideoStream} peers={this.state.peers} userMap={this.state.userMap}/>
+      page = <LecturePage mySocketId={this.state.mySocketId } myVideoStream={this.state.myVideoStream} peers={this.state.peers} userMap={this.state.userMap} userDataMap={this.state.userDataMap}/>
     }
     return (
       <ClassTemplate match={this.props.match}>

@@ -17,18 +17,21 @@ export default class InLecturePage extends Component {
   constructor(props){
     super(props)
     this.state = {
-      classId: "",
+      classId: false,
       peers: {},
       myVideoStream: false,
       mySocketId: false,
       error: false,
-      userMap: {}
+      userMap: {},
+      lectureId: false
     }
     this.getMedia = this.getMedia.bind(this)
     this.onMedia = this.onMedia.bind(this)
     this.createWebRTCSocket = this.createWebRTCSocket.bind(this)
     this.connectWebRTCSocket = this.connectWebRTCSocket.bind(this)
     this.handleComplete = this.handleComplete.bind(this)
+    this.requestUserMap = this.requestUserMap.bind(this)
+    this.handleUserMap = this.handleUserMap.bind(this)
   }
 
   /** 현 기기의 화면/소리를 가져오는 method */
@@ -72,8 +75,6 @@ export default class InLecturePage extends Component {
       this.socket.on('reconnect_failed', function(err) {
         console.log(err);
       })
-
-
     })
   }
 
@@ -87,7 +88,6 @@ export default class InLecturePage extends Component {
         return this.debug('Peer is me :D', peerId)
       }
       this.createPeer(peerId, true, this.state.myVideoStream)
-      console.log("send member request")
     })
 
     this.socket.on("member", msg=>{
@@ -133,6 +133,14 @@ export default class InLecturePage extends Component {
     this.setState({mySocketId: this.socket.id})
   }
 
+  requestUserMap(){
+    return network.network("/api/lecture/get_user_map", { body: { classId: this.state.classId, lectureId: this.state.lectureId} })
+  }
+
+  handleUserMap(res){
+    console.log("USER MAP", res)
+  }
+
   componentDidMount(){
 
     // classId parsing
@@ -145,6 +153,8 @@ export default class InLecturePage extends Component {
       .then(()=>{ return requestSocketLectureJoin(classId, this.socket.id) })
       .then(this.connectWebRTCSocket)
       .then(this.handleComplete)
+      .then(this.requestUserMap)
+      .then(this.handleUserMap)
       .catch(err=>{
         let errMsg = "알 수 없는 오류"
         if (err.status){

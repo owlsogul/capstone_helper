@@ -654,3 +654,94 @@ exports.replyPost = (req, res, next)=>{
       else req.Error.internal(res)
     })
 }
+
+
+/**
+@swagger
+paths: {
+  /api/feedback/list_reply: {
+    post: {
+      tags: [ Feedback ],
+      summary: "feedback reply 조회하는 API",
+      description: "피드백 reply 조회한다.",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "object",
+          required: [ "classId", "teamId"],
+          properties: {
+            classId: { type: "integer", description: "classId" },
+            teamId: { type: "integer", description: "teamId" },
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "feedback reply 찾았을 경우.",
+          schema: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  replyId: { type: "integer", description: ""},
+                  body: { type: "integer", description: ""}                  
+                }
+              }
+            }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
+exports.listReply = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let teamId = req.body.teamId
+
+  if (!classId || !teamId){
+    req.Error.wrongParameter(res, "classId teamId")
+    return;
+  }
+  
+  // Join Check (퍼미션 체크는 여기서 되었다고 가정)
+  const checkJoin = ()=>{
+    return models.Join
+            .findOne({ where: { joinStatus: 1, user: userId, teamId: teamId } })
+            .then(join=>{
+              if (!join) throw new Error("NoJoin")
+              return join
+            })
+  }
+
+  // list reply
+  const findReply = ()=>{
+    return models.FeedbackReply
+      .findAll({ 
+        attributes: ["replyId", "body"],
+        where: { targetTeamId: teamId } 
+      })
+  }
+
+
+  const respond = (data)=>{
+    res.json(data)
+  }
+  
+  checkJoin()
+    .then(findReply)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoJoin") req.Error.noAuthorization(res)
+      else req.Error.internal(res)
+    })
+}

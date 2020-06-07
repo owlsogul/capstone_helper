@@ -386,6 +386,15 @@ paths: {
                 type: "object",
                 properties: {
                   postId: { type: "integer", description: ""},
+                  expiredDate: { type: "string", description: "만료일"},
+                  FeedbackForm: { 
+                    type: "object", 
+                    description: "", 
+                    properties: { 
+                      formId: { type: "integer", desrciption: ""},
+                      body: { type:"string" }
+                    } 
+                  }
                 }
               }
             }
@@ -411,6 +420,7 @@ exports.listPost = (req, res, next)=>{
   // form 찾음
   const findPost = ()=>{
     return models.FeedbackPost.findAll({
+      include: [ models.FeedbackForm ],
       where: { classId: classId }
     })
   }

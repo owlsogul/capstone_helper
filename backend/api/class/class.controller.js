@@ -102,7 +102,7 @@ exports.listClass = (req, res, next)=>{
 @swagger
 paths: {
   /api/class/info/classId: {
-    post: {
+    get: {
       tags: [ Class ],
       summary: "class의 정보를 확인하는 API",
       description: "/api/class/info/(해당 classId)",

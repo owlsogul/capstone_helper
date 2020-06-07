@@ -15,7 +15,7 @@ export default class ClassTemplate extends Component {
   render() {
     return (
       <Dashboard initState={[false, true, false]} history={this.props.history}>
-        <div>
+        <div style={{ flex: "0 1 auto" }}>
           <Bar match={this.props.match}/>
         </div>
         <div style={{ padding: 10, overflow: 'scroll'}}>

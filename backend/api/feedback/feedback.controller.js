@@ -392,7 +392,7 @@ paths: {
                     description: "", 
                     properties: { 
                       formId: { type: "integer", desrciption: ""},
-                      body: { type:"string" }
+                      body: { type:"string", desrciption: "" }
                     } 
                   }
                 }

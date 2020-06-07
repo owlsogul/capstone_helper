@@ -97,6 +97,48 @@ exports.listClass = (req, res, next)=>{
 
 }
 
+
+/**
+@swagger
+paths: {
+  /api/class/info/classId: {
+    post: {
+      tags: [ Class ],
+      summary: "class의 정보를 확인하는 API",
+      description: "/api/class/info/(해당 classId)",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "param",
+          required: [ "classId" ],
+          properties: {
+            classId: { type: "integer", description: "classId" },
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "결과.",
+          schema: {
+            type: "object",
+            properties: {
+              className: { type: "string", description: ""},
+              isMatching: { type: "boolean", description: "true or false"},
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
 exports.getClassInfo = (req, res, next)=>{
   let userId = req.ServiceUser.userId
   let classId = req.params.classId

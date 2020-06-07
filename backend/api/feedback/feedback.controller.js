@@ -390,9 +390,10 @@ paths: {
                   FeedbackForm: { 
                     type: "object", 
                     description: "", 
+                    required: [ "formId", "body"],
                     properties: { 
-                      formId: { type: "integer", desrciption: ""},
-                      body: { type:"string", desrciption: "" }
+                      formId: { type: "integer", description: ""},
+                      body: { type: "string", description: "" }
                     } 
                   }
                 }

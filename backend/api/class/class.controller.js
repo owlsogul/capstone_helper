@@ -159,7 +159,7 @@ paths: {
 exports.getUserPermission = (req, res)=>{
 
   let userId = req.ServiceUser.userId
-  let classId = req.params.classId
+  let classId = req.body.classId
 
   if (!classId){
     req.Error.wrongParameter(res, "classId")

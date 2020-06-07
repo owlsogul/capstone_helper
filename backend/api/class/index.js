@@ -22,7 +22,7 @@ router.get("/invite/:invitationCode", [serviceUser.checkLogin, cc.enterInvitatio
 
 router.post("/member", [serviceUser.checkLogin, cc.listMember])
 
-router.get("/set_matching", [serviceUser.checkLogin, cc.setMatching])
+router.post("/set_matching", [serviceUser.checkLogin, cc.setMatching])
 
 router.post("/list_notice", [serviceUser.checkLogin, cc.listNotice] )
 

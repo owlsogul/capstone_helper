@@ -689,7 +689,7 @@ exports.listMember = (req, res, next)=>{
  * @swagger
  *  paths: {
  *    /api/class/set_matching: {
- *      get: {
+ *      post: {
  *        tags: [ Class ],
  *        summary: "팀 매칭 여부를 결정하는 api",
  *        description: "팀 매칭을 하는 기간인지 아닌지 결정하는 api입니다.",
@@ -715,7 +715,7 @@ exports.setMatching = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
-  let matchingInfo = req.body.matching
+  let matchingInfo = req.body.matchingInfo
 
   if (!classId){
     req.Error.wrongParameter(res,"classId")
@@ -726,7 +726,7 @@ exports.setMatching = (req, res, next)=>{
     return models.ClassRelation.findOne({ where: { user: userId, classId: classId, [Op.gte]:{ relationType: 2 } } })
   }
 
-  const setMatching = (result)=>{
+  const settingMatching = (result)=>{
     if (!result) {
       throw new Error("NoAuth")
     }
@@ -760,7 +760,7 @@ exports.setMatching = (req, res, next)=>{
   }
 
   chkPermission()
-    .then(setMatching)
+    .then(settingMatching)
     .then(sortTeam)
     .then(respond)
     .catch(err=>{
@@ -769,6 +769,8 @@ exports.setMatching = (req, res, next)=>{
       else req.Error.internal(res)
     })
 }
+
+
 
 exports.listNotice = (req, res, next)=>{
 

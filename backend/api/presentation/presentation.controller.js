@@ -8,6 +8,7 @@ tags:
 const models = require("../../models")
 const Sequelize = require("sequelize")
 const Op = Sequelize.Op;
+const socketServer = require("../../websocket")
 
 /**
 @swagger
@@ -25,10 +26,9 @@ paths: {
         description: "",
         schema: {
           type: "object",
-          required: [ "classId", "teamId" ],
+          required: [ "classId" ],
           properties: {
-            classId: { type: "integer", description: "classId" },
-            teamId: { type: "integer", description: "classId" },
+            classId: { type: "integer", description: "classId" }
           }
         }
       }],
@@ -55,11 +55,11 @@ exports.startPresentation = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
-  let teamId = req.body.teamId
+  let teamId = false
   let lectureId = -1
-
-  if (!classId || !teamId){
-    req.Error.wrongParameter(res, "classId teamid")
+  let returnPresentation = false
+  if (!classId){
+    req.Error.wrongParameter(res, "classId")
     return;
   }
 
@@ -82,12 +82,12 @@ exports.startPresentation = (req, res, next)=>{
   const checkTeam = ()=>{
     return models.Join.findOne({
       classId: classId,
-      teamId: teamId,
       user: userId
     })
-    .then(team=> { 
-      if (!team) throw new Error("NoTeam") 
-      return team
+    .then(join=> { 
+      if (!join) throw new Error("NoTeam") 
+      teamId = join.teamId
+      return join
     })
   }
   
@@ -130,8 +130,13 @@ exports.startPresentation = (req, res, next)=>{
     })
   }
 
-  const respond = (presentation)=>{
-    res.json(presentation)
+  const broadCastPresentation = (presentation)=>{
+    returnPresentation = presentation
+    return socketServer.startPresentation(lectureId, userId, presentation.startedAt)
+  }
+
+  const respond = ()=>{
+    res.json(returnPresentation)
   }
   
   checkPermission()
@@ -139,6 +144,7 @@ exports.startPresentation = (req, res, next)=>{
     .then(checkLecture)
     .then(checkPresentation)
     .then(createPresentation)
+    .then(broadCastPresentation)
     .then(respond)
     .catch(err=>{
       console.log(err)
@@ -146,6 +152,7 @@ exports.startPresentation = (req, res, next)=>{
       else if (err.message == "NoTeam") req.Error.noAuthorization(res)
       else if (err.message == "AlreadyPresentation") req.Error.conflict(res)
       else if (err.message == "NoLecture") req.Error.conflict(res)
+      else if (err.message == "WrongLectureId") req.Error.conflict(res)
       else req.Error.internal(res)
     })
 }
@@ -166,10 +173,9 @@ paths: {
         description: "",
         schema: {
           type: "object",
-          required: [ "classId", teamId" ],
+          required: [ "classId" ],
           properties: {
-            classId: { type: "integer", description: "classId" },
-            teamId: { type: "integer", description: "teamId" },
+            classId: { type: "integer", description: "classId" }
           }
         }
       }],
@@ -196,13 +202,13 @@ exports.endPresentation = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
-  let teamId = req.body.teamId
+  let teamId = false
   let lectureId = -1
 
   let level = -1
 
-  if (!classId || !teamId){
-    req.Error.wrongParameter(res, "classId teamid")
+  if (!classId){
+    req.Error.wrongParameter(res, "classId")
     return;
   }
 
@@ -270,6 +276,10 @@ exports.endPresentation = (req, res, next)=>{
     })
   }
 
+  const broadCastPresentation = ()=>{
+    return socketServer.endPresentation(lectureId)
+  }
+
   const respond = ()=>{
     res.json({ message: "success" })
   }
@@ -278,11 +288,13 @@ exports.endPresentation = (req, res, next)=>{
     .then(checkLecture)
     .then(checkPresentation)
     .then(updatePresentation)
+    .then(broadCastPresentation)
     .then(respond)
     .catch(err=>{
       console.log(err)
       if (err.message == "NoPermission") req.Error.noAuthorization(res)
       else if (err.message == "NoPresentation") req.Error.conflict(res)
+      else if (err.message == "WrongLectureId") req.Error.conflict(res)
       else if (err.message == "NoLecture") req.Error.noAuthorization(res)
       else req.Error.internal(res)
     })

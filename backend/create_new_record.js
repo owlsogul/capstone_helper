@@ -202,11 +202,11 @@ module.exports = ()=>{
     // 조 매칭 하기
     .then(()=>{
       let matching = [
-        models.Join.create({ user: "student01@cau.ac.kr", classId: 1, teamId: 1, isLeader: true }),
-        models.Join.create({ user: "student02@cau.ac.kr", classId: 1, teamId: 1 }),
-        models.Join.create({ user: "student03@cau.ac.kr", classId: 1, teamId: 1 }),
-        models.Join.create({ user: "student04@cau.ac.kr", classId: 1, teamId: 2, isLeader: true }),
-        models.Join.create({ user: "student05@cau.ac.kr", classId: 1, teamId: 2 }),
+        models.Join.create({ user: "student01@cau.ac.kr", classId: 1, teamId: 1, isLeader: true, joinStatus: 1 }),
+        models.Join.create({ user: "student02@cau.ac.kr", classId: 1, teamId: 1, joinStatus: 1 }),
+        models.Join.create({ user: "student03@cau.ac.kr", classId: 1, teamId: 1, joinStatus: 0 }),
+        models.Join.create({ user: "student04@cau.ac.kr", classId: 1, teamId: 2, isLeader: true, joinStatus: 1 }),
+        models.Join.create({ user: "student05@cau.ac.kr", classId: 1, teamId: 2, joinStatus: 1 }),
       ]
       return Promise.all(matching)
     })

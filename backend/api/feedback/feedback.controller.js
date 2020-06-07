@@ -509,3 +509,148 @@ exports.deletePost = (req, res, next)=>{
       else req.Error.internal(res)
     })
 }
+
+
+/**
+@swagger
+paths: {
+  /api/feedback/save_reply: {
+    post: {
+      tags: [ Feedback ],
+      summary: "피드백 reply를 저장하는 API",
+      description: "피드백 reply을 저장한다. ",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "object",
+          required: [ "postId", "teamId", "targetTeamId", "body" ],
+          properties: {
+            postId: { type: "integer", description: "postId" },
+            teamId: { type: "integer", description: "내 팀" },
+            targetTeamId: { type: "integer", description: "피드백 할 팀" },
+            body: { type: "string"", description: "내용" },
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "피드백을 reply함.",
+          schema: {
+            type: "object",
+            required: [ "replyId", "postId", "teamId", "targetTeamId", "body" ],
+            properties: {
+              replyId: { type: "integer", description: "replyId" },
+              postId: { type: "integer", description: "postId" },
+              teamId: { type: "integer", description: "내 팀" },
+              targetTeamId: { type: "integer", description: "피드백 할 팀" },
+              body: { type: "string"", description: "내용" },
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
+exports.replyPost = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let postId = req.body.postId
+  let teamId = req.body.teamId
+  let targetTeamId = req.body.targetTeamId
+  let body = req.body.body
+  let receivedDate = new Date()
+
+  if (!teamId || !postId || !targetTeamId || !teamId || !body){
+    req.Error.wrongParameter(res, "classId postId targetTeamId body")
+    return;
+  }
+
+  if (teamId == targetTeamId) {
+    req.Error.wrongParameter(res, "same team Id")
+    return
+  }
+
+  // body check
+  const checkBody = ()=>{
+    try{
+      return JSON.stringify(body)
+    }
+    catch(err) {
+      throw new Error("WrongBody")
+    }
+  }
+
+  // Join Check (퍼미션 체크는 여기서 되었다고 가정)
+  const checkJoin = ()=>{
+    return models.Join
+            .findOne({ where: { joinStatus: 1, user: userId, teamId: teamId } })
+            .then(join=>{
+              if (!join) throw new Error("NoJoin")
+              return join
+            })
+  }
+
+  // targetTeamId check
+  const checkTargetTeam = ()=>{
+    return models.Team
+            .findOne({ where: { teamId: targetTeamId }})
+            .then(team=>{
+              if (!team) throw new Error("NoTargetTeam")
+              return team
+            })
+
+  }
+
+  // 해당 포스트가 expiredDate가 넘었는지 확인
+  const checkExpriedDate = ()=>{
+    return models.FeedbackPost
+      .findOne({
+        where: {
+          postId: postId,
+          expiredDate: { [Op.gte]: receivedDate }
+        }
+      })
+      .then(post=>{
+        if (!post) throw new Error("NoPost")
+        return post
+      })
+  }
+
+  // save
+  const saveReply = ()=>{
+    return models.FeedbackReply.create({
+      postId: postId,
+      teamId: teamId,
+      targetTeamId: targetTeamId,
+      body: body
+    })
+  }
+
+  // response
+  const respond = (reply)=>{
+    res.json(reply)
+  }
+
+  checkBody()
+    .then(checkJoin)
+    .then(checkTargetTeam)
+    .then(checkExpriedDate)
+    .then(saveReply)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "WrongBody") req.Error.wrongParameter(res, "wrong body")
+      else if (err.message == "NoJoin") req.Error.noAuthorization(res)
+      else if (err.message == "NoTargetTeam") req.Error.wrongParameter(res, "no target team")
+      else if (err.message == "NoPost") req.Error.wrongParameter(res, "no post")
+      else req.Error.internal(res)
+    })
+}

@@ -722,6 +722,7 @@ paths: {
                 FeedbackPost: {
                   type: "object",
                   properties: {
+                    postId: { type: "integer", description: "postId"}, 
                     title: { type: "string", description: "title of post"}
                   }
                 }                  

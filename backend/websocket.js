@@ -180,7 +180,7 @@ class SocketServer {
     let lectureId = String(_lectureId)
     let lectureRooms = this.lectureRooms
     if (!lectureRooms.includes(lectureId)) { throw new Error("WrongLectureId")}
-    nsp.to(lectureId).emit("presentation", { type:"end", userId: userId })
+    nsp.to(lectureId).emit("presentation", { type:"end" })
     this.presentationMap[lectureId] = { type: 0 }
     console.log(this.presentationMap)
   }

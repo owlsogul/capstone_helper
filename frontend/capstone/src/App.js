@@ -14,6 +14,8 @@ import StudentList from './pages/StudentList';
 import WriteNoticePage from './pages/WriteNoticePage';
 import TeamPage from './pages/TeamPage';
 import TeamInfoPage from './pages/TeamInfoPage';
+import CreateFeedbackFormPage from './pages/CreateFeedbackFormPage';
+import FeedbackFormPage from './pages/FeedbackFormPage';
 
 import ManageLinkPage from './pages/ManageLinkPage';
 
@@ -34,8 +36,11 @@ function App() {
           <Route path="/:classId/students" component={StudentList} />
           <Route exact path="/:classId/teams" component={TeamPage} /> 
           <Route path="/:classId/manageLink" component={ManageLinkPage} /> 
-
           <Route path="/:classId/teams/:teamId" component={TeamInfoPage} /> 
+          {// <Route path="/:classId/teams/feedbackform" component={FeedbackFormPage} />
+}
+          <Route path="/createfeedbackform" component={CreateFeedbackFormPage} /> 
+          <Route path="/feedbackform" component={FeedbackFormPage} /> 
           
         </Switch>
       </div >

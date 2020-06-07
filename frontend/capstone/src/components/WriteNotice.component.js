@@ -10,26 +10,49 @@ class WriteNotice extends Component {
         this.state = { title: "", contents: "", noticeId: "" }
     }
 
+    handleTitleChange = (e) => {
+        this.setState({ title: e.target.value })
+    }
+
+    handleContentsChange = (e) => {
+        this.setState({ contents: e.target.value })
+    }
+
     createnotice() {
+        let tempClassId = ''
         fetch('/api/class/post_notice', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                title: this.state.title,
-                contents: this.state.contents
-            })
+            body: JSON.stringify({ noticeTitle: this.state.title, noticeContents: this.state.contents })
         })
+
+            .then(res => res.json())
+
             .then(json => {
                 console.log(json)
                 console.log(json["title"])
-                this.setState({ noticeId: json["title"] })
+                this.setState({ noticeTitle: json["title"] })
             })
 
-            .then(res => {
-                return res.json()
+            .then(json => {
+                console.log(json)
+                console.log(json["contents"])
+                this.setState({ noticeContents: json["contents"] })
             })
+
+            .then(json => {
+                tempClassId = json.classId
+                this.setState({ noticeId: json["nticeId"] })
+            })
+
+            .then((json) => {
+                console.log("여기는 " + tempClassId)
+                // this.props.createClassCallback(tempClassId)
+                this.props.changeScene("notice")
+            })
+
             .catch((err) => {
                 console.log("등록 불가")
                 if (err.title === '') {
@@ -38,15 +61,7 @@ class WriteNotice extends Component {
                 else if (err.contents === '') {
                     return alert("내용을 입력해주세요.")
                 }
-                /*if (res.data) {
-                    alert("공지가 등록되었습니다.")
-                    return window.location.replace('/')
-                }*/
             })
-    }
-
-    handleClick = () => {
-        console.log("Click");
     }
 
     render() {
@@ -54,15 +69,15 @@ class WriteNotice extends Component {
         return (
             <div className='Write'>
                 <div>
-                    <input type='text' id='title_txt' name='title' placeholder='제목을 입력하세요' />
+                    <input type='text' id='title_txt' name='title' placeholder='제목을 입력하세요' value={this.state.title} onChange={this.handleTitleChange} />
                 </div>
 
                 <div>
-                    <textarea id='content_txt' name='contents' placeholder='내용을 입력하세요.'></textarea>
+                    <textarea id='content_txt' name='contents' placeholder='내용을 입력하세요.' value={this.state.contents} onChange={this.handleContentsChange}></textarea>
                 </div>
                 <div id='post_submit'>
                     <Link to="/notice">
-                        <button onClick={this.handleClick}>등록</button>
+                        <button onClick={this.createnotice}>등록</button>
                     </Link>
                 </div>
             </div>

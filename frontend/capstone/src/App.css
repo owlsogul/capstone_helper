@@ -163,6 +163,13 @@ li {
   height: 500px
 }
 
+#fcontent_txt {
+  width: 60%;
+  resize: none;
+  border: none;
+  height: 250px
+}
+
 #content_txt:focus { outline : none; }
 
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { ListGroup } from "react-bootstrap"
-import { bool } from 'prop-types';
 
 const style = {
   leftHalf: {
@@ -24,8 +23,11 @@ const style = {
     padding: "30px",
     border: "1px solid black",
   },
+  eachStudent: {
+    width: "30%",
+    border: "1px solid black",
+  },
 }
-
 
 class MessageClassList extends Component {
   listGroupClicked(classes, boolValue) {
@@ -79,7 +81,7 @@ class MessageList extends Component {
           <h6> 수업을 선택해 주세요.</h6>
         </div>
       )
-    } else if (this.props.messages.length > 0){
+    } else if (this.props.messages.length > 0) {
       console.log("메세지는")
       console.log(this.props.messages)
       return (
@@ -97,17 +99,29 @@ class MessageList extends Component {
             <button onClick={this.onClickButton}>메세지 보내기</button>
           </div>
           {
-          this.props.messages.map((message, index) => (
-            <div>
-              <EachMessage message={message}></EachMessage>
-            </div>
-          ))}
+            this.props.messages.map((message, index) => (
+              <div>
+                <EachMessage message={message}></EachMessage>
+              </div>
+            ))}
         </div>
       )
     } else {
       return (
         <div style={style.rightHalf}>
-          <h6> 메시지가 없습니다.</h6>
+          <div className="input-group mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="메세지를 입력하세요"
+              aria-label="메세지를 입력하세요"
+              aria-describedby="button-addon2"
+              value={this.state.writingMessage}
+              onChange={this.handleTargetText}
+            />
+            <button onClick={this.onClickButton}>메세지 보내기</button>
+          </div>
+          <h6> 기존 메시지가 없습니다.</h6>
         </div>
       )
     }
@@ -135,6 +149,22 @@ class AdminMessageList extends Component {
           <h6> 수업을 선택해 주세요.</h6>
         </div>
       )
+    } else if (this.props.student == "") {
+      // 학생 선택 전
+      var title = null
+      {
+        if (this.props.messages.length == 0) {
+          title = <h6>메세지가 없습니다</h6>
+        }
+      }
+      return (
+        <div style={style.rightHalf}>
+          {this.props.messages.map((person) => {
+            return <EachStudent eachStudent={person}></EachStudent>
+          })}
+          {title}
+        </div>
+      )
     } else {
       return (
         <div style={style.rightHalf}>
@@ -150,9 +180,11 @@ class AdminMessageList extends Component {
             />
             <button onClick={this.onClickButton}>메세지 보내기</button>
           </div>
-          {Object.entries(this.props.messages).forEach((messages) => (
+
+          {this.props.messages.forEach((person) => (
             // const [key, value] = messages
-            messages.map((singleMessage) => (
+            // TODO: 여기서는 
+            person.map((singleMessage) => (
               <div>
                 <AdminEachMessage message={singleMessage}></AdminEachMessage>
               </div>
@@ -186,6 +218,16 @@ class EachMessage extends Component {
   }
 }
 
+class EachStudent extends Component {
+  render() {
+    return (
+      <div style={style.eachStudent} >
+        <li> {this.props.eachStudent} </li>
+      </div>
+    )
+  }
+}
+
 class AdminEachMessage extends Component {
   render() {
     if (this.props.message["msgType"] == 0) {
@@ -208,4 +250,4 @@ class AdminEachMessage extends Component {
   }
 }
 
-export { MessageClassList, MessageList, AdminMessageList, EachMessage, AdminEachMessage }
+export { MessageClassList, MessageList, AdminMessageList, EachMessage, AdminEachMessage, EachStudent }

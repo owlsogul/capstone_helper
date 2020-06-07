@@ -39,7 +39,7 @@ function getClassMessage(classId) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: { classId: classId},
+    body: { classId: classId },
   })
 }
 
@@ -64,7 +64,7 @@ const loadClass = () => {
 export default class MessagePage extends Component {
   constructor(props) {
     super(props);
-    this.state = { classId: -1, isAdmin: false, takeClassList: [], manageClassList: [], messages: [] }
+    this.state = { classId: -1, isAdmin: false, takeClassList: [], manageClassList: [], messages: [], student: ""  }
     this.studentSelectClass = this.studentSelectClass.bind(this)
     this.adminSelectClass = this.adminSelectClass.bind(this)
     this.sendMessageAnd = this.sendMessageAnd.bind(this)
@@ -88,6 +88,7 @@ export default class MessagePage extends Component {
         }
 
         if (res.manage) {
+          this.setState({ isAdmin: true })
           manageClassList = manageClassList.concat(res.manage.map(e => {
             return {
               classId: e.classId,
@@ -97,6 +98,7 @@ export default class MessagePage extends Component {
         }
 
         if (res.own) {
+          this.setState({ isAdmin: true })
           manageClassList = manageClassList.concat(res.own.map(e => {
             return {
               classId: e.classId,
@@ -125,11 +127,18 @@ export default class MessagePage extends Component {
   }
 
   adminSelectClass(classId) {
+    console.log("admin이 class선택함")
     this.setState({ classId: classId })
     getClassMessage(classId).then((res) => {
       console.log(res)
-      this.setState({ messages: res })
-      console.log(this.state.message)
+      // userId: [{}{}] userId2: [{}{}{}]
+      var messages = {}
+      var keys = Object.keys(res) // userId, userId2
+      for (var i=0; i<keys.length; i++){
+        var key = keys[i]
+        messages[key] = res[key]
+      }
+      this.setState({ messages: messages })
     })
   }
 

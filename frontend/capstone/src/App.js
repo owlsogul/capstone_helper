@@ -13,13 +13,13 @@ import ClassInfoPage from './pages/ClassInfo';
 import StudentList from './pages/StudentList';
 import WriteNoticePage from './pages/WriteNoticePage';
 import TeamPage from './pages/TeamPage';
+import AdminTeamPage from './pages/AdminTeamPage';
 import TeamInfoPage from './pages/TeamInfoPage';
+import FeedbackPage from './pages/FeedbackPage';
+import CheckFeedbackPage from './pages/CheckFeedbackPage';
 import MessagePage from './pages/MessagePage';
-
 import ManageLinkPage from './pages/ManageLinkPage';
-
 import JoinPage from './pages/JoinPage';
-
 import WebRTCTest from './pages/WebRTCTest';
 import InLecturePage from './pages/InLecturePage';
 
@@ -39,10 +39,16 @@ function App() {
           <Route path="/:classId/classinfo" component={ClassInfoPage} />
           <Route path="/:classId/lecture" component={InLecturePage} />
           <Route path="/:classId/students" component={StudentList} />
-          <Route exact path="/:classId/teams" component={TeamPage} /> 
+          <Route exact path="/:classId/teams" component={TeamPage} />
+          <Route exact path="/:classId/admin_teams" component={AdminTeamPage} />
+
           <Route path="/:classId/manageLink" component={ManageLinkPage} /> 
           <Route path="/message" component={MessagePage} />
-          <Route path="/:classId/teams/:teamId" component={TeamInfoPage} /> 
+
+          <Route exact path="/:classId/teams/:teamId/info" component={TeamInfoPage} /> 
+          <Route exact path="/:classId/teams/:teamId/feedback" component={FeedbackPage} /> 
+          <Route exact path="/:classId/teams/:teamId/check_feedback" component={CheckFeedbackPage} /> 
+
           <Route path="/join/:code" component={JoinPage} /> 
           <Route path="/webrtctest" component={WebRTCTest} /> 
           

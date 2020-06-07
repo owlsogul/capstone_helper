@@ -663,8 +663,8 @@ paths: {
   /api/feedback/list_reply: {
     post: {
       tags: [ Feedback ],
-      summary: "feedback reply 조회하는 API",
-      description: "피드백 reply 조회한다.",
+      summary: "우리 조의 feedback reply 조회하는 API",
+      description: "피드백 reply 조회한다. type에 send 를 넣을 경우 우리가 보낸 reply, receive 넣을 경우 우리가 받은 reply를 받는다.",
       consumes: [ "application/json" ],
       produces: [ "application/json" ],
       parameters : [{
@@ -676,6 +676,7 @@ paths: {
           required: [ "classId", "teamId"],
           properties: {
             classId: { type: "integer", description: "classId" },
+            type: { type: "string", description: "send or receive"},
             teamId: { type: "integer", description: "teamId" },
           }
         }
@@ -713,6 +714,8 @@ exports.listReply = (req, res, next)=>{
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
   let teamId = req.body.teamId
+  let type = req.body.type
+  if (!type) type = "send"
 
   if (!classId || !teamId){
     req.Error.wrongParameter(res, "classId teamId")
@@ -731,12 +734,19 @@ exports.listReply = (req, res, next)=>{
 
   // list reply
   const findReply = ()=>{
+    if (type == "receive") // 우리가 받은거
     return models.FeedbackReply
       .findAll({ 
         attributes: ["replyId", "body"],
-        include: [ models.FeedbackPost ],
+        include: [{ model: models.FeedbackPost, include:[ models.FeedbackForm ] }],
         where: { targetTeamId: teamId } 
       })
+    else // 우리가 보낸거
+    return models.FeedbackReply
+      .findAll({ 
+        include: [{ model: models.FeedbackPost, include:[ models.FeedbackForm ] }],
+        where: { targetTeamId: teamId } 
+      }) 
   }
 
 

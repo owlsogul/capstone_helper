@@ -259,8 +259,38 @@ module.exports = ()=>{
           title: "4주차 피드백",
           expiredDate: new Date("2020-06-10")
         }),
+        
       ]
       return Promise.all(form)
+    })
+    .then(()=>{
+      let msg = [
+        models.FeedbackReply.create({
+          postId: 1,
+          teamId: 1,
+          targetTeamId: 2,
+          body: JSON.stringify({ "1": "5", "3":"5", "2":"그냥저냥 좋았습니다." })
+        }),
+        models.FeedbackReply.create({
+          postId: 1,
+          teamId: 2,
+          targetTeamId: 1,
+          body: JSON.stringify({ "1": "0", "3":"0", "2":"2조 -> 1조" })
+        }),
+        models.FeedbackReply.create({
+          postId: 2,
+          teamId: 1,
+          targetTeamId: 2,
+          body: JSON.stringify({})
+        }),
+        models.FeedbackReply.create({
+          postId: 2,
+          teamId: 2,
+          targetTeamId: 1,
+          body: JSON.stringify({})
+        }),
+      ]
+      return Promise.all(msg)
     })
     .then(()=>{
       console.log("테스트 데이터 생성 완료!")

@@ -683,15 +683,21 @@ paths: {
         200: {
           description: "feedback reply 찾았을 경우.",
           schema: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  replyId: { type: "integer", description: ""},
-                  body: { type: "string", description: ""}                  
-                }
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                replyId: { type: "integer", description: ""},
+                body: { type: "string", description: ""},
+                FeedbackPost: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string", description: "title of post"}
+                  }
+                }                  
               }
             }
+          }
         },
         400: { $ref: "#/components/res/ResWrongParameter" },
         401: { $ref: "#/components/res/ResNoAuthorization" },
@@ -727,6 +733,7 @@ exports.listReply = (req, res, next)=>{
     return models.FeedbackReply
       .findAll({ 
         attributes: ["replyId", "body"],
+        include: [ models.FeedbackPost ],
         where: { targetTeamId: teamId } 
       })
   }

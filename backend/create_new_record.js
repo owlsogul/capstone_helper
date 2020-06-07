@@ -219,6 +219,49 @@ module.exports = ()=>{
       ]
       return Promise.all(msgs)
     })
+    // feedback
+    .then(()=>{
+      let form = [
+        models.FeedbackForm.create(
+          { 
+            classId: 1, 
+            name: "Test Form", 
+            body: JSON.stringify(
+              {
+                "1": {
+                  "type": "number",
+                  "title": "내용의 흐름도",
+                  "shared": false
+                },
+                "3": {
+                  "type": "number",
+                  "title": "내용의 간략화",
+                  "shared": false
+                },
+                "2": {
+                  "type": "string",
+                  "title": "총평",
+                  "shared": true
+                } 
+              }
+            ) 
+          }
+        ),
+        models.FeedbackPost.create({
+          formId: 1,
+          classId: 1,
+          title: "3주차 피드백",
+          expiredDate: new Date("2020-06-08")
+        }),
+        models.FeedbackPost.create({
+          formId: 1,
+          classId: 1,
+          title: "4주차 피드백",
+          expiredDate: new Date("2020-06-10")
+        }),
+      ]
+      return Promise.all(form)
+    })
     .then(()=>{
       console.log("테스트 데이터 생성 완료!")
     })

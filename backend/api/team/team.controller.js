@@ -385,6 +385,126 @@ exports.getMyTeam = (req, res, next)=>{
 /**
 @swagger
 paths: {
+  /api/team/leave_team:{
+    post: {
+      tags: [ Team ],
+      summary: "팀에서 나가는 API",
+      description: "",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "해당 팀에서 나간다",
+        schema: {
+          type: "object",
+          required: [ "classId", "teamId" ],
+          properties: {
+            classId: { type: "integer", description: "수업 아이디"},
+            teamId: { type: "integer", description: "팀 아이디"},
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "없으면 빈 값으로 온다.",
+          schema: {
+            type: "object",
+            properties: {
+              msg: { type: "string", description: "success"},
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+ */
+exports.leaveTeam = (req, res)=>{
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let teamId = req.body.teamId
+
+  if (!classId || !teamId){
+    req.Error.wrongParameter(res, "classId or teamId")
+    return
+  }
+
+  // TODO: 기간 check
+
+  // join 찾기
+  const findJoin = ()=>{
+    return models.findAll({ where: { classId: classId, teamId: teamId } })
+  }
+
+  // 없으면 안되고, 있을경우
+  // 리더면 다른 사람에게
+  const checkLeader = (joins)=>{
+
+    let notMe = [] // 다른 사람있는지 check
+    let isLeader = false // leader인지 check
+    let findMe = false // 가입했는지 check
+
+    joins.forEach((join)=>{
+      if (join.user != userId) notMe.push(join) // 내가 아닐경우 notMe에
+      else { // 나일 경우 리더인지 확인
+        findMe = true
+        isLeader = join.isLeader
+      }
+    })
+    if (!findMe) throw new Error("NoJoin")
+    return { isLeader, notMe }
+  }
+
+  const deleteJoin = ()=>{
+    return models.Join.destroy({ where: { user: userId, classId: classId, teamId: teamId } })
+  }
+
+  const deleteTeam = ()=>{
+    return models.Team.destroy({ where: { teamId: teamId } })
+  }
+  
+  const routePromise = (data)=>{
+    let notMe = data.notMe
+    let isLeader = data.isLeader
+    if (notMe.length == 0) { // 나 제외 팀이 없을 경우
+      return deleteJoin().then(deleteTeam) // 조인 삭제 후 팀 삭제
+    }
+    else { // 나 제외 팀원이 있을 경우
+      if (isLeader){ // 내가 리더면 리더 변경
+        return models.Join
+                .update(
+                  { isLeader: true, joinStatus: 1 }, 
+                  { where: { user: notMe[0].user, teamId: teamId, classId: classId } })
+                .then(deleteJoin)
+      }
+      else { // 아니면 그냥 나감
+        return deleteJoin()
+      }
+    }
+  }
+
+  const respond = ()=>{
+    res.json({ msg: "success" })
+  }
+
+  findJoin()
+    .then(checkLeader)
+    .then(routePromise)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoJoin") req.Error.wrongParameter(res, "no join")
+      else req.Error.internal(res)
+    })
+
+}
+
+/**
+@swagger
+paths: {
   /api/team/get_invite:{
     post: {
       tags: [ Team ],

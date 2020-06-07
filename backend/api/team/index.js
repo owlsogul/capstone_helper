@@ -13,6 +13,8 @@ router.post("/create", [serviceUser.checkLogin, tc.createTeam])
 router.post("/get_myteam", [serviceUser.checkLogin, tc.getMyTeam])
 
 
+router.post("/leave_team", [serviceUser.checkLogin, tc.leaveTeam])
+
 router.post("/get_invite", [serviceUser.checkLogin, tc.getInvite])
 
 router.post("/invite", [serviceUser.checkLogin, tc.inviteMember])

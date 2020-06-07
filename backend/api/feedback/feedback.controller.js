@@ -321,6 +321,7 @@ exports.publishForm = (req, res, next)=>{
   let formId = req.body.formId
   let title = req.body.title
   let expiredDate = Date.parse(req.body.expiredDate)
+  let returnData = false
 
   if (!classId || !formId || !title){
     req.Error.wrongParameter(res, "classId expiredDate formId title")
@@ -341,12 +342,39 @@ exports.publishForm = (req, res, next)=>{
     })
   }
 
-  const respond = (data)=>{
-    res.json(data)
+  const createEmptyReplies = (post)=>{
+    returnData = post
+    return new Promise((res, rej)=>{
+      models.Team.findAll({ where: { classId: classId }})
+        .then(teams=>{
+          let replies = teams.reduce((prev, from)=>{
+            return prev.concat(
+              teams.filter(e=>e.teamId != from.teamId)
+                .map(to=>models.FeedbackReply.create(
+                  { 
+                    postId: post.postId, 
+                    teamId: from.teamId, 
+                    targetTeamId: to.teamId, 
+                    body: JSON.stringify({}) 
+                  }
+                )
+              )
+            )
+          }, [])
+          return Promise.all(replies)
+        })
+        .then(res)
+        .catch(rej)
+    })
+  }
+
+  const respond = ()=>{
+    res.json(returnData)
   }
   
   checkManager(userId, classId)
     .then(createPost)
+    .then(createEmptyReplies)
     .then(respond)
     .catch(err=>{
       console.log(err)

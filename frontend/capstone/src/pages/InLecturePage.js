@@ -17,17 +17,24 @@ export default class InLecturePage extends Component {
   constructor(props){
     super(props)
     this.state = {
-      classId: "",
+      classId: false,
       peers: {},
       myVideoStream: false,
       mySocketId: false,
-      error: false
+      error: false,
+      userMap: {}, // socketId 와 userId의 매핑 정보
+      userDataMap: {}, // userId와 userData의 매핑 정보
+      lectureId: false,
+      presentationUserId: false, // 발표자 socketId
+      presentationStartedAt: false
     }
     this.getMedia = this.getMedia.bind(this)
     this.onMedia = this.onMedia.bind(this)
     this.createWebRTCSocket = this.createWebRTCSocket.bind(this)
     this.connectWebRTCSocket = this.connectWebRTCSocket.bind(this)
     this.handleComplete = this.handleComplete.bind(this)
+    this.requestUserMap = this.requestUserMap.bind(this)
+    this.handleUserMap = this.handleUserMap.bind(this)
   }
 
   /** 현 기기의 화면/소리를 가져오는 method */
@@ -47,7 +54,6 @@ export default class InLecturePage extends Component {
    * @param {*} stream 
    */
   onMedia(stream) {
-
     this.setState({ myVideoStream: stream })
     this.forceUpdate() // we have stream
   }
@@ -72,20 +78,42 @@ export default class InLecturePage extends Component {
         console.log(err);
       })
 
+    // user on connect
+      this.socket.on('peer', msg => {
+        const peerId = msg.peerId
+        console.log('new peer poof!', peerId)
+        if (peerId === this.socket.id) {
+          return this.debug('Peer is me :D', peerId)
+        }
+        this.createPeer(peerId, true, this.state.myVideoStream)
+        this.socket.emit("member", { lectureId: this.state.lectureId })
+      })
+  
+      // 멤버 관련 부분
+      this.socket.on("member", msg=>{
+        let result = msg.result
+        console.log("MEMBER EVENT", result)
+        if (result){
+          this.setState({ userMap: result})
+        }      
+      })
+  
+      // 발표 관련 부분
+      this.socket.on("presentation", msg=>{
+          let type = msg.type
+          let userId = msg.userId
+          let startedAt = msg.startedAt
+          this.setState({ presentationUserId: userId, presentationStartedAt: startedAt })
+          console.log("발표자:", userId)
+      })
 
     })
   }
 
-  connectWebRTCSocket(){
-    
-    this.socket.on('peer', msg => {
-      const peerId = msg.peerId
-      this.debug('new peer poof!', peerId)
-      if (peerId === this.socket.id) {
-        return this.debug('Peer is me :D', peerId)
-      }
-      this.createPeer(peerId, true, this.state.myVideoStream)
-    })
+  connectWebRTCSocket(data){
+    this.setState({ lectureId: data.lectureId })
+    this.socket.emit("member", { lectureId: data.lectureId })
+    // user on signal
     this.socket.on('signal', data => {
       const peerId = data.from
       const peer = this.state.peers[peerId]
@@ -95,10 +123,15 @@ export default class InLecturePage extends Component {
       this.debug('Setting signal', peerId, data)
       this.signalPeer(this.state.peers[peerId], data.signal)
     })
+
+    // user on disconnected
     this.socket.on('unpeer', msg => {
       this.debug('Unpeer', msg)
       this.destroyPeer(msg.peerId)
+      this.socket.emit("member", { lectureId: data.lectureId })
     })
+
+    // lecture is ended
     this.socket.on("end", msg=>{
       this.socket.close()
       Object.entries(this.state.peers).forEach(entry=>{
@@ -116,6 +149,15 @@ export default class InLecturePage extends Component {
     this.setState({mySocketId: this.socket.id})
   }
 
+  requestUserMap(){
+    return network.network("/api/lecture/get_user_map", { body: { classId: this.state.classId, lectureId: this.state.lectureId} })
+  }
+
+  handleUserMap(res){
+    console.log("USER DATA MAP", res)
+    this.setState({ userDataMap: res })
+  }
+
   componentDidMount(){
 
     // classId parsing
@@ -128,6 +170,8 @@ export default class InLecturePage extends Component {
       .then(()=>{ return requestSocketLectureJoin(classId, this.socket.id) })
       .then(this.connectWebRTCSocket)
       .then(this.handleComplete)
+      .then(this.requestUserMap)
+      .then(this.handleUserMap)
       .catch(err=>{
         let errMsg = "알 수 없는 오류"
         if (err.status){
@@ -144,7 +188,6 @@ export default class InLecturePage extends Component {
       })
 
   }
-
   
   createPeer(peerId, initiator, stream) {
     this.debug('creating new peer', peerId, initiator)
@@ -168,13 +211,6 @@ export default class InLecturePage extends Component {
       this.debug('Connected to peer', peerId)
       //peer.connected = true
       this.setPeerState(peerId, peer)
-      peer.send(this.serialize({
-        msg: 'hey man!'
-      }))
-    })
-
-    peer.on('data', data => {
-      this.debug('Data from peer', peerId, this.unserialize(data))
     })
 
     peer.on('error', (e) => {
@@ -226,13 +262,56 @@ export default class InLecturePage extends Component {
     }
   }
 
+  handlePresentation(){
+    let isPresentation = this.state.presentationUserId
+    if(!isPresentation){
+      network.network("/api/presentation/start_presentation", {body: {classId: this.state.classId}})
+        .then(res=>{
+          console.log(res)
+        })
+        .catch(err=>{
+          if (err.status == 409){
+            alert("already start")
+          }
+          else {
+            alert("error")
+          }
+        })
+    }
+    else {
+      network.network("/api/presentation/end_presentation", {body: {classId: this.state.classId}})
+        .then(res=>{
+          console.log(res)
+        })
+        .catch(err=>{
+          if (err.status == 409){
+            alert("already start")
+          }
+          else {
+            alert("error")
+          }
+        })
+    }
+  }
+
   render() {
     let page = (<></>)
     if (this.state.error) {
       page = <ErrorPage msg={this.state.error}/>
     }
     else {
-      page = <LecturePage mySocketId={this.state.mySocketId } myVideoStream={this.state.myVideoStream} peers={this.state.peers}/>
+      page = 
+      <LecturePage 
+        mySocketId={this.state.mySocketId } 
+        myVideoStream={this.state.myVideoStream} 
+        peers={this.state.peers} 
+        userMap={this.state.userMap} 
+        userDataMap={this.state.userDataMap}
+        presentationUserId={this.state.presentationUserId}
+
+        // event callback
+        onClickPresentation={this.handlePresentation.bind(this)}
+      />
     }
     return (
       <ClassTemplate match={this.props.match}>

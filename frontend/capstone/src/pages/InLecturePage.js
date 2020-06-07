@@ -270,9 +270,11 @@ export default class InLecturePage extends Component {
           console.log(res)
         })
         .catch(err=>{
-          if (err.status){
-            var status = err.status
-            err.json().then(data => { console.log(status, data)})
+          if (err.status == 409){
+            alert("already start")
+          }
+          else {
+            alert("error")
           }
         })
     }
@@ -282,9 +284,11 @@ export default class InLecturePage extends Component {
           console.log(res)
         })
         .catch(err=>{
-          if (err.status){
-            var status = err.status
-            err.json().then(data => { console.log(status, data)})
+          if (err.status == 409){
+            alert("already start")
+          }
+          else {
+            alert("error")
           }
         })
     }

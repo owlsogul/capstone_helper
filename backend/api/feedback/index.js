@@ -19,6 +19,6 @@ router.post("/delete_post", [serviceUser.checkLogin, fc.deletePost])
 
 router.post("/save_reply", [serviceUser.checkLogin, fc.replyPost])
 
-router.post("/list_response", [serviceUser.checkLogin, fc.listResponse])
+router.post("/list_reply", [serviceUser.checkLogin, fc.listReply])
 
 module.exports = router

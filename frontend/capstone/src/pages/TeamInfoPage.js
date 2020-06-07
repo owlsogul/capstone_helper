@@ -47,14 +47,17 @@ export default class TeamInfoPage extends Component {
               value={this.state.githubUrl}
             />
             <InputGroup.Append>
-              <Button variant="outline-primary">Save</Button>
+              <Button variant="outline-primary">저장</Button>
+              <Button variant="outline-primary">연동하기</Button>
             </InputGroup.Append>
           </InputGroup>
+          {/*
+            발표 자료 
+            // n주차: upload 버튼
+            // n-1주차: 파일명이고, 누르면 다운로드
+          */}
         </div>
       </TeamTemplate>
     );
   }
-  
 }
-
-

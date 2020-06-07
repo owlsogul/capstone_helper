@@ -6,14 +6,6 @@ export default class JoinPage extends Component {
   }
 
   componentDidMount(){
-    let inviteCode = this.props.match.params.code
-    fetch("/api/class/invite/" + inviteCode)
-      .then(res=>res.json())
-      .then(res=>{
-        console.log(res)
-        alert("수업이 등록되었습니다.")
-        window.location = "/dashboard"
-      })
   }
 
   render() {

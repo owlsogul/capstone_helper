@@ -14,6 +14,10 @@ const getClassInfo = (classId) => {
   })
 }
 
+const getPermisson = (classId) => {
+  return network.network("/api/class/get_permission", { body: { classId: classId } })
+}
+
 const getLectureInfo = (classId) => {
   return network.network("/api/lecture/get_current_lecture", { body: { classId: classId } })
 }
@@ -23,6 +27,7 @@ export default class Bar extends Component {
     super(props);
     this.state = { 
       className: "",
+      permission: -1,
       urlNotice: "#",
       urlStudentInfo: "#",
       urlTeamInfo: "#",
@@ -41,6 +46,7 @@ export default class Bar extends Component {
           urlNotice: `/${res.classId}/notice`,
           urlStudentInfo: `/${res.classId}/students`,
           urlTeamInfo: `/${res.classId}/teams`,
+          urlAdminTeamInfo: `/${res.classId}/admin_teams`,
           urlClassInfo: `/${res.classId}/classinfo`,
           urlManageLinks: `/${res.classId}/manageLink`,
 
@@ -65,14 +71,27 @@ export default class Bar extends Component {
           console.log(err)
         }
       })
+
+    getPermisson(classId)
+      .then(res=>{
+        console.log("getPermission")
+        console.log(res)
+        this.setState({permission: res["relationType"]})
+      })
     
   }
 
   render(){
-
+    var myTeamInfo = null
     let lectureBadge = <Badge variant="secondary">OFF</Badge>
     if (this.state.lectureStatus){
-      lectureBadge = <Badge variant="primary">ON <Moment fromNow>{this.state.lectureStatus.startedAt}</Moment></Badge>
+      lectureBadge = <Badge variant="primary" onClick={()=>{window.location=`/${this.state.lectureStatus.classId}/lecture`}}>ON <Moment fromNow>{this.state.lectureStatus.startedAt}</Moment></Badge>
+    }
+    if (this.state.permission == 1){
+      // 학생
+      myTeamInfo = <Nav.Link href={this.state.urlTeamInfo}>조 정보</Nav.Link>
+    } else if (this.state.permission > 1){
+      myTeamInfo = <Nav.Link href={this.state.urlAdminTeamInfo}>조 정보</Nav.Link>
     }
 
     return (
@@ -84,7 +103,7 @@ export default class Bar extends Component {
             <Navbar.Text>수업 {lectureBadge}</Navbar.Text>
             <Nav.Link href={this.state.urlNotice}>공지사항</Nav.Link>
             <Nav.Link href={this.state.urlStudentInfo}>학생 정보</Nav.Link>
-            <Nav.Link href={this.state.urlTeamInfo}>조 정보</Nav.Link>
+            {myTeamInfo}
             <Nav.Link href={this.state.urlManageLinks}>초대링크 관리</Nav.Link>
             <Nav.Link href={this.state.urlClassInfo}>수업 정보</Nav.Link>
           </Nav>

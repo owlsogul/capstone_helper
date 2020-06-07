@@ -28,8 +28,8 @@ export default class TeamBar extends Component {
       this.setState({
         teamName: team.teamName,
         urlTeamInfo: `/${classId}/teams/${teamId}/info`,
-        urlDoFeedback: `/${classId}/teams/${teamId}/info`,
-        urlFeedback: `/${classId}/teams/${teamId}/info`,
+        urlDoFeedback: `/${classId}/teams/${teamId}/feedback`,
+        urlFeedback: `/${classId}/teams/${teamId}/check_feedback`,
       })
     })
     .catch(err=>{

@@ -10,13 +10,14 @@ const Sequelize = require("sequelize")
 const Op = Sequelize.Op;
 
 
-const checkManager = (userId, classId)=>{
+const checkManager = (userId, classId, level)=>{
+  if (!level) level = 2
   return models.ClassRelation.findOne({
     where: {
       user: userId,
       classId: classId,
       relationType: {
-        [Op.gte]: 2
+        [Op.gte]: level
       }
     }
   })
@@ -430,7 +431,7 @@ exports.listPost = (req, res, next)=>{
     res.json(form)
   }
   
-  checkManager(userId, classId)
+  checkManager(userId, classId, 1)
     .then(findPost)
     .then(respond)
     .catch(err=>{

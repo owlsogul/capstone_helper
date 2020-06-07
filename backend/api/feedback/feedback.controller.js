@@ -532,7 +532,7 @@ paths: {
             postId: { type: "integer", description: "postId" },
             teamId: { type: "integer", description: "내 팀" },
             targetTeamId: { type: "integer", description: "피드백 할 팀" },
-            body: { type: "string"", description: "내용" },
+            body: { type: "string", description: "내용" },
           }
         }
       }],

@@ -244,17 +244,17 @@ module.exports = ()=>{
             name: "Test Form", 
             body: JSON.stringify(
               {
-                "1": {
+                "_1": {
                   "type": "number",
                   "title": "내용의 흐름도",
                   "shared": false
                 },
-                "3": {
+                "_3": {
                   "type": "number",
                   "title": "내용의 간략화",
                   "shared": false
                 },
-                "2": {
+                "_2": {
                   "type": "string",
                   "title": "총평",
                   "shared": true
@@ -287,76 +287,76 @@ module.exports = ()=>{
           postId: 1,
           teamId: 1,
           targetTeamId: 2,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 1->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 1->2 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 1,
           targetTeamId: 3,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 1->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 1->3 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 1,
           targetTeamId: 4,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 1->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 1->4 피드백" })
         }),
         //2
         models.FeedbackReply.create({
           postId: 1,
           teamId: 2,
           targetTeamId: 1,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 2->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->2 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 2,
           targetTeamId: 3,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 2->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->3 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 1,
           targetTeamId: 4,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 2->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->4 피드백" })
         }),
         // 3
         models.FeedbackReply.create({
           postId: 1,
           teamId: 3,
           targetTeamId: 2,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 3->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 3->2 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 3,
           targetTeamId: 1,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 3->1 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 3->1 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 3,
           targetTeamId: 4,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 3->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 3->4 피드백" })
         }),
         // 4
         models.FeedbackReply.create({
           postId: 1,
           teamId: 4,
           targetTeamId: 2,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 4->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 4->2 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 4,
           targetTeamId: 1,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 4->1 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 4->1 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 4,
           targetTeamId: 3,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 4->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 4->3 피드백" })
         }),
 
         // 4주차
@@ -365,76 +365,76 @@ module.exports = ()=>{
           postId: 2,
           teamId: 1,
           targetTeamId: 2,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 1->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 1->2 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 1,
           targetTeamId: 3,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 1->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 1->3 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 1,
           targetTeamId: 4,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 1->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 1->4 피드백" })
         }),
         //2
         models.FeedbackReply.create({
           postId: 2,
           teamId: 2,
           targetTeamId: 1,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 2->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->2 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 2,
           targetTeamId: 3,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 2->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->3 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 1,
           targetTeamId: 4,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 2->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->4 피드백" })
         }),
         // 3
         models.FeedbackReply.create({
           postId: 2,
           teamId: 3,
           targetTeamId: 2,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 3->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 3->2 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 3,
           targetTeamId: 1,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 3->1 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 3->1 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 3,
           targetTeamId: 4,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 3->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 3->4 피드백" })
         }),
         // 4
         models.FeedbackReply.create({
           postId: 2,
           teamId: 4,
           targetTeamId: 2,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 4->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 4->2 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 4,
           targetTeamId: 1,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 4->1 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 4->1 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 4,
           targetTeamId: 3,
-          body: JSON.stringify({ "1": "5", "3":"5", "2":"3주차 4->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 4->3 피드백" })
         }),
       ]
       return Promise.all(msg)

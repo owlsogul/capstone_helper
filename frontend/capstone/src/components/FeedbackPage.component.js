@@ -61,6 +61,11 @@ function SimpleExpansionPanel(props) {
 
 function MyExpansionPanel(props) {
   const classes = useStyles();
+  var a = null;
+  var b = null;
+  a = props.questionsAndAnswers[Object.keys(props.questionsAndAnswers)]
+  console.log(a) // [Log] {질문1: "발표를 잘했나요?", 질문2: "발표 자료의 완성도는 어땠나요?"} (main.chunk.js, line 1203)
+  console.log(Object.keys(a)) // [Log] ["질문1", "질문2"] (2) (main.chunk.js, line 1204)
   return (
     <div className={classes.root}>
       <ExpansionPanel>
@@ -74,7 +79,11 @@ function MyExpansionPanel(props) {
         <ExpansionPanelDetails>
           <Typography>
             <Pagination count={props.count} color="primary"></Pagination>
-            <h1>{`${props.questionsAndAnswers}`}</h1>
+            {
+              Object.keys(a).map((key)=>{
+                return <li>{key+':'+ a[key]}</li>
+              })
+            }
           </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>

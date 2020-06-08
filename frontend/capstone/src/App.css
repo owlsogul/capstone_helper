@@ -104,12 +104,12 @@ li {
 }
 
 .dashboard-left {
-  width: 100px;
+  flex: 0 0 100px;
   z-index: 1039;
 }
 
 .dashboard-body {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;

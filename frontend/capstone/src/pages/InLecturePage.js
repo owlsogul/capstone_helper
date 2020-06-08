@@ -24,7 +24,9 @@ export default class InLecturePage extends Component {
       error: false,
       userMap: {}, // socketId 와 userId의 매핑 정보
       userDataMap: {}, // userId와 userData의 매핑 정보
-      lectureId: false
+      lectureId: false,
+      presentationUserId: false, // 발표자 socketId
+      presentationStartedAt: false
     }
     this.getMedia = this.getMedia.bind(this)
     this.onMedia = this.onMedia.bind(this)
@@ -52,15 +54,14 @@ export default class InLecturePage extends Component {
    * @param {*} stream 
    */
   onMedia(stream) {
-
     this.setState({ myVideoStream: stream })
     this.forceUpdate() // we have stream
   }
 
   createWebRTCSocket(){
     return new Promise((res, rej)=>{
-      this.socket = io("http://localhost:30081/socket.io")
-      //this.socket = io.connect("https://caphelper.owlsogul.com/socket.io")
+      //this.socket = io("http://localhost:30081/socket.io")
+      this.socket = io.connect("https://caphelper.owlsogul.com/socket.io")
       this.setState({ error: "연결 대기중입니다."})
       this.socket.on("connect", ()=>{
         console.log("client nsp->%s", this.socket.nsp);  
@@ -76,29 +77,42 @@ export default class InLecturePage extends Component {
       this.socket.on('reconnect_failed', function(err) {
         console.log(err);
       })
+
+    // user on connect
+      this.socket.on('peer', msg => {
+        const peerId = msg.peerId
+        console.log('new peer poof!', peerId)
+        if (peerId === this.socket.id) {
+          return this.debug('Peer is me :D', peerId)
+        }
+        this.createPeer(peerId, true, this.state.myVideoStream)
+        this.socket.emit("member", { lectureId: this.state.lectureId })
+      })
+  
+      // 멤버 관련 부분
+      this.socket.on("member", msg=>{
+        let result = msg.result
+        console.log("MEMBER EVENT", result)
+        if (result){
+          this.setState({ userMap: result})
+        }      
+      })
+  
+      // 발표 관련 부분
+      this.socket.on("presentation", msg=>{
+          let type = msg.type
+          let userId = msg.userId
+          let startedAt = msg.startedAt
+          this.setState({ presentationUserId: userId, presentationStartedAt: startedAt })
+          console.log("발표자:", userId)
+      })
+
     })
   }
 
   connectWebRTCSocket(data){
     this.setState({ lectureId: data.lectureId })
-    // user on connect
-    this.socket.on('peer', msg => {
-      const peerId = msg.peerId
-      console.log('new peer poof!', peerId)
-      if (peerId === this.socket.id) {
-        return this.debug('Peer is me :D', peerId)
-      }
-      this.createPeer(peerId, true, this.state.myVideoStream)
-    })
-
-    this.socket.on("member", msg=>{
-      let result = msg.result
-      console.log("MEMBER EVENT", result)
-      if (result){
-        this.setState({ userMap: result})
-      }      
-    })
-
+    this.socket.emit("member", { lectureId: data.lectureId })
     // user on signal
     this.socket.on('signal', data => {
       const peerId = data.from
@@ -114,6 +128,7 @@ export default class InLecturePage extends Component {
     this.socket.on('unpeer', msg => {
       this.debug('Unpeer', msg)
       this.destroyPeer(msg.peerId)
+      this.socket.emit("member", { lectureId: data.lectureId })
     })
 
     // lecture is ended
@@ -139,7 +154,7 @@ export default class InLecturePage extends Component {
   }
 
   handleUserMap(res){
-    console.log("USER MAP", res)
+    console.log("USER DATA MAP", res)
     this.setState({ userDataMap: res })
   }
 
@@ -173,7 +188,6 @@ export default class InLecturePage extends Component {
       })
 
   }
-
   
   createPeer(peerId, initiator, stream) {
     this.debug('creating new peer', peerId, initiator)
@@ -197,7 +211,6 @@ export default class InLecturePage extends Component {
       this.debug('Connected to peer', peerId)
       //peer.connected = true
       this.setPeerState(peerId, peer)
-      this.socket.emit("member", { lectureId: this.state.lectureId })
     })
 
     peer.on('error', (e) => {
@@ -249,13 +262,52 @@ export default class InLecturePage extends Component {
     }
   }
 
+  handlePresentation(){
+    let isPresentation = this.state.presentationUserId
+    if(!isPresentation){
+      network.network("/api/presentation/start_presentation", {body: {classId: this.state.classId}})
+        .then(res=>{
+          console.log(res)
+        })
+        .catch(err=>{
+          if (err.status){
+            var status = err.status
+            err.json().then(data => { console.log(status, data)})
+          }
+        })
+    }
+    else {
+      network.network("/api/presentation/end_presentation", {body: {classId: this.state.classId}})
+        .then(res=>{
+          console.log(res)
+        })
+        .catch(err=>{
+          if (err.status){
+            var status = err.status
+            err.json().then(data => { console.log(status, data)})
+          }
+        })
+    }
+  }
+
   render() {
     let page = (<></>)
     if (this.state.error) {
       page = <ErrorPage msg={this.state.error}/>
     }
     else {
-      page = <LecturePage mySocketId={this.state.mySocketId } myVideoStream={this.state.myVideoStream} peers={this.state.peers} userMap={this.state.userMap} userDataMap={this.state.userDataMap}/>
+      page = 
+      <LecturePage 
+        mySocketId={this.state.mySocketId } 
+        myVideoStream={this.state.myVideoStream} 
+        peers={this.state.peers} 
+        userMap={this.state.userMap} 
+        userDataMap={this.state.userDataMap}
+        presentationUserId={this.state.presentationUserId}
+
+        // event callback
+        onClickPresentation={this.handlePresentation.bind(this)}
+      />
     }
     return (
       <ClassTemplate match={this.props.match}>

@@ -33,6 +33,12 @@ export default class CheckFeedbackPage extends Component {
       <TeamTemplate match={this.props.match} history={this.props.history}>
         <div>
           {this.state.posts.map((e) => {
+            console.log("e.body는")
+            console.log(e.body)
+            var down = '_2'
+            console.log(Object.keys(e.body))
+            console.log(e.body["_2"])
+            console.log(e.FeedbackPost.FeedbackForm.body)
             return <DefaultFeedbackList title={e.body} body={e.FeedbackPost.FeedbackForm.body}></DefaultFeedbackList>
           })}
         </div>

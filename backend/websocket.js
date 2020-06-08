@@ -19,7 +19,8 @@ String.prototype.toNspId = function() {
  */
 class SocketServer {
   constructor(){
-    this.lectureRooms = [ "1" ]
+    this.lectureRooms = []
+    this.presentationMap = {}
 
     this.listen = this.listen.bind(this)
     this.handleConnection = this.handleConnection.bind(this)
@@ -43,11 +44,16 @@ class SocketServer {
     let idx = this.lectureRooms.findIndex(e=>e==lectureId)
     if (idx >= 0) this.lectureRooms = this.lectureRooms.splice(idx, 1)
     this.nsp.to(lectureId).emit("end", { lectureId: lectureId })
+    // 발표 저장 부분 지우기
+    delete this.presentationMap[lectureId]
   }
 
   startLecture(_lectureId){
     let lectureId = String(_lectureId)
     this.lectureRooms.push(lectureId)
+    console.log("current lecture rooms are " + JSON.stringify(this.lectureRooms, null, 2))
+    this.presentationMap[lectureId] = { type: 0 }
+    console.log(this.presentationMap)
   }
 
   /**
@@ -56,7 +62,7 @@ class SocketServer {
    * @param {*} _lectureId 
    * @param {*} socketId 
    */
-  joinLecture(_lectureId, socketId){
+  joinLecture(_lectureId, socketId, userId){
 
     let io = this.io
     let nsp = this.nsp
@@ -71,8 +77,16 @@ class SocketServer {
       socket.join(lectureId, (err)=>{
         if (err) console.log(err)
         socket.joinedLecture = lectureId
-        console.log(`${socket.joinedLecture}에 ${socket.id}가 들어갔습니다.`)
+        socket.userId = userId
+        console.log(`${socket.joinedLecture}에 ${socket.id}:${userId}가 들어갔습니다.`)
         nsp.to(lectureId).emit('peer', { peerId: socket.id })
+
+        console.log("presentation map", this.presentationMap)
+        if (this.presentationMap[lectureId] && this.presentationMap[lectureId].type == 1){
+          var pData = this.presentationMap[lectureId]
+          socket.emit({ type: "start", userId: pData.userId, startedAt: pData.startedAt })
+          console.log("presentation map", pData)
+        }
         res(lectureId)
 
       })
@@ -84,6 +98,7 @@ class SocketServer {
    * @param {*} socket 
    */
   handleConnection(socket){
+    console.log("on connect event", socket.id)
     let io = this.io
     let nsp = this.nsp
     console.log('a user connected');
@@ -107,7 +122,7 @@ class SocketServer {
 
     socket.on('signal', msg => {
         const receiverId = msg.to
-        const receiver = io.sockets.connected[receiverId.toSocketId()]
+        const receiver = nsp.connected[receiverId]
         if (receiver) {
         const data = {
             from: socket.id,
@@ -119,7 +134,57 @@ class SocketServer {
             console.log('no receiver found', receiverId)
         }
     })
+    
+    socket.on("member", msg=>{
+      console.log("on member event", msg)
+      let lectureId = String(msg.lectureId)
+      if (!lectureId || lectureId != socket.joinedLecture) {
+        console.log("not in lecture :", lectureId, socket.joinedLecture)
+        socket.emit({ result: false })
+        return
+      }
+
+      let userMap = {}
+      Object.entries(nsp.in(lectureId).connected).forEach(([key, value])=>{
+        userMap[key] = value.userId
+      })
+      socket.emit("member", { result: userMap })
+      console.log(socket.userId, "request", userMap)
+    })
+
   }
+
+  /**
+   * 발표 관련 처리 부분
+   */
+
+  // 발표 시작
+  startPresentation(_lectureId, userId, startedAt){
+    let io = this.io
+    let nsp = this.nsp
+    let lectureId = String(_lectureId)
+    let lectureRooms = this.lectureRooms
+    if (!lectureRooms.includes(lectureId)) { throw new Error("WrongLectureId")}
+    nsp.to(lectureId).emit("presentation", { type: "start", userId: userId, startedAt: startedAt })
+    this.presentationMap[lectureId] = {
+      type: 1,
+      startedAt: startedAt,
+      userId: userId
+    }
+    console.log(this.presentationMap)
+  }
+
+  endPresentation(_lectureId){
+    let io = this.io
+    let nsp = this.nsp
+    let lectureId = String(_lectureId)
+    let lectureRooms = this.lectureRooms
+    if (!lectureRooms.includes(lectureId)) { throw new Error("WrongLectureId")}
+    nsp.to(lectureId).emit("presentation", { type:"end" })
+    this.presentationMap[lectureId] = { type: 0 }
+    console.log(this.presentationMap)
+  }
+  
 }
 
 const _socketServer = new SocketServer()

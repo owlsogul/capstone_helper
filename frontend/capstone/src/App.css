@@ -75,7 +75,7 @@ ul {
 li {
   list-style-type: none;
 }
-
+/* 
 .btn {
   color: rgb(1, 116, 183);
   background: white;
@@ -85,7 +85,7 @@ li {
   font-size: 1rem;
   line-height: 1.5;
   font-weight: bold;
-}
+} */
 
 .dashboard-page {
   left: 0;

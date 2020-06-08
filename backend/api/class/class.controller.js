@@ -97,6 +97,48 @@ exports.listClass = (req, res, next)=>{
 
 }
 
+
+/**
+@swagger
+paths: {
+  /api/class/info/classId: {
+    get: {
+      tags: [ Class ],
+      summary: "class의 정보를 확인하는 API",
+      description: "/api/class/info/(해당 classId)",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "param",
+          required: [ "classId" ],
+          properties: {
+            classId: { type: "integer", description: "classId" },
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "결과.",
+          schema: {
+            type: "object",
+            properties: {
+              className: { type: "string", description: ""},
+              isMatching: { type: "boolean", description: "true or false"},
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
 exports.getClassInfo = (req, res, next)=>{
   let userId = req.ServiceUser.userId
   let classId = req.params.classId
@@ -159,7 +201,7 @@ paths: {
 exports.getUserPermission = (req, res)=>{
 
   let userId = req.ServiceUser.userId
-  let classId = req.params.classId
+  let classId = req.body.classId
 
   if (!classId){
     req.Error.wrongParameter(res, "classId")
@@ -689,7 +731,7 @@ exports.listMember = (req, res, next)=>{
  * @swagger
  *  paths: {
  *    /api/class/set_matching: {
- *      get: {
+ *      post: {
  *        tags: [ Class ],
  *        summary: "팀 매칭 여부를 결정하는 api",
  *        description: "팀 매칭을 하는 기간인지 아닌지 결정하는 api입니다.",
@@ -715,7 +757,7 @@ exports.setMatching = (req, res, next)=>{
 
   let userId = req.ServiceUser.userId
   let classId = req.body.classId
-  let matchingInfo = req.body.matching
+  let matchingInfo = req.body.matchingInfo
 
   if (!classId){
     req.Error.wrongParameter(res,"classId")
@@ -726,7 +768,7 @@ exports.setMatching = (req, res, next)=>{
     return models.ClassRelation.findOne({ where: { user: userId, classId: classId, [Op.gte]:{ relationType: 2 } } })
   }
 
-  const setMatching = (result)=>{
+  const settingMatching = (result)=>{
     if (!result) {
       throw new Error("NoAuth")
     }
@@ -760,7 +802,7 @@ exports.setMatching = (req, res, next)=>{
   }
 
   chkPermission()
-    .then(setMatching)
+    .then(settingMatching)
     .then(sortTeam)
     .then(respond)
     .catch(err=>{
@@ -769,6 +811,8 @@ exports.setMatching = (req, res, next)=>{
       else req.Error.internal(res)
     })
 }
+
+
 
 exports.listNotice = (req, res, next)=>{
 

@@ -35,5 +35,16 @@ module.exports = function(sequelize, DataTypes){
         underscored: true,
         freezeTableName: true
     });
+    model.associate = function(models){
+        model.hasMany(models.Presentation, {
+            foreignKey: "userId"
+        })
+        model.hasMany(models.Join, {
+          foreignKey: "user"
+        })
+        model.hasMany(models.ClassRelation, {
+            foreignKey: "user"
+        })
+    }
     return model;
 }

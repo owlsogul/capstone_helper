@@ -19,7 +19,6 @@ export default class InLecturePage extends Component {
     this.state = {
       classId: false,
       peers: {},
-      myVideoStream: false,
       mySocketId: false,
       error: false,
       userMap: {}, // socketId 와 userId의 매핑 정보
@@ -28,6 +27,7 @@ export default class InLecturePage extends Component {
       presentationUserId: false, // 발표자 socketId
       presentationStartedAt: false
     }
+    this.myVideoStream = false
     this.getMedia = this.getMedia.bind(this)
     this.onMedia = this.onMedia.bind(this)
     this.createWebRTCSocket = this.createWebRTCSocket.bind(this)
@@ -54,14 +54,14 @@ export default class InLecturePage extends Component {
    * @param {*} stream 
    */
   onMedia(stream) {
-    this.setState({ myVideoStream: stream })
+    this.myVideoStream = stream
     this.forceUpdate() // we have stream
   }
 
   createWebRTCSocket(){
     return new Promise((res, rej)=>{
-      //this.socket = io("http://localhost:30081/socket.io")
-      this.socket = io.connect("https://caphelper.owlsogul.com/socket.io")
+      this.socket = io("http://localhost:30081/socket.io")
+      //this.socket = io.connect("https://caphelper.owlsogul.com/socket.io")
       this.setState({ error: "연결 대기중입니다."})
       this.socket.on("connect", ()=>{
         console.log("client nsp->%s", this.socket.nsp);  
@@ -85,7 +85,7 @@ export default class InLecturePage extends Component {
         if (peerId === this.socket.id) {
           return this.debug('Peer is me :D', peerId)
         }
-        this.createPeer(peerId, true, this.state.myVideoStream)
+        this.createPeer(peerId, true, this.myVideoStream)
         this.socket.emit("member", { lectureId: this.state.lectureId })
       })
   
@@ -118,7 +118,7 @@ export default class InLecturePage extends Component {
       const peerId = data.from
       const peer = this.state.peers[peerId]
       if (!peer) {
-        this.createPeer(peerId, false, this.state.myVideoStream)
+        this.createPeer(peerId, false, this.myVideoStream)
       }
       this.debug('Setting signal', peerId, data)
       this.signalPeer(this.state.peers[peerId], data.signal)
@@ -203,6 +203,10 @@ export default class InLecturePage extends Component {
   
     peer.on('stream', (stream) => {
       this.debug('Got peer stream!!!', peerId, stream)
+      if (peerId == this.socket.id) {
+        peer.stream = this.myVideoStream
+        return this.setPeerState(peerId, peer)
+      }
       peer.stream = stream
       this.setPeerState(peerId, peer)
     })
@@ -270,9 +274,11 @@ export default class InLecturePage extends Component {
           console.log(res)
         })
         .catch(err=>{
-          if (err.status){
-            var status = err.status
-            err.json().then(data => { console.log(status, data)})
+          if (err.status == 409){
+            alert("already start")
+          }
+          else {
+            alert("error")
           }
         })
     }
@@ -282,9 +288,11 @@ export default class InLecturePage extends Component {
           console.log(res)
         })
         .catch(err=>{
-          if (err.status){
-            var status = err.status
-            err.json().then(data => { console.log(status, data)})
+          if (err.status == 409){
+            alert("already start")
+          }
+          else {
+            alert("error")
           }
         })
     }
@@ -299,7 +307,7 @@ export default class InLecturePage extends Component {
       page = 
       <LecturePage 
         mySocketId={this.state.mySocketId } 
-        myVideoStream={this.state.myVideoStream} 
+        myVideoStream={this.myVideoStream} 
         peers={this.state.peers} 
         userMap={this.state.userMap} 
         userDataMap={this.state.userDataMap}

@@ -10,13 +10,14 @@ const Sequelize = require("sequelize")
 const Op = Sequelize.Op;
 
 
-const checkManager = (userId, classId)=>{
+const checkManager = (userId, classId, level)=>{
+  if (!level) level = 2
   return models.ClassRelation.findOne({
     where: {
       user: userId,
       classId: classId,
       relationType: {
-        [Op.gte]: 2
+        [Op.gte]: level
       }
     }
   })
@@ -159,7 +160,7 @@ exports.editForm = (req, res, next)=>{
   const checkBody = ()=>{
     try {
       JSON.parse(body)
-    } catch {
+    } catch(err) {
       throw new Error("WrongBody")
     }
   }
@@ -320,6 +321,7 @@ exports.publishForm = (req, res, next)=>{
   let formId = req.body.formId
   let title = req.body.title
   let expiredDate = Date.parse(req.body.expiredDate)
+  let returnData = false
 
   if (!classId || !formId || !title){
     req.Error.wrongParameter(res, "classId expiredDate formId title")
@@ -340,12 +342,39 @@ exports.publishForm = (req, res, next)=>{
     })
   }
 
-  const respond = (data)=>{
-    res.json(data)
+  const createEmptyReplies = (post)=>{
+    returnData = post
+    return new Promise((res, rej)=>{
+      models.Team.findAll({ where: { classId: classId }})
+        .then(teams=>{
+          let replies = teams.reduce((prev, from)=>{
+            return prev.concat(
+              teams.filter(e=>e.teamId != from.teamId)
+                .map(to=>models.FeedbackReply.create(
+                  { 
+                    postId: post.postId, 
+                    teamId: from.teamId, 
+                    targetTeamId: to.teamId, 
+                    body: JSON.stringify({}) 
+                  }
+                )
+              )
+            )
+          }, [])
+          return Promise.all(replies)
+        })
+        .then(res)
+        .catch(rej)
+    })
+  }
+
+  const respond = ()=>{
+    res.json(returnData)
   }
   
   checkManager(userId, classId)
     .then(createPost)
+    .then(createEmptyReplies)
     .then(respond)
     .catch(err=>{
       console.log(err)
@@ -386,6 +415,16 @@ paths: {
                 type: "object",
                 properties: {
                   postId: { type: "integer", description: ""},
+                  expiredDate: { type: "string", description: "만료일"},
+                  FeedbackForm: { 
+                    type: "object", 
+                    description: "", 
+                    required: [ "formId", "body"],
+                    properties: { 
+                      formId: { type: "integer", description: ""},
+                      body: { type: "string", description: "" }
+                    } 
+                  }
                 }
               }
             }
@@ -411,6 +450,7 @@ exports.listPost = (req, res, next)=>{
   // form 찾음
   const findPost = ()=>{
     return models.FeedbackPost.findAll({
+      include: [ models.FeedbackForm ],
       where: { classId: classId }
     })
   }
@@ -419,7 +459,7 @@ exports.listPost = (req, res, next)=>{
     res.json(form)
   }
   
-  checkManager(userId, classId)
+  checkManager(userId, classId, 1)
     .then(findPost)
     .then(respond)
     .catch(err=>{
@@ -495,6 +535,260 @@ exports.deletePost = (req, res, next)=>{
     .catch(err=>{
       console.log(err)
       if (err.message == "NoPermission") req.Error.noAuthorization(res)
+      else req.Error.internal(res)
+    })
+}
+
+
+/**
+@swagger
+paths: {
+  /api/feedback/save_reply: {
+    post: {
+      tags: [ Feedback ],
+      summary: "피드백 reply를 저장하는 API",
+      description: "피드백 reply을 저장한다. ",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "object",
+          required: [ "postId", "teamId", "targetTeamId", "body" ],
+          properties: {
+            postId: { type: "integer", description: "postId" },
+            teamId: { type: "integer", description: "내 팀" },
+            targetTeamId: { type: "integer", description: "피드백 할 팀" },
+            body: { type: "string", description: "내용" },
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "피드백을 reply함.",
+          schema: {
+            type: "object",
+            required: [ "replyId", "postId", "teamId", "targetTeamId", "body" ],
+            properties: {
+              replyId: { type: "integer", description: "replyId" },
+              postId: { type: "integer", description: "postId" },
+              teamId: { type: "integer", description: "내 팀" },
+              targetTeamId: { type: "integer", description: "피드백 할 팀" },
+              body: { type: "string", description: "내용" },
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
+exports.replyPost = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let postId = req.body.postId
+  let teamId = req.body.teamId
+  let targetTeamId = req.body.targetTeamId
+  let body = req.body.body
+  let receivedDate = new Date()
+
+  if (!teamId || !postId || !targetTeamId || !teamId || !body){
+    req.Error.wrongParameter(res, "classId postId targetTeamId body")
+    return;
+  }
+
+  if (teamId == targetTeamId) {
+    req.Error.wrongParameter(res, "same team Id")
+    return
+  }
+
+  // body check
+  const checkBody = ()=>{
+    try{
+      return JSON.stringify(body)
+    }
+    catch(err) {
+      throw new Error("WrongBody")
+    }
+  }
+
+  // Join Check (퍼미션 체크는 여기서 되었다고 가정)
+  const checkJoin = ()=>{
+    return models.Join
+            .findOne({ where: { joinStatus: 1, user: userId, teamId: teamId } })
+            .then(join=>{
+              if (!join) throw new Error("NoJoin")
+              return join
+            })
+  }
+
+  // targetTeamId check
+  const checkTargetTeam = ()=>{
+    return models.Team
+            .findOne({ where: { teamId: targetTeamId }})
+            .then(team=>{
+              if (!team) throw new Error("NoTargetTeam")
+              return team
+            })
+
+  }
+
+  // 해당 포스트가 expiredDate가 넘었는지 확인
+  const checkExpriedDate = ()=>{
+    return models.FeedbackPost
+      .findOne({
+        where: {
+          postId: postId,
+          expiredDate: { [Op.gte]: receivedDate }
+        }
+      })
+      .then(post=>{
+        if (!post) throw new Error("NoPost")
+        return post
+      })
+  }
+
+  // save
+  const saveReply = ()=>{
+    return models.FeedbackReply.create({
+      postId: postId,
+      teamId: teamId,
+      targetTeamId: targetTeamId,
+      body: body
+    })
+  }
+
+  // response
+  const respond = (reply)=>{
+    res.json(reply)
+  }
+
+  checkBody()
+    .then(checkJoin)
+    .then(checkTargetTeam)
+    .then(checkExpriedDate)
+    .then(saveReply)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "WrongBody") req.Error.wrongParameter(res, "wrong body")
+      else if (err.message == "NoJoin") req.Error.noAuthorization(res)
+      else if (err.message == "NoTargetTeam") req.Error.wrongParameter(res, "no target team")
+      else if (err.message == "NoPost") req.Error.wrongParameter(res, "no post")
+      else req.Error.internal(res)
+    })
+}
+
+
+/**
+@swagger
+paths: {
+  /api/feedback/list_reply: {
+    post: {
+      tags: [ Feedback ],
+      summary: "우리 조의 feedback reply 조회하는 API",
+      description: "피드백 reply 조회한다. type에 send 를 넣을 경우 우리가 보낸 reply, receive 넣을 경우 우리가 받은 reply를 받는다.",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "object",
+          required: [ "classId", "teamId"],
+          properties: {
+            classId: { type: "integer", description: "classId" },
+            type: { type: "string", description: "send or receive"},
+            teamId: { type: "integer", description: "teamId" },
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "feedback reply 찾았을 경우.",
+          schema: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                replyId: { type: "integer", description: ""},
+                body: { type: "string", description: ""},
+                FeedbackPost: {
+                  type: "object",
+                  properties: {
+                    postId: { type: "integer", description: "postId"}, 
+                    title: { type: "string", description: "title of post"}
+                  }
+                }                  
+              }
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
+exports.listReply = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+  let classId = req.body.classId
+  let teamId = req.body.teamId
+  let type = req.body.type
+  if (!type) type = "send"
+
+  if (!classId || !teamId){
+    req.Error.wrongParameter(res, "classId teamId")
+    return;
+  }
+  
+  // Join Check (퍼미션 체크는 여기서 되었다고 가정)
+  const checkJoin = ()=>{
+    return models.Join
+            .findOne({ where: { joinStatus: 1, user: userId, teamId: teamId } })
+            .then(join=>{
+              if (!join) throw new Error("NoJoin")
+              return join
+            })
+  }
+
+  // list reply
+  const findReply = ()=>{
+    if (type == "receive") // 우리가 받은거
+    return models.FeedbackReply
+      .findAll({ 
+        attributes: ["replyId", "body"],
+        include: [{ model: models.FeedbackPost, include:[ models.FeedbackForm ] }],
+        where: { targetTeamId: teamId } 
+      })
+    else // 우리가 보낸거
+    return models.FeedbackReply
+      .findAll({ 
+        include: [{ model: models.FeedbackPost, include:[ models.FeedbackForm ] }],
+        where: { targetTeamId: teamId } 
+      }) 
+  }
+
+
+  const respond = (data)=>{
+    res.json(data)
+  }
+  
+  checkJoin()
+    .then(findReply)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoJoin") req.Error.noAuthorization(res)
       else req.Error.internal(res)
     })
 }

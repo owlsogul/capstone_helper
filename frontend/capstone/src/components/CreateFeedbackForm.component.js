@@ -38,6 +38,15 @@ class CreateFeedback extends Component {
     this.state = { classId: 0, formId: 0, name: "", feedback: ""}
   }
 
+  addFeedbackForm = (e) => {
+    return (
+      <p>
+        <strong>
+          <input type="text" name="evaluate_index" value={this.state.name} placeholder="평가 항목 입력" onChange={this.handlenameChange, this.handleformIdChange} />
+        </strong>
+      </p>
+    )
+  }
 
   handleclassIdChange = (e) => {
     this.setState({ classId: e.target.value })
@@ -107,7 +116,7 @@ class CreateFeedback extends Component {
         </p>
 
         <div>
-          <button onChange={this.feedbackContents(), <AddFeedbackform/>}>항목 추가</button>
+          <button onChange={this.feedbackContents()} onClick={this.addFeedbackForm()}>항목 추가</button>
         </div>
 
         <p>

@@ -107,14 +107,37 @@ paths: {
   /api/feedback/edit_form: {
     post: {
       tags: [ Feedback ],
-      summary: "피드백을 수정/생성하는 API",
-      description: "피드백을 수정하거나 생성한다. 잘못된 body를 보내면 400이 간다. JSON.parse로 체크하고 보낼 것.",
+      summary: "feedback form을 수정/생성하는 API",
+      description: "피드백 form을 수정하거나 생성한다. 잘못된 body를 보내면 400이 간다. JSON.parse로 체크하고 보낼 것.",
       consumes: [ "application/json" ],
       produces: [ "application/json" ],
       parameters : [{
         in: "body",
         name: "body",
-        description: "",
+        description: "예시: 
+                        { 
+                          classId: 1, 
+                          name: 'Test Form', 
+                          body: JSON.stringify(
+                            {
+                              '_1': {
+                                'type': 'number',
+                                'title': '내용의 흐름도',
+                                'shared': false
+                              },
+                              '_3': {
+                                'type': 'number',
+                                'title': '내용의 간략화',
+                                'shared': false
+                              },
+                              '_2': {
+                                'type': 'string',
+                                'title': '총평',
+                                'shared': true
+                              } 
+                            }
+                          ) 
+                        }",
         schema: {
           type: "object",
           required: [ "classId", "name", "body" ],
@@ -207,7 +230,7 @@ paths: {
   /api/feedback/delete_form: {
     post: {
       tags: [ Feedback ],
-      summary: "피드백을 삭제하는 API",
+      summary: "피드백 form을 삭제하는 API",
       description: "피드백을 삭제한다. ",
       consumes: [ "application/json" ],
       produces: [ "application/json" ],
@@ -764,18 +787,23 @@ exports.listReply = (req, res, next)=>{
   // list reply
   const findReply = ()=>{
     if (type == "receive") // 우리가 받은거
-    return models.FeedbackReply
+    return models.FeedbackPost
       .findAll({ 
-        attributes: ["replyId", "body"],
-        include: [{ model: models.FeedbackPost, include:[ models.FeedbackForm ] }],
-        where: { targetTeamId: teamId } 
+        include: [
+          { model: models.FeedbackForm },
+          { model: models.FeedbackReply, where: {targetTeamId: teamId}, include:[ "replyId", "body" ] }
+        ],
+        where: { classId: classId }
       })
     else // 우리가 보낸거
-    return models.FeedbackReply
+    return models.FeedbackPost
       .findAll({ 
-        include: [{ model: models.FeedbackPost, include:[ models.FeedbackForm ] }],
-        where: { targetTeamId: teamId } 
-      }) 
+        include: [
+          { model: models.FeedbackForm },
+          { model: models.FeedbackReply, where: { teamId: teamId} }
+        ],
+        where: { classId: classId }
+      })
   }
 
 

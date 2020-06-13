@@ -306,7 +306,7 @@ module.exports = ()=>{
           postId: 1,
           teamId: 2,
           targetTeamId: 1,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->1 피드백" })
         }),
         models.FeedbackReply.create({
           postId: 1,
@@ -316,7 +316,7 @@ module.exports = ()=>{
         }),
         models.FeedbackReply.create({
           postId: 1,
-          teamId: 1,
+          teamId: 2,
           targetTeamId: 4,
           body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->4 피드백" })
         }),

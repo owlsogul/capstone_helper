@@ -33,6 +33,9 @@ module.exports = function(sequelize, DataTypes){
       model.belongsTo(models.Class, {
           foreignKey: "classId",
       })
+      model.hasMany(models.FeedbackReply, {
+        foreignKey: "postId"
+      })
   }    
   return model;
 }

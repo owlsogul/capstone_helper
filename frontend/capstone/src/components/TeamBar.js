@@ -15,31 +15,31 @@ export default class TeamBar extends Component {
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     let classId = this.props.match.params.classId
     let teamId = this.props.match.params.teamId
-    if (!classId || !teamId){
+    if (!classId || !teamId) {
       window.location = "/dashboard"
     }
     network.network("/api/team/get_team", {
       body: { classId: classId, teamId: teamId }
     })
-    .then(team=>{
-      this.setState({
-        teamName: team.teamName,
-        urlTeamInfo: `/${classId}/teams/${teamId}/info`,
-        urlDoFeedback: `/${classId}/teams/${teamId}/feedback`,
-        urlFeedback: `/${classId}/teams/${teamId}/check_feedback`,
+      .then(team => {
+        this.setState({
+          teamName: team.teamName,
+          urlTeamInfo: `/${classId}/teams/${teamId}/info`,
+          urlDoFeedback: `/${classId}/teams/${teamId}/feedback`,
+          urlFeedback: `/${classId}/teams/${teamId}/check_feedback`,
+        })
       })
-    })
-    .catch(err=>{
-      if (err.status == 400){
-        window.location = "/dashboard"
-      }
-    })
+      .catch(err => {
+        if (err.status == 400) {
+          window.location = "/dashboard"
+        }
+      })
   }
 
-  render(){
+  render() {
     return (
       <Navbar bg="light" expand="lg">
         <Navbar.Brand>{this.state.teamName}</Navbar.Brand>

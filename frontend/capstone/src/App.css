@@ -157,10 +157,12 @@ li {
 #title_txt:focus { outline : none; }
 
 #content_txt {
-  width: 91%;
+  border: 'solid';
+  border-width: '0 0 1px';
   resize: none;
   border: none;
-  height: 500px
+  height: 500px;
+  width: 100%
 }
 
 #content_txt:focus { outline : none; }

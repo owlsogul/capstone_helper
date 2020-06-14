@@ -123,6 +123,8 @@ class FeedbackList extends Component {
           var finalArr = []
           keys.forEach(key => {
             var obj = {}
+            console.log(key)
+            console.log(JSON.parse(k["body"])[key])
             obj[key] = JSON.parse(k["body"])[key]
             finalArr.push(obj)
           })
@@ -153,4 +155,4 @@ class DefaultFeedbackList extends Component {
     return <SimpleExpansionPanel title={this.props.title} body={this.props.body}></SimpleExpansionPanel>
   }
 }
-export { FeedbackForm, FeedbackList, DefaultFeedbackList }
+export { FeedbackForm, FeedbackList, DefaultFeedbackList, MyExpansionPanel }

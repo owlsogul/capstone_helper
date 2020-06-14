@@ -8,10 +8,10 @@ import wait from './pages/Wait';
 import OpenClass from './pages/OpenClass'
 import RedirectingComponent from './components/RedirectingComponent.js';
 import NoticePage from './pages/NoticePage.js';
+import WriteNoticePage from './pages/WriteNoticePage';
 import DashboardPage from "./pages/DashboardPage"
 import ClassInfoPage from './pages/ClassInfo';
 import StudentList from './pages/StudentList';
-import WriteNoticePage from './pages/WriteNoticePage';
 import TeamPage from './pages/TeamPage';
 import AdminTeamPage from './pages/AdminTeamPage';
 import TeamInfoPage from './pages/TeamInfoPage';
@@ -38,6 +38,7 @@ function App() {
           <Route path="/dashboard" component={DashboardPage} />
           <Route path="/writenotice" component={WriteNoticePage} />
           <Route path="/:classId/notice" component={NoticePage} />
+          <Route path="/:classId/writeNotice" component={WriteNoticePage} />
           <Route path="/:classId/classinfo" component={ClassInfoPage} />
           <Route path="/:classId/lecture" component={InLecturePage} />
           <Route path="/:classId/students" component={StudentList} />

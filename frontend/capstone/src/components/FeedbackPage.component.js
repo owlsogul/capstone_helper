@@ -93,27 +93,35 @@ function MyExpansionPanel(props) {
             {
              props.body.map(reply=>{
                var body = reply.body
-               return (
+               return ( // 여기 기준으로 페이지네이션 같은거 해야할 거 같음. 너무 지저분함.
                  <div>
-                   <div>평가 조 : {reply.targetTeamId}</div>
-                  <div>평가 내역 : 
-                    { 
-                      Object.entries(body)
-                        .sort((prev, next)=>{ // 이부분은 해도 되고 안해도 되고 문제 id로 정렬하는거
-                          if (prev[0] < next[0]) return -1
-                          else if (prev[0] == next[0]) return 0
-                          else return 1
-                        })
-                        .map(([key, value])=>{
-                          return (
-                            <div>
-                              <div>문항 번호 {key}</div>
-                              <div>{value.title} : {value.answer}</div>
-                            </div>
-                          )
-                        })
-                    }
-                  </div>
+                    <div>평가 조 : {reply.targetTeamId}</div>
+                    <div>평가 내역 : 
+                      { 
+                        Object.entries(body)
+                          .sort((prev, next)=>{ // 이부분은 해도 되고 안해도 되고 문제 id로 정렬하는거
+                            if (prev[0] < next[0]) return -1
+                            else if (prev[0] == next[0]) return 0
+                            else return 1
+                          })
+                          .map(([key, value])=>{
+                            console.log(value)
+                            if (props.onlyRead && !value.shared) return <></>
+                            return (
+                              <div>
+                                <div>{value.title} : 
+                                  {
+                                    props.onlyRead ? <strong>{value.answer}</strong> :
+                                      value.type == "number" ? 
+                                        (<input type="number" value={value.answer}/>) :
+                                        (<textarea>{value.answer}</textarea>)
+                                  }
+                                </div>
+                              </div>
+                            )
+                          })
+                      }
+                    </div>
                  </div>
                )
              }) 
@@ -167,7 +175,7 @@ class FeedbackList extends Component {
         }
         return retValue
       })
-      return <MyExpansionPanel title={feedback.title} body={replyBody}></MyExpansionPanel>
+      return <MyExpansionPanel title={feedback.title} body={replyBody} onlyRead={this.props.onlyRead}></MyExpansionPanel>
     })
   }
 

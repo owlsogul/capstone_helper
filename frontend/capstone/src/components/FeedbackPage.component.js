@@ -91,12 +91,12 @@ function MyExpansionPanel(props) {
         <ExpansionPanelDetails>
           <Typography>
             {
-             props.body.map(reply=>{
+             (props.onlyRead ? props.body.sort(function(){return 0.5-Math.random()}) : props.body).map(reply=>{
                var body = reply.body
                return ( // 여기 기준으로 페이지네이션 같은거 해야할 거 같음. 너무 지저분함.
                  <div>
-                    <div>평가 조 : {reply.targetTeamId}</div>
-                    <div>평가 내역 : 
+                    {props.onlyRead ? <></> : <div>평가 조 : {reply.targetTeamId}</div>}
+                    <div>{props.onlyRead ? "" : "평가 내역"}
                       { 
                         Object.entries(body)
                           .sort((prev, next)=>{ // 이부분은 해도 되고 안해도 되고 문제 id로 정렬하는거

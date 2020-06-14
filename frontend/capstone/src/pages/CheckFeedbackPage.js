@@ -48,7 +48,7 @@ export default class CheckFeedbackPage extends Component {
           <FeedbackForm feedBackFormText={"이번주 평가폼 작성하기"}></FeedbackForm>
           <br></br>
         </div>
-        <FeedbackList json={this.state.posts} ></FeedbackList>
+        <FeedbackList feedbackList={this.state.posts} onlyRead={true} ></FeedbackList>
       </TeamTemplate >
     )
   }

@@ -32,7 +32,6 @@ const style = {
 class MessageClassList extends Component {
   listGroupClicked(classes, boolValue) {
     this.props.listGroupClickedCallBack(classes.classId)
-    this.props.setIsAdmin(boolValue)
   }
 
   constructor(props) {

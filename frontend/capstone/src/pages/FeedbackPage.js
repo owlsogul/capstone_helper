@@ -4,7 +4,7 @@ import network from "../network"
 import { FeedbackForm, FeedbackList } from '../components/FeedbackPage.component'
 
 const getFeedbackForm = (classId) => {
-  return network.network('/api/feedback/get_last_post', { body: { classId: classId } })
+  return network.network('/api/feedback/list_form', { body: { classId: classId } })
 }
 
 const getFeedbackList = (classId, teamId) => {
@@ -17,6 +17,7 @@ export default class FeedbackPage extends Component {
     this.state = {
       teamName: "",
       joins: [],
+      form: "",
       feedBackFormText: "폼이 없습니다",
       feedbackList: []
     }
@@ -34,16 +35,21 @@ export default class FeedbackPage extends Component {
         console.log("feeback list는..")
         console.log(this.state.feedbackList)
       })
+    getFeedbackForm(classId)
+      .then(json => {
+        console.log("폼은...")
+        console.log(json)
+        this.setState({ form: json })
+      })
   }
 
   render() {
     return (
       <TeamTemplate match={this.props.match} history={this.props.history} >
         <div>
-          <FeedbackForm feedBackFormText={this.state.feedBackFormText}></FeedbackForm>
-          <br></br>
+          <FeedbackForm feedBackFormText={this.state.form}></FeedbackForm>
         </div>
-        
+        <br></br>
         <FeedbackList feedbackList={this.state.feedbackList} ></FeedbackList>
       </TeamTemplate >
     );

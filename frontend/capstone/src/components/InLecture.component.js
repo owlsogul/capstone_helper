@@ -113,6 +113,10 @@ class UserVideo extends Component {
 
   componentDidUpdate(){
     this.video.srcObject = this.props.stream
+    console.log("[VideoTracking]", "componentDidUpdate", this.props.id, this.props.stream)
+    if (!this.props.stream.active){
+      console.log("[VideoTracking]", "onInactive", this.props.id, this.props.stream, this.props.stream.getTracks())
+    }
   }
 
   handleRef(video){
@@ -157,6 +161,7 @@ class UserVideo extends Component {
       let presentationData = this.props.userData.presentation
       let presentationInfo = (
         <>
+          <div> key : {this.props.id} </div>
           <div>발표 총 횟수: {presentationData.length}</div>
           {presentationData.reverse().map((p, idx)=>{
             if (idx > 3 || !p.endedAt) return <></>

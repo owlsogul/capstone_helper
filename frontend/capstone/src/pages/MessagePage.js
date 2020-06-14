@@ -82,7 +82,7 @@ export default class MessagePage extends Component {
         let takeClassList = []
         let manageClassList = []
 
-        if (res.take) {
+        if (res.take.length > 0) {
           console.log("take로 옴")
           this.setState({ isAdmin: false })
           takeClassList = takeClassList.concat(res.take.map(e => {
@@ -93,7 +93,8 @@ export default class MessagePage extends Component {
           }));
         }
 
-        else if (res.manage) {
+        if (res.manage.length > 0) {
+          console.log("manage 옴")
           this.setState({ isAdmin: true })
           manageClassList = manageClassList.concat(res.manage.map(e => {
             return {
@@ -103,7 +104,8 @@ export default class MessagePage extends Component {
           }));
         }
 
-        else if (res.own) {
+        if (res.own.length > 0) {
+          console.log("own 옴")
           this.setState({ isAdmin: true })
           manageClassList = manageClassList.concat(res.own.map(e => {
             return {
@@ -162,6 +164,19 @@ export default class MessagePage extends Component {
       })
   }
 
+  sendMyReply(classId, body) {
+    sendReply(classId, "student01@cau.ac.kr", body)
+      .then(() => {
+        return getMessage()
+      })
+      .then((res) => {
+        let a = this.state.classId
+        console.log(a)
+        this.setState({ messages: res[a] })
+        console.log(this.state.message)
+      })
+  }
+
   render() {
     console.log("그래서 IsAdmin은")
     console.log(this.state.isAdmin)
@@ -174,7 +189,7 @@ export default class MessagePage extends Component {
               manageClassList={this.state.manageClassList}
               listGroupClickedCallBack={this.adminSelectClass}
             ></MessageClassList>
-            <AdminMessageList classId={this.state.classId} messages={this.state.messages} sendMsg={this.sendReply}></AdminMessageList>
+            <AdminMessageList classId={this.state.classId} messages={this.state.messages} sendMsg={this.sendMyReply}></AdminMessageList>
           </div>
         </Dashboard>
       )

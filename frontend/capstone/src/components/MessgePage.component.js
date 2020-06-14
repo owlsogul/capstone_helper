@@ -44,7 +44,7 @@ class MessageClassList extends Component {
       <div style={style.leftHalf}>
         <ListGroup>
           {this.props.takeClassList.map((classes) => (
-            <ListGroup.Item action onClick={() => { this.listGroupClicked(classes, false) }}>
+            <ListGroup.Item variant="primary" action onClick={() => { this.listGroupClicked(classes, false) }}>
               {classes.className}
             </ListGroup.Item>
           ))}
@@ -164,7 +164,25 @@ class AdminMessageList extends Component {
           {title}
         </div>
       )
-    } else {
+    } else if (this.props.messages.length == 0 || this.props.messages == undefined) {
+      return (
+        <div style={style.rightHalf}>
+          <div className="input-group mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="메세지를 입력하세요"
+              aria-label="메세지를 입력하세요"
+              aria-describedby="button-addon2"
+              value={this.state.writingMessage}
+              onChange={this.handleTargetText}
+            />
+            <button onClick={this.onClickButton}>메세지 보내기</button>
+          </div>
+        </div>
+      )
+    }
+    else {
       return (
         <div style={style.rightHalf}>
           <div className="input-group mb-3">
@@ -180,15 +198,13 @@ class AdminMessageList extends Component {
             <button onClick={this.onClickButton}>메세지 보내기</button>
           </div>
 
-          {this.props.messages.forEach((person) => (
-            // const [key, value] = messages
-            // TODO: 여기서는 
+          {/* {this.props.messages.forEach((person) => (
             person.map((singleMessage) => (
               <div>
                 <AdminEachMessage message={singleMessage}></AdminEachMessage>
               </div>
             ))
-          ))}
+          ))} */}
         </div>
       )
     }
@@ -200,18 +216,29 @@ class EachMessage extends Component {
     if (this.props.message["msgType"] == 0) {
       // 내가 보낸것
       return (
-        <div style={style.eachMessage} >
-          <li> [나] </li>
-          <li> {this.props.message["body"]} </li>
-        </div>
+        // <div className="d-flex justify-content-end" style={style.eachMessage} >
+        //   <li> [나] </li>
+        //   <li> {this.props.message["body"]} </li>
+        // </div>
+
+        <ListGroup>
+          <ListGroup.Item variant="primary">
+            [나]: {this.props.message["body"]}
+          </ListGroup.Item>
+        </ListGroup>
       )
     } else {
       // 상대가 보낸것
       return (
-        <div style={style.eachMessage} >
-          <li> [상대] </li>
-          <li> {this.props.message["body"]} </li>
-        </div>
+        // <div style={style.eachMessage} >
+        //   <li> [상대] </li>
+        //   <li> {this.props.message["body"]} </li>
+        // </div>
+        <ListGroup>
+          <ListGroup.Item variant="danger">
+            [상대]: {this.props.message["body"]}
+          </ListGroup.Item>
+        </ListGroup>
       )
     }
   }

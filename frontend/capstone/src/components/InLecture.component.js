@@ -38,7 +38,8 @@ const style = {
     position: "absolute", right: 0, top: 0, left: 0, bottom: 0,
     background: "rgba(0,0,0,0.8)", color: "#ffffff",
     display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center",
-
+    overflow: "auto",
+    padding: 5
   }
 }
 
@@ -64,9 +65,12 @@ class MainVideo extends Component {
     this.renderVideo = this.renderVideo.bind(this)
   }
 
-  componentDidUpdate(){
-    if (this.props.stream){
-      this.video.srcObject = this.props.stream.video
+  componentDidUpdate(prevProps){
+    
+    if (prevProps.stream != this.props.stream){
+      if (this.props.stream){
+        this.video.srcObject = this.props.stream.video
+      }
     }
   }
 
@@ -79,7 +83,8 @@ class MainVideo extends Component {
 
   renderVideo(){
     if (this.props.stream){
-      return <video ref={this.handleRef} autoPlay style={{ width: "100%", height: "100%"}}/>
+      return <video ref={this.handleRef} autoPlay style={{ flex: "1 1 auto", alignItems: "stretch"}}/>
+      //return <video ref={this.handleRef} autoPlay style={{ wid}}/>
     }
     else {
       return <div>No video</div>
@@ -88,7 +93,7 @@ class MainVideo extends Component {
 
   render(){
     return(
-      <div style={{ width: "100%", height: "100%"}}>
+      <div style={{ flex: "1 1 auto", alignItems: "center"}}>
         {this.renderVideo()}
       </div>
     )
@@ -111,8 +116,14 @@ class UserVideo extends Component {
     this.renderVideoData = this.renderVideoData.bind(this)
   }
 
-  componentDidUpdate(){
-    this.video.srcObject = this.props.stream
+  componentDidUpdate(prevProps){
+    if (prevProps.stream != this.props.stream){
+      this.video.srcObject = this.props.stream
+      console.log("[VideoTracking]", "componentDidUpdate", this.props.id, this.props.stream)
+      if (!this.props.stream.active){
+        console.log("[VideoTracking]", "onInactive", this.props.id, this.props.stream, this.props.stream.getTracks())
+      }
+    }
   }
 
   handleRef(video){
@@ -199,11 +210,21 @@ class LecturePage extends Component {
   constructor(props){
     super(props)
     this.state = {
-      videos: {}
-    
+      videos: {},
+      now: new Date()
     }
     this.attachPeerVideos = this.attachPeerVideos.bind(this)
     this.renderMapping = this.renderMapping.bind(this)
+    this.timer = false
+  }
+
+  componentDidMount(){
+    if (this.timer){
+      clearInterval(this.timer)
+    }
+    this.timer = setInterval(()=>{
+      this.setState({now: new Date()})
+    }, 1000)
   }
 
   componentDidUpdate(prevProps) {
@@ -280,9 +301,35 @@ class LecturePage extends Component {
     )
   }
 
+  renderController(){
+    var presentationTimer = <></>
+    if (this.props.presentationStartedAt){
+      let userData = this.props.userDataMap[this.props.presentationUserId]
+      let name = userData ? userData.name : "loading..."
+      let startDate = Date.parse(this.props.presentationStartedAt)
+      let gap = this.state.now.getTime() - startDate
+      presentationTimer = (<div style={{ marginRight: 10}}>
+                              <div style={{ textAlign: "left" }}>발표자 {name}</div>
+                              <div style={{ textAlign: "left" }}>
+                                <Moment format="MM.DD hh:mm:ss">{this.props.presentationStartedAt}</Moment>
+                                <Badge>{Math.floor(gap/1000)}초 경과</Badge>
+                              </div>
+                          </div>)
+    }
+
+    return (
+      <div style={{ position:"absolute", left: 0, bottom: 0, width: "100%", maxWidth: "100%", height: "auto", background:"rgba(0,0,0,0.5)", padding: 10, display:"flex", flexDirection: "row" }}>
+        {presentationTimer}
+        <Button variant="primary" size="lg" onClick={this.props.onClickPresentation}>
+          { this.props.presentationUserId ? "발표종료" : "발표시작" }
+        </Button>
+      </div>
+    )
+  }
+
   render(){
     return(
-      <div style={{ position: "relative", flex: "0 1 auto", display: "flex",  flexDirection: "column", height: "100%"}}>
+      <div className="OnlineLectureWrapper" style={{ position: "relative", flex: "0 1 auto", display: "flex",  flexDirection: "column", height: "100%"}}>
         
         {/* user cam part */}
         <div style={{ overflowX: "scroll", WebkitOverflowScrolling: "touch" }}>
@@ -299,9 +346,7 @@ class LecturePage extends Component {
         </div>
 
         {/* controller part */}
-        <div style={{ position:"absolute", left: 0, right:0, bottom: 0, height: "auto", background:"#000000", padding: 10 }}>
-          <Button variant="primary" size="lg" onClick={this.props.onClickPresentation}>{ this.props.presentationUserId ? "발표종료" : "발표시작" }</Button>
-        </div>
+        {this.renderController()}
         
       </div>
     )

@@ -10,9 +10,6 @@ const uploadNotice = (classId, title, body) => {
 }
 
 class WriteNoticePage extends Component {
-    constructor(props) {
-        super(props)
-    }
 
     componentDidMount() {
         let classId = this.props.match.params.classId
@@ -21,7 +18,7 @@ class WriteNoticePage extends Component {
 
     sendMsg(title, body) {
         console.log("classId는")
-        // console.log(this.state.classId)
+        console.log(this.state.classId)
         /// TODO: classId가 undefined인 문제 있음. 
         uploadNotice(1, title, body)
             .then((res) => {

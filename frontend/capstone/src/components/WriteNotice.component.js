@@ -5,6 +5,7 @@ import { Form, TextArea } from 'semantic-ui-react'
 class WriteNotice extends Component {
     constructor(props) {
         super(props)
+        // this.sendMsg = this.sendMsg.bind(this)
     }
 
     state = {

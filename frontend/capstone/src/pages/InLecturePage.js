@@ -104,6 +104,7 @@ export default class InLecturePage extends Component {
   
       // 발표 관련 부분
       this.socket.on("presentation", msg=>{
+          console.log("[PresentationTracker] onPresentation", msg)
           let type = msg.type
           let userId = msg.userId
           let startedAt = msg.startedAt
@@ -117,6 +118,7 @@ export default class InLecturePage extends Component {
   connectWebRTCSocket(data){
     this.setState({ lectureId: data.lectureId })
     this.socket.emit("member", { lectureId: data.lectureId })
+    this.socket.emit("presentation", { lectureId:  data.lectureId })
     // user on signal
     this.socket.on('signal', data => {
       const peerId = data.from
@@ -228,6 +230,9 @@ export default class InLecturePage extends Component {
     peer.on('error', (e) => {
       console.log('[PeerTracking] onError', peerId == this.socket.id, peerId, e)
       // 에러 발생시 삭제 하고 다시 만들기
+      if (peer){
+        peer.destroy()
+      }
       this.createPeer(peerId, true, this.myVideoStream)
     })
 
@@ -238,6 +243,7 @@ export default class InLecturePage extends Component {
 
   destroyPeer(peerId) {
     const peers = {...this.state.peers}
+    peers[peerId].destroy()
     delete peers[peerId]
     this.setState({
       peers
@@ -312,6 +318,7 @@ export default class InLecturePage extends Component {
         userMap={this.state.userMap} 
         userDataMap={this.state.userDataMap}
         presentationUserId={this.state.presentationUserId}
+        presentationStartedAt={this.state.presentationStartedAt}
 
         // event callback
         onClickPresentation={this.handlePresentation.bind(this)}

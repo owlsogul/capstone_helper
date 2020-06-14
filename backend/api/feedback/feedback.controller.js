@@ -791,7 +791,7 @@ exports.listReply = (req, res, next)=>{
       .findAll({ 
         include: [
           { model: models.FeedbackForm },
-          { model: models.FeedbackReply, where: {targetTeamId: teamId}, include:[ "replyId", "body" ] }
+          { model: models.FeedbackReply, where: {targetTeamId: teamId}, attributes:[ "replyId", "body" ] }
         ],
         where: { classId: classId }
       })

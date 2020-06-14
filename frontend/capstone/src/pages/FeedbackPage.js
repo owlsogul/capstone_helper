@@ -22,7 +22,7 @@ export default class FeedbackPage extends Component {
     }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     let classId = this.props.match.params.classId
     let teamId = this.props.match.params.teamId
     if (!classId || !teamId) {

@@ -60,25 +60,23 @@ function SimpleExpansionPanel(props) {
   );
 }
 
+// title, key 받아오기
+/*
+[
+  {title: 5주차 피드백,
+  body: [{내용의흐름도:5, 내용: 어쩌구저쩌구}, {내용의흐름도:5, 내용: 어쩌구저쩌구}]
+  },
+  {title: 5주차 피드백,
+  body: [{내용의흐름도:5, 내용: 어쩌구저쩌구}, {내용의흐름도:5, 내용: 어쩌구저쩌구}]
+  }
+  ]
+  */
+
 function MyExpansionPanel(props) {
   const classes = useStyles();
-  var a = null;
-  var b = null;
-  var v = null;
-  a = props.questionsAndAnswers[Object.keys(props.questionsAndAnswers)]
-  // console.log(a) // [Log] {질문1: "발표를 잘했나요?", 질문2: "발표 자료의 완성도는 어땠나요?"} (main.chunk.js, line 1203)
-  // console.log(Object.keys(a)) // [Log] ["0", "1"] (2) (main.chunk.js, line 1204)
+  console.log("안에는....")
+  console.log(props)
 
-  // for (var i = 0; i < Object.keys(a).length; i++) {
-  //   for (var j = 0; j < Object.keys(a[key]).length; j++) {
-  //     return (
-  //       <div>
-  //         <li>set</li>
-  //         <form>a[key][set]</form>
-  //       </div>
-  //     )
-  //   }
-  // }
   return (
     <div className={classes.root}>
       <ExpansionPanel>
@@ -87,26 +85,23 @@ function MyExpansionPanel(props) {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography className={classes.heading}>{props.week}</Typography>
+          <Typography className={classes.heading}>{"dkdkk"}</Typography>
+
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Typography>
-            <Pagination count={props.count} color="primary"></Pagination>
+            {/* <Pagination count={1} color="primary"></Pagination> */}
             {
-              Object.keys(a).map((key) => {
-                // console.log(key)
-                return key;
-              }).map((set) => {
-                console.log(set)
-                console.log(a[set]) // [Log] {질문2: "발표를 잘했나요?", 답변1: "예"} (main.chunk.js, line 1285)
-                return `${a[set]}`
-              })
+
+              <h1>{props.body}</h1>
               // .map((each)=>{
               //   Object.keys(each) // [["0", "1", "2"], ["0", "1", "2"]] (2)
               // }).map((v)=>{
               //   return <h1>{v}</h1>
               // })
             }
+            {/* <Pagination color="primary"></Pagination>
+            {props.body} */}
           </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -117,68 +112,41 @@ function MyExpansionPanel(props) {
 
 class FeedbackList extends Component {
   render() {
+    var myArray = null
     var keys = null
     console.log("json은")
     console.log(this.props.json)
     var arr = [] // 제일 큰 array
 
     if (this.props.json != null) {
-      // title, key 받아오기
-      /*
-      [
-        {title: 5주차 피드백,
-        body: [{내용의흐름도:5, 내용: 어쩌구저쩌구}, {내용의흐름도:5, 내용: 어쩌구저쩌구}]
-        },
-        {title: 5주차 피드백,
-        body: [{내용의흐름도:5, 내용: 어쩌구저쩌구}, {내용의흐름도:5, 내용: 어쩌구저쩌구}]
-        }
-        ]
-        */
+      console.log("여기로 잘 옴!!!")
       this.props.json.forEach((e) => {
-        var bodyArray = []
-        console.log("타이틀은")
-        console.log(e["title"])
-        console.log(e["FeedbackForm"]["body"])
         keys = Object.keys(JSON.parse(e["FeedbackForm"]["body"]))
-        console.log("키는")
-        console.log(keys)
-        console.log("질문들은")
-        keys.forEach((key)=>{
-          console.log("각각의 키는")
-
-          console.log(JSON.parse(e["FeedbackForm"]["body"])[key])
-          console.log(JSON.parse(e["FeedbackForm"]["body"])[key].title) // 내용의 흐름도
-          console.log(JSON.parse(e["FeedbackForm"]["body"])[key].type)
-          
-        })
-
+        var bodyArr = []
         e["FeedbackReplies"].forEach((k) => {
-          console.log("reply는")
-          console.log(k["body"])
-          // console.log(k["body"]["_1"]) // 어쩌구 저쩌구 
-          keys.forEach(key=>{
-            console.log(key)
-            console.log(JSON.parse(k["body"])[key]) // 어쩌구 저쩌구 
+          var finalArr = []
+          keys.forEach(key => {
             var obj = {}
             obj[key] = JSON.parse(k["body"])[key]
-            bodyArray.push(obj)
-            // bodyArray.push({{key}: k["body"][key]})
+            finalArr.push(obj)
           })
+          bodyArr.push(finalArr)
         })
-        arr.push({"title": e["title"], "body": bodyArray}) // 5주차 피드백
+        arr.push({ "title": e["title"], "body": bodyArr }) // 5주차 피드백
       })
-      console.log("///////////////")
-      console.log(arr)
+      myArray = arr
+      return (
+        <div>
+          {myArray.forEach((e) => {
+            return <MyExpansionPanel title={e.title} body={e.body}></MyExpansionPanel>
+          })}
+        </div>
+      )
     }
-    return (
-      <div>
-        {/* {this.props.json.forEach((e)=>{
-          console.log(e["title"])
-          return <MyExpansionPanel week={e["title"]}></MyExpansionPanel>
-        })} */}
-        <h1>hello!</h1>
-      </div>
-    )
+    else {
+      console.log("여기여기여기")
+      return <h6>보여줄 것이 없습니다.</h6>
+    }
   }
 }
 

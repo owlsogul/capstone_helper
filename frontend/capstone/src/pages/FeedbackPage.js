@@ -22,7 +22,7 @@ export default class FeedbackPage extends Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     let classId = this.props.match.params.classId
     let teamId = this.props.match.params.teamId
     if (!classId || !teamId) {
@@ -44,49 +44,29 @@ export default class FeedbackPage extends Component {
       .then(json => {
         console.log("피드백 리스트는...")
         console.log(json)
+        json.forEach((e) => {
+          console.log("각각은...")
+          console.log(e)
+        })
         this.setState({ feedbackList: json })
+        console.log("feeback list는..")
+        console.log(this.state.feedbackList)
       })
   }
 
   render() {
-    var dummy = {
-      questionsAndAnswers: [
-        {
-          "6주차": [
-            {
-              "body": [
-                { "1조": [{ "질문1": "발표를 잘했나요?", "답변1": "예" }, { "질문2": "발표를 잘했나요?", "답변1": "예" }] },
-                { "2조":[{ "질문1": "발표를 잘했나요?", "답변1": "예" }, { "질문2": "발표를 잘했나요?", "답변1": "예" }] },
-              ]
-            },
-            { "count": 2 }
-          ]
-        },
-        {
-          "7주차": [
-            {
-              "body": [
-                { "1조": [{ "질문1": "발표를 잘했나요?", "답변1": "예" }, { "질문2": "발표를 잘했나요?", "답변1": "예" }] },
-                { "2조": [{ "질문1": "발표를 잘했나요?", "답변1": "예" }, { "질문2": "발표를 잘했나요?", "답변1": "예" }] },
-              ]
-            },
-            { "count": 2 }
-          ]
-        }
-      ]
-    }
+    return (
+      <TeamTemplate match={this.props.match} history={this.props.history} >
+        <div>
+          <FeedbackForm feedBackFormText={this.state.feedBackFormText}></FeedbackForm>
+          <br></br>
+        </div>
 
-    return(
-      <TeamTemplate match = { this.props.match } history = { this.props.history } >
-            <div>
-              <FeedbackForm feedBackFormText={this.state.feedBackFormText}></FeedbackForm>
-              <br></br>
-            </div>
+        {/* {this.state.feedbackList.map((e) => { */}
+        {/* })} */}
 
-        {/* {this.state.feedbackList.map((e) => { */ }
-        {/* })} */ }
-
-        <FeedbackList questionsAndAnswers = { dummy } ></FeedbackList>
+        {/* <FeedbackList questionsAndAnswers = { dummy } ></FeedbackList> */}
+        <FeedbackList json={this.state.feedbackList} ></FeedbackList>
       </TeamTemplate >
     );
   }

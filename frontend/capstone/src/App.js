@@ -22,6 +22,8 @@ import ManageLinkPage from './pages/ManageLinkPage';
 import JoinPage from './pages/JoinPage';
 import WebRTCTest from './pages/WebRTCTest';
 import InLecturePage from './pages/InLecturePage';
+import EditFeedbackFormPage from './pages/EditFeebackFormPage';
+import FeedbackFormPage from './pages/FeedbackFormPage';
 
 function App() {
   return (
@@ -48,6 +50,9 @@ function App() {
           <Route exact path="/:classId/teams/:teamId/info" component={TeamInfoPage} /> 
           <Route exact path="/:classId/teams/:teamId/feedback" component={FeedbackPage} /> 
           <Route exact path="/:classId/teams/:teamId/check_feedback" component={CheckFeedbackPage} /> 
+
+          <Route exact path="/:classId/fixForm" component={EditFeedbackFormPage} />
+          <Route exact path="/:classId/form" component={FeedbackFormPage} />
 
           <Route path="/join/:code" component={JoinPage} /> 
           <Route path="/webrtctest" component={WebRTCTest} /> 

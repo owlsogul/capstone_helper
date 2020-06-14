@@ -7,11 +7,11 @@ import 'moment-timezone';
 import network from "../network"
 
 const getClassInfo = (classId) => {
-  return fetch("/api/class/info/"+classId)
-  .then(res=>{
+  return fetch("/api/class/info/" + classId)
+    .then(res => {
       if (res.status != 200) throw new Error(res)
       return res.json()
-  })
+    })
 }
 
 const getPermisson = (classId) => {
@@ -25,7 +25,7 @@ const getLectureInfo = (classId) => {
 export default class Bar extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       className: "",
       permission: -1,
       urlNotice: "#",
@@ -36,11 +36,11 @@ export default class Bar extends Component {
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     let classId = this.props.match.params.classId
     console.log(classId)
     getClassInfo(classId)
-      .then(res=>{
+      .then(res => {
         this.setState({
           className: res.className,
           urlNotice: `/${res.classId}/notice`,
@@ -49,21 +49,21 @@ export default class Bar extends Component {
           urlAdminTeamInfo: `/${res.classId}/admin_teams`,
           urlClassInfo: `/${res.classId}/classinfo`,
           urlManageLinks: `/${res.classId}/manageLink`,
-
+          urlFixForm: `/${res.classId}/form`,
           lectureStatus: false
         })
       })
-      .catch(err=>{
+      .catch(err => {
         console.log(err)
       })
 
 
     getLectureInfo(classId)
-      .then(res=>{
+      .then(res => {
         console.log(res)
-        this.setState({ lectureStatus: res})
+        this.setState({ lectureStatus: res })
       })
-      .catch(err=>{
+      .catch(err => {
         if (err.status) {
           if (err.status == 409) this.setState({ lectureStatus: false })
         }
@@ -73,25 +73,28 @@ export default class Bar extends Component {
       })
 
     getPermisson(classId)
-      .then(res=>{
+      .then(res => {
         console.log("getPermission")
         console.log(res)
-        this.setState({permission: res["relationType"]})
+        this.setState({ permission: res["relationType"] })
       })
-    
+
   }
 
-  render(){
+  render() {
     var myTeamInfo = null
+    var fixForm = null
     let lectureBadge = <Badge variant="secondary">OFF</Badge>
-    if (this.state.lectureStatus){
-      lectureBadge = <Badge variant="primary" onClick={()=>{window.location=`/${this.state.lectureStatus.classId}/lecture`}}>ON <Moment fromNow>{this.state.lectureStatus.startedAt}</Moment></Badge>
+    if (this.state.lectureStatus) {
+      lectureBadge = <Badge variant="primary" onClick={() => { window.location = `/${this.state.lectureStatus.classId}/lecture` }}>ON <Moment fromNow>{this.state.lectureStatus.startedAt}</Moment></Badge>
     }
-    if (this.state.permission == 1){
+    if (this.state.permission == 1) {
       // 학생
       myTeamInfo = <Nav.Link href={this.state.urlTeamInfo}>조 정보</Nav.Link>
-    } else if (this.state.permission > 1){
+    } else if (this.state.permission > 1) {
+      // 조교, 교수
       myTeamInfo = <Nav.Link href={this.state.urlAdminTeamInfo}>조 정보</Nav.Link>
+      fixForm = <Nav.Link href={this.state.urlFixForm}>폼 수정하기</Nav.Link>
     }
 
     return (
@@ -104,6 +107,7 @@ export default class Bar extends Component {
             <Nav.Link href={this.state.urlNotice}>공지사항</Nav.Link>
             <Nav.Link href={this.state.urlStudentInfo}>학생 정보</Nav.Link>
             {myTeamInfo}
+            {fixForm}
             <Nav.Link href={this.state.urlManageLinks}>초대링크 관리</Nav.Link>
             <Nav.Link href={this.state.urlClassInfo}>수업 정보</Nav.Link>
           </Nav>

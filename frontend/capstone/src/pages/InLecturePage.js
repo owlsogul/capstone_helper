@@ -25,7 +25,8 @@ export default class InLecturePage extends Component {
       userDataMap: {}, // userId와 userData의 매핑 정보
       lectureId: false,
       presentationUserId: false, // 발표자 socketId
-      presentationStartedAt: false
+      presentationStartedAt: false,
+      userFeedbackData: { result: false, msg: "로딩 중..." },
     }
     this.myVideoStream = false
     this.getMedia = this.getMedia.bind(this)
@@ -243,7 +244,7 @@ export default class InLecturePage extends Component {
 
   destroyPeer(peerId) {
     const peers = {...this.state.peers}
-    peers[peerId].destroy()
+    if (peers[peerId]) peers[peerId].destroy()
     delete peers[peerId]
     this.setState({
       peers
@@ -304,6 +305,56 @@ export default class InLecturePage extends Component {
     }
   }
 
+  handleCheckFeedback(){
+
+    this.setState({ userFeedbackData: { result: false, msg: "로딩 중..." } })
+    // target userId, classId => team
+    // team => feedback replies
+    // show it
+    network.network("/api/feedback/admin_list_reply", { body: { userId: this.state.presentationUserId, classId: this.state.classId } })
+      .then(feedbackList=>{
+        var body = feedbackList.map(weeklyFeedback=>{
+          var replies = weeklyFeedback.FeedbackReplies
+          var form = weeklyFeedback.FeedbackForm
+
+          // 응답 수집 및 가공
+          var formBody = JSON.parse(form.body)
+          var retValue = {
+            postId: weeklyFeedback.postId,
+            title: weeklyFeedback.title,
+            body: {}
+          }
+          Object.entries(formBody).forEach(([pId, pData])=>{
+            if (pData.type == "number"){
+              retValue.body[pId] = {
+                title: pData.title,
+                answer: replies.reduce((prev, reply)=>{
+                  return prev + Number.parseInt(JSON.parse(reply.body)[pId])/replies.length
+                }, 0)
+              }
+            }
+            else {
+              retValue.body[pId] = {
+                title: pData.title,
+                answer: replies.reduce((prev, reply)=>{
+                  return prev + JSON.parse(reply.body)[pId] + "\n"
+                }, "")
+              }
+            }
+          })
+
+          // 리턴
+          console.log("[FeedbackTracking]", retValue)
+          return retValue
+        })        
+        this.setState({ userFeedbackData: { result: true, body: body} })
+      })
+      .catch(res=>{
+        this.setState({ userFeedbackData: { result: false, msg: "권한이 없습니다." } })
+      })
+
+  }
+
   render() {
     let page = (<></>)
     if (this.state.error) {
@@ -322,6 +373,10 @@ export default class InLecturePage extends Component {
 
         // event callback
         onClickPresentation={this.handlePresentation.bind(this)}
+        onClickCheckFeedback={this.handleCheckFeedback.bind(this)}
+        
+        // 주차별로 합산들어갑니다잉
+        userFeedbackData={this.state.userFeedbackData}
 
       />
     }

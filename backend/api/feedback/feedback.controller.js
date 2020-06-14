@@ -91,7 +91,7 @@ exports.listForm = (req, res, next)=>{
     res.json(form)
   }
   
-  checkManager(userId, classId)
+  checkManager(userId, classId, 1)
     .then(findForm)
     .then(respond)
     .catch(err=>{
@@ -791,7 +791,7 @@ exports.listReply = (req, res, next)=>{
       .findAll({ 
         include: [
           { model: models.FeedbackForm },
-          { model: models.FeedbackReply, where: {targetTeamId: teamId}, include:[ "replyId", "body" ] }
+          { model: models.FeedbackReply, where: {targetTeamId: teamId}, attributes:[ "replyId", "body" ] }
         ],
         where: { classId: classId }
       })
@@ -817,6 +817,108 @@ exports.listReply = (req, res, next)=>{
     .catch(err=>{
       console.log(err)
       if (err.message == "NoJoin") req.Error.noAuthorization(res)
+      else req.Error.internal(res)
+    })
+}
+
+
+/**
+@swagger
+paths: {
+  /api/feedback/admin_list_reply: {
+    post: {
+      tags: [ Feedback ],
+      summary: "어드민이 발표시 feedback reply 조회하는 API",
+      description: "피드백 reply 조회한다. type에 send 를 넣을 경우 우리가 보낸 reply, receive 넣을 경우 우리가 받은 reply를 받는다.",
+      consumes: [ "application/json" ],
+      produces: [ "application/json" ],
+      parameters : [{
+        in: "body",
+        name: "body",
+        description: "",
+        schema: {
+          type: "object",
+          required: [ "classId", "teamId"],
+          properties: {
+            classId: { type: "integer", description: "classId" },
+            type: { type: "string", description: "send or receive"},
+            teamId: { type: "integer", description: "teamId" },
+          }
+        }
+      }],
+      responses: {
+        200: {
+          description: "feedback reply 찾았을 경우.",
+          schema: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                replyId: { type: "integer", description: ""},
+                body: { type: "string", description: ""},
+                FeedbackPost: {
+                  type: "object",
+                  properties: {
+                    postId: { type: "integer", description: "postId"}, 
+                    title: { type: "string", description: "title of post"}
+                  }
+                }                  
+              }
+            }
+          }
+        },
+        400: { $ref: "#/components/res/ResWrongParameter" },
+        401: { $ref: "#/components/res/ResNoAuthorization" },
+        500: { $ref: "#/components/res/ResInternal" },
+      }
+    }
+  }
+}
+*/
+exports.adminListReply = (req, res, next)=>{
+
+  let userId = req.ServiceUser.userId
+
+  let targetUserId = req.body.userId
+  let classId = req.body.classId
+  
+
+  if (!classId || !targetUserId){
+    req.Error.wrongParameter(res, "classId userId")
+    return;
+  }
+  
+
+  const findTeam = ()=>{
+    return models.Join.findOne({ where: { classId: classId, user:targetUserId } })
+  }
+
+  // list reply
+  const findReply = (team)=>{
+    if (!team) throw new Error("NoTeam")
+    return models.FeedbackPost
+      .findAll({ 
+        include: [
+          { model: models.FeedbackForm },
+          { model: models.FeedbackReply, where: { targetTeamId: team.teamId } }
+        ],
+        where: { classId: classId }
+      })
+  }
+
+
+  const respond = (data)=>{
+    res.json(data)
+  }
+  
+  checkManager(userId, classId)
+    .then(findTeam)
+    .then(findReply)
+    .then(respond)
+    .catch(err=>{
+      console.log(err)
+      if (err.message == "NoPermission") req.Error.noAuthorization(res)
+      if (err.message == "NoTeam") req.Error.wrongParameter(res)
       else req.Error.internal(res)
     })
 }

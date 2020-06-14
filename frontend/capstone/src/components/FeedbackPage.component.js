@@ -91,34 +91,53 @@ function MyExpansionPanel(props) {
         <ExpansionPanelDetails>
           <Typography>
             {
-              props.body.map(reply => {
-                var body = reply.body
-                return (
-                  <div>
-                    <div>평가 조 : {reply.targetTeamId}</div>
-                    <div>[평가 내역]
-                    {
+             (props.onlyRead ? props.body.sort(function(){return 0.5-Math.random()}) : props.body).map(reply=>{
+               var body = reply.body
+               return ( // 여기 기준으로 페이지네이션 같은거 해야할 거 같음. 너무 지저분함.
+                 <div>
+                    {props.onlyRead ? <></> : <div>평가 조 : {reply.targetTeamId}</div>}
+                    <div>{props.onlyRead ? "" : "평가 내역"}
+                      { 
                         Object.entries(body)
-                          .sort((prev, next) => { // 이부분은 해도 되고 안해도 되고 문제 id로 정렬하는거
+                          .sort((prev, next)=>{ // 이부분은 해도 되고 안해도 되고 문제 id로 정렬하는거
                             if (prev[0] < next[0]) return -1
                             else if (prev[0] == next[0]) return 0
                             else return 1
                           })
-                          .map(([key, value]) => {
+                          .map(([key, value])=>{
+                            console.log(value)
+                            if (props.onlyRead && !value.shared) return <></>
                             return (
                               <div>
-                                {/* <div>문항 번호 {key}</div> */}
-                                <div>{value.title} : {value.answer}</div>
+                                <div>{value.title} : 
+                                  {
+                                    props.onlyRead ? <strong>{value.answer}</strong> :
+                                      value.type == "number" ? 
+                                        (<input type="number" value={value.answer}/>) :
+                                        (<textarea>{value.answer}</textarea>)
+                                  }
+                                </div>
                               </div>
                             )
                           })
                       }
                     </div>
-                    <br>
-                    </br>
-                  </div>
-                )
-              })
+                 </div>
+               )
+             }) 
+              // props.body.map(reply=>{
+              //   return (
+              //     <div>
+                    
+              //     </div>
+              //   )
+              // })
+              // props.body.map((e) => {
+              //   Object.keys(e)
+              // }).map(key => {
+              //   return <h3>{key + "는" + e[key]}</h3>
+              // })
+              // JSON.stringify(props.body, null, 2)
             }
           </Typography>
         </ExpansionPanelDetails>
@@ -156,7 +175,7 @@ class FeedbackList extends Component {
         }
         return retValue
       })
-      return <MyExpansionPanel title={feedback.title} body={replyBody}></MyExpansionPanel>
+      return <MyExpansionPanel title={feedback.title} body={replyBody} onlyRead={this.props.onlyRead}></MyExpansionPanel>
     })
   }
 

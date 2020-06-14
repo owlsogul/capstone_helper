@@ -4,7 +4,8 @@ import Moment from 'react-moment';
 import { 
   Button, 
   Nav, 
-  Badge 
+  Badge,
+  Alert
 } from "react-bootstrap"
 
 const style = {
@@ -211,7 +212,8 @@ class LecturePage extends Component {
     super(props)
     this.state = {
       videos: {},
-      now: new Date()
+      now: new Date(),
+      showFeedback: false,
     }
     this.attachPeerVideos = this.attachPeerVideos.bind(this)
     this.renderMapping = this.renderMapping.bind(this)
@@ -317,14 +319,59 @@ class LecturePage extends Component {
                           </div>)
     }
 
+    var btnCheckFeedback = <></>
+    if (this.props.presentationStartedAt){
+      btnCheckFeedback = (
+        <Button variant="primary" size="lg" onClick={()=>{ this.setState({ showFeedback: true}); this.props.onClickCheckFeedback();  }} style={{ marginLeft: 10}}>
+          피드백 확인
+        </Button>
+      )
+    }
+
     return (
       <div style={{ position:"absolute", left: 0, bottom: 0, width: "100%", maxWidth: "100%", height: "auto", background:"rgba(0,0,0,0.5)", padding: 10, display:"flex", flexDirection: "row" }}>
         {presentationTimer}
-        <Button variant="primary" size="lg" onClick={this.props.onClickPresentation}>
+        <Button variant="primary" size="lg" onClick={this.props.onClickPresentation} style={{ marginLeft: 10}}>
           { this.props.presentationUserId ? "발표종료" : "발표시작" }
         </Button>
+        {btnCheckFeedback}
       </div>
     )
+  }
+
+  renderFeedbackAlert(){
+    let feedbackAlert = <></>
+    if (this.state.showFeedback){
+      let msg = this.props.userFeedbackData.msg
+      if (this.props.userFeedbackData.result){
+        msg = this.props.userFeedbackData.body.map(feedback=>{
+          return (
+            <div>
+              <div>{feedback.title}</div>
+              <div>
+                {
+                  Object.entries(feedback.body).map(([pId, pData])=>{
+                    console.log("[FeedbackTracking]", "inner", pData)
+                    return (
+                      <div>
+                        {pData.title} : {pData.answer}
+                      </div>
+                    )
+                  })
+                }
+              </div>
+            </div>
+          )
+        })
+      }
+      feedbackAlert = (
+        <Alert variant={this.props.userFeedbackData.result ? "success" : "danger"} onClose={() => { this.setState({ showFeedback: false })}} dismissible>
+          <Alert.Heading>피드백 확인</Alert.Heading>
+          {msg}
+        </Alert>
+      )
+    }
+    return feedbackAlert
   }
 
   render(){
@@ -347,6 +394,9 @@ class LecturePage extends Component {
 
         {/* controller part */}
         {this.renderController()}
+
+        {/* alert view part */}
+        {this.renderFeedbackAlert()}
         
       </div>
     )

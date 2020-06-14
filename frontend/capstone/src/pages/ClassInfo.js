@@ -4,12 +4,19 @@ import ClassInfoList from '../components/ClassInfoList.component'
 import { confirmAlert } from 'react-confirm-alert';
 import ClassTemplate from "../components/ClassTemplate"
 import network from "../network"
+import { Table } from "react-bootstrap"
+import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import { InputGroup, FormControl} from "react-bootstrap"
 
-import { 
-  InputGroup, 
-  FormControl,
-  Button,
-} from "react-bootstrap"
+const useStyles = makeStyles((theme) => ({
+  root: {
+    '& > *': {
+      margin: theme.spacing(1),
+    },
+  },
+}));
+
 
 class ClassInfoPage extends Component {
 
@@ -23,68 +30,69 @@ class ClassInfoPage extends Component {
     }
   }
 
-  getClassId(){
+  getClassId() {
     return this.props.match.params.classId
   }
 
   // API get_current_lecture
-  getCurrentLecture(){
+  getCurrentLecture() {
     network.network("/api/lecture/get_current_lecture", { body: { classId: this.getClassId() } })
-    .then(res=>{
-      this.setState({ lectureStatus: res })
-    })
-    .catch(err=>{
-      if (err.status == 409) this.setState({ lectureStatus: false })
-      else console.log(err)
-    })
+      .then(res => {
+        console.log(res)
+        this.setState({ lectureStatus: res, lectureId: res["lectureId"] })
+      })
+      .catch(err => {
+        if (err.status == 409) this.setState({ lectureStatus: false })
+        else console.log(err)
+      })
   }
 
   // API get_class_member
-  getClassMember(){
-    network.network("/api/class/member", { body: {classId: this.getClassId()} })
-    .then(member=>{
-      console.log(member)
-      this.setState({ professor: member.targetClass,member: member.manages })
-    })
-    .catch(err=>{
-      console.log(err)
-    })
+  getClassMember() {
+    network.network("/api/class/member", { body: { classId: this.getClassId() } })
+      .then(member => {
+        console.log(member)
+        this.setState({ professor: member.targetClass, member: member.manages })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
-  startLecture(name){
+  startLecture(name) {
     network.network("/api/lecture/start_lecture", { body: { classId: this.getClassId(), lectureName: name } })
-      .then(res=>{
+      .then(res => {
         alert("수업이 시작되었습니다.")
       })
-      .catch(err=>{
+      .catch(err => {
         if (err.status == 409) {
           alert("수업이 이미 진행중입니다.")
         }
         else console.log(err)
       })
-      .finally(()=>{
+      .finally(() => {
         window.location.reload()
       })
   }
 
-  endLecture(){
+  endLecture() {
     network.network("/api/lecture/end_lecture", { body: { classId: this.getClassId() } })
-      .then(res=>{
+      .then(res => {
         alert("수업이 종료되었습니다.")
       })
-      .catch(err=>{
+      .catch(err => {
         if (err.status == 409) {
           alert("수업이 시작 되지 않았습니다.")
         }
         else console.log(err)
       })
-      .finally(()=>{
+      .finally(() => {
         window.location.reload()
       })
   }
 
   // 이 페이지가 불러와졌을 때 어떤일들을 할지
-  componentDidMount(){
+  componentDidMount() {
 
     // url에서 classId를 읽어오고 없을경우 dashboard로 이동
     let classId = this.props.match.params.classId
@@ -95,7 +103,7 @@ class ClassInfoPage extends Component {
 
     // 강의 정보를 가져옴
     this.getCurrentLecture()
-    
+
   }
 
   submit = () => {
@@ -116,7 +124,7 @@ class ClassInfoPage extends Component {
     })
   }
 
-  onClickLectureBtn(flag){
+  onClickLectureBtn(flag) {
     if (flag) { // 수업 시작
       this.startLecture(this.state.lectureName)
     }
@@ -126,7 +134,7 @@ class ClassInfoPage extends Component {
   }
 
   render() {
-    
+
     const postList = this.state.member.map((post) => (
       <div>
         <div><b>{post.User.name}</b></div>
@@ -143,14 +151,14 @@ class ClassInfoPage extends Component {
         <FormControl
           placeholder="ex) 1주차 캡스톤"
           value={this.state.lectureName}
-          onChange={event=>{ console.log(event.target.value); this.setState({ lectureName: event.target.value}) }}
+          onChange={event => { console.log(event.target.value); this.setState({ lectureName: event.target.value }) }}
         />
         <InputGroup.Append>
-          <Button variant="outline-primary" onClick={()=>{this.onClickLectureBtn(true)}}>수업 시작</Button>
+          <Button variant="outline-primary" onClick={() => { this.onClickLectureBtn(true) }}>수업 시작</Button>
         </InputGroup.Append>
       </InputGroup>
     </div>)
-    if (this.state.lectureStatus){
+    if (this.state.lectureStatus) {
       lectureForm = (<div>
         <InputGroup>
           <InputGroup.Prepend>
@@ -162,12 +170,12 @@ class ClassInfoPage extends Component {
             contentEditable={false}
           />
           <InputGroup.Append>
-            <Button variant="outline-danger" onClick={()=>{this.onClickLectureBtn(false)}}>수업 종료</Button>
+            <Button variant="outline-danger" onClick={() => { this.onClickLectureBtn(false) }}>수업 종료</Button>
           </InputGroup.Append>
         </InputGroup>
       </div>)
     }
-    
+
     return (
       <ClassTemplate match={this.props.match}>
         <div>
@@ -176,38 +184,39 @@ class ClassInfoPage extends Component {
           </div>
           <div>
             <ul>
-              <h2>강의계획서</h2>
-              <a class="btn btn-light btn-lg" href="#" role="button">PDF 다운로드</a>
+              <li>{this.state.lectureId}</li>
+              {/* <a class="btn btn-light btn-lg" href="#" role="button">PDF 다운로드</a> */}
+              <Button variant="contained" color="primary">강의 계획서 PDF 다운로드</Button>
             </ul>
           </div>
+          <br></br><br></br><br></br><br></br>
           <div>
             <ul>
-              <h2>수업 시작하기</h2>
+              <h3>[수업 시작하기]</h3>
               {lectureForm}
             </ul>
           </div>
-          <br></br><br></br>
+          <br></br><br></br><br></br><br></br>
           <div>
-            <h2>관리자 정보</h2>
+            <h3>[관리자 정보]</h3>
           </div>
           <div>
             <div><b>{this.state.professor.professorName}</b></div>
             {this.state.professor.professor}
           </div>
           <div class="adminInfo" style={{ width: "30rem", margin: "auto" }}>
-            { postList
+            {postList
             /*<ClassInfoList data={this.state.information} />*/}
           </div>
-
-          <br></br><br></br>
+          <br></br><br></br><br></br><br></br>
           <div>
-            <button onClick={this.submit}>
+            <Button variant="contained" color="secondary" onClick={this.submit}>
               종강하기
-            </button>
+            </Button>
           </div>
         </div>
       </ClassTemplate>
-      
+
     )
   }
 }

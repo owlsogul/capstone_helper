@@ -91,12 +91,45 @@ function MyExpansionPanel(props) {
         <ExpansionPanelDetails>
           <Typography>
             {
+             props.body.map(reply=>{
+               var body = reply.body
+               return (
+                 <div>
+                   <div>평가 조 : {reply.targetTeamId}</div>
+                  <div>평가 내역 : 
+                    { 
+                      Object.entries(body)
+                        .sort((prev, next)=>{ // 이부분은 해도 되고 안해도 되고 문제 id로 정렬하는거
+                          if (prev[0] < next[0]) return -1
+                          else if (prev[0] == next[0]) return 0
+                          else return 1
+                        })
+                        .map(([key, value])=>{
+                          return (
+                            <div>
+                              <div>문항 번호 {key}</div>
+                              <div>{value.title} : {value.answer}</div>
+                            </div>
+                          )
+                        })
+                    }
+                  </div>
+                 </div>
+               )
+             }) 
+              // props.body.map(reply=>{
+              //   return (
+              //     <div>
+                    
+              //     </div>
+              //   )
+              // })
               // props.body.map((e) => {
               //   Object.keys(e)
               // }).map(key => {
               //   return <h3>{key + "는" + e[key]}</h3>
               // })
-              JSON.stringify(props.body)
+              // JSON.stringify(props.body, null, 2)
             }
           </Typography>
         </ExpansionPanelDetails>
@@ -107,41 +140,48 @@ function MyExpansionPanel(props) {
 
 
 class FeedbackList extends Component {
+
+  constructor(props){
+    super(props)
+    this.renderWeeks = this.renderWeeks.bind(this)
+  }
+
+  renderWeeks(){
+    return this.props.feedbackList.map(feedback=>{
+      let formBody = feedback.FeedbackForm.body // form body json string
+      let replyBody = feedback.FeedbackReplies.map(reply=>{
+        var formObj = JSON.parse(formBody)
+        var replyObj = JSON.parse(reply.body)
+
+        // form에다가 answer 항목 넣어서 전달.
+        Object.keys(formObj).forEach(key=>{
+          if (replyObj[key]){
+            formObj[key].answer = replyObj[key]
+          }
+        })
+
+        var retValue = {
+          targetTeamId: reply.targetTeamId,
+          teamId: reply.teamId,
+          body: formObj
+        }
+        return retValue
+      })
+      return <MyExpansionPanel title={feedback.title} body={replyBody}></MyExpansionPanel>
+    })
+  }
+
   render() {
     var myArray = null
     var keys = null
     console.log("json은")
-    console.log(this.props.json)
+    console.log(this.props.feedbackList)
     var arr = [] // 제일 큰 array
 
-    if (this.props.json != null) {
-      console.log("여기로 잘 옴!!!")
-      this.props.json.forEach((e) => {
-        keys = Object.keys(JSON.parse(e["FeedbackForm"]["body"]))
-        var bodyArr = []
-        e["FeedbackReplies"].forEach((k) => {
-          var finalArr = []
-          keys.forEach(key => {
-            var obj = {}
-            console.log(key)
-            console.log(JSON.parse(k["body"])[key])
-            obj[key] = JSON.parse(k["body"])[key]
-            finalArr.push(obj)
-          })
-          bodyArr.push(finalArr)
-        })
-        arr.push({ "title": e["title"], "body": bodyArr })
-      })
-      myArray = arr
-      return (
-        <div>
-          {
-            myArray.map((e) => {
-              return <MyExpansionPanel title={e.title} body={e.body}></MyExpansionPanel>
-            })
-          }
-        </div>
-      )
+    if (this.props.feedbackList.length > 0) {
+      return (<>
+      {this.renderWeeks()}
+      </>)
     }
     else {
       console.log("여기여기여기")

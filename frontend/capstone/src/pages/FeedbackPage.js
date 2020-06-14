@@ -18,7 +18,7 @@ export default class FeedbackPage extends Component {
       teamName: "",
       joins: [],
       feedBackFormText: "폼이 없습니다",
-      feedbackList: null
+      feedbackList: []
     }
   }
 
@@ -28,26 +28,8 @@ export default class FeedbackPage extends Component {
     if (!classId || !teamId) {
       window.location = "/dashboard"
     }
-    network.network("/api/team/get_team", {
-      body: { classId: classId, teamId: teamId }
-    })
-      .then(team => {
-        console.log(team)
-        this.setState({
-          teamName: team.teamName,
-          joins: team.Joins,
-          githubUrl: team.githubUrl
-        })
-      })
-
-    getFeedbackList(this.props.match.params.classId, this.props.match.params.teamId)
+    getFeedbackList(classId, teamId)
       .then(json => {
-        console.log("피드백 리스트는...")
-        console.log(json)
-        json.forEach((e) => {
-          console.log("각각은...")
-          console.log(e)
-        })
         this.setState({ feedbackList: json })
         console.log("feeback list는..")
         console.log(this.state.feedbackList)
@@ -62,7 +44,7 @@ export default class FeedbackPage extends Component {
           <br></br>
         </div>
         
-        <FeedbackList json={this.state.feedbackList} ></FeedbackList>
+        <FeedbackList feedbackList={this.state.feedbackList} ></FeedbackList>
       </TeamTemplate >
     );
   }

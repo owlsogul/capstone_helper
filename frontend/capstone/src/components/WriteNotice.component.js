@@ -30,6 +30,8 @@ class WriteNotice extends Component {
 
             .then(res => res.json())
 
+            .then(data => console.log(data))
+
             .then(json => {
                 console.log(json)
                 console.log(json["title"])

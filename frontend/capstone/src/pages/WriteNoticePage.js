@@ -15,6 +15,8 @@ export default class WriteNoticePage extends Component {
     changeScene(newScene) {
         this.setState({ currentScene: newScene })
     }
+
+
   
     render() {
         let form = this.state.currentScene === "notice" ?

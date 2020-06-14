@@ -40,7 +40,7 @@ function App() {
           {// <Route path="/:classId/teams/feedbackform" component={FeedbackFormPage} />
 }
           <Route path="/createfeedbackform" component={CreateFeedbackFormPage} /> 
-          <Route path="/feedbackform" component={FeedbackFormPage} /> 
+          <Route path="/feedbackform" component={FeedbackFormPage} />
           
         </Switch>
       </div >

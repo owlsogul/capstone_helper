@@ -200,7 +200,17 @@ export default class InLecturePage extends Component {
   createPeer(peerId, initiator, stream) {
     console.log('[PeerTracking] createPeer', peerId == this.socket.id, peerId, initiator, stream)
 
-    const peer = new Peer({initiator: initiator, trickle: false, stream })
+    const peer = new Peer({
+      initiator: initiator, 
+      trickle: false, 
+      stream: stream, 
+      config: { 
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' }, 
+          { urls: 'stun:stun.mit.de:3478' }
+        ] 
+      }, 
+    })
 
     peer.on('signal', (signal) => {
       const msgId = (new Date().getTime())

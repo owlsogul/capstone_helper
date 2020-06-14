@@ -2,29 +2,28 @@
 import React, { Component } from 'react'
 import FeedbackForm from '../components/FeedbackForm.component'
 import '../App.css'
+import network from '../network'
+import ClassTemplate from "../components/ClassTemplate"
 import { useState } from 'react';
 
-function form(sendObj) {
-  return fetch('/api/class/list_form', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ classId: sendObj.classId }),
-  })
+const form = (classId) => {
+  return network.network('/api/feedback/list_form', { body: { classId: classId } })
 }
 
 export default class FeedbackFormPage extends Component {
+  componentDidMount() {
+    form(this.props.match.params.classId)
+      .then(json => {
+        console.log(json)
+      })
+  }
   constructor(props) {
     super(props);
     this.state = { classId: this.props.match.params.classId, form: [] }
-    this.getForm = this.getForm.bind(this);
   }
 
   getForm() {
-    form({ classId: this.state.classId })
+    form(this.state.classId)
       .then((res) => res.json())
       .then((json) => {
         console.log("폼은...")
@@ -46,9 +45,11 @@ export default class FeedbackFormPage extends Component {
         (<NoticePage changeScene={this.changeScene.bind(this)} />) */
 
     return (
-      <div>
-        <FeedbackForm match={this.props.match}></FeedbackForm>
-      </div>
+      <ClassTemplate match={this.props.match}>
+        <div>
+          <FeedbackForm match={this.props.match}></FeedbackForm>
+        </div>
+      </ClassTemplate>
     );
   }
 }

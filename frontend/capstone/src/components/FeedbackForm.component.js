@@ -4,29 +4,10 @@ import '../App.css'
 import { useState } from 'react';
 import CreateFeedback from './EditFeedbackForm.component'
 
-function form(sendObj) {
-  return fetch('/api/class/list_form', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ classId: sendObj.classId }),
-  })
-
-    .then(json => {
-      this.setState({ body: json["feedback"] })
-      console.log(JSON.stringify({ body: this.state.feedback }))
-    })
-}
-
-
 class FeedbackComment extends Component {
   constructor(props) {
     super(props);
     this.state = { classId: this.props.match.params.classId, name: "", formId: 0, feedback: "", myTeam: 0 }
-    this.getForm = this.getForm.bind(this);
   }
 
   handlefeedbackChange = (e) => {
@@ -35,17 +16,6 @@ class FeedbackComment extends Component {
 
   handlemyTeamChange = (e) => {
     this.setState({ myTeam: e.target.value })
-  }
-
-  getForm() {
-    form({ classId: this.state.classId })
-      .then((res) => res.json())
-      .then((json) => {
-        console.log(json)
-        this.setState({
-          form: json
-        })
-      })
   }
 
   render() {
@@ -59,7 +29,7 @@ class FeedbackComment extends Component {
           <input type="text" name="myTeam" value={this.state.myNumber} placeholder="자신의 조 입력" onChange={this.handleMyNumberChange} />
         </h3>
 
-        <p>
+        {/* <p>
           <strong>평가항목</strong>
         </p>
         <p>
@@ -81,8 +51,8 @@ class FeedbackComment extends Component {
           </div>
         </p>
         <p>
-          <input type="submit" value="제출" onChange={form()} />
-        </p>
+          <input type="submit" value="제출" onChange={()=>{}} />
+        </p> */}
       </form>
     )
   }

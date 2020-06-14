@@ -25,7 +25,7 @@ class WriteNoticePage extends Component {
         /// TODO: classId가 undefined인 문제 있음. 
         uploadNotice(1, title, body)
             .then((res) => {
-                if (res.status == 200) 
+                if (res.status == 200)
                     alert("성공적으로 공지가 등록되었습니다. ")
             })
     }

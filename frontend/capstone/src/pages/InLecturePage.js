@@ -56,8 +56,12 @@ export default class InLecturePage extends Component {
   onMedia(stream) {
     this.myVideoStream = stream
     this.forceUpdate() // we have stream
+    console.log("[VideoTracking]", "onMedia", false, this.myVideoStream)
   }
 
+  /**
+   * socket 연결 하는 부분
+   */
   createWebRTCSocket(){
     return new Promise((res, rej)=>{
       //this.socket = io("http://localhost:30081/socket.io")
@@ -78,12 +82,12 @@ export default class InLecturePage extends Component {
         console.log(err);
       })
 
-    // user on connect
+      // user on connect
       this.socket.on('peer', msg => {
         const peerId = msg.peerId
-        console.log('new peer poof!', peerId)
+        console.log('[PeerTracking] onPeer', peerId == this.socket.id, peerId)
         if (peerId === this.socket.id) {
-          return this.debug('Peer is me :D', peerId)
+          return console.log('[PeerTracking] is Me', peerId == this.socket.id, peerId)
         }
         this.createPeer(peerId, true, this.myVideoStream)
         this.socket.emit("member", { lectureId: this.state.lectureId })
@@ -120,13 +124,14 @@ export default class InLecturePage extends Component {
       if (!peer) {
         this.createPeer(peerId, false, this.myVideoStream)
       }
-      this.debug('Setting signal', peerId, data)
+      console.log('[PeerTracking] setting siganl', peerId == this.socket.id, peerId, data)
       this.signalPeer(this.state.peers[peerId], data.signal)
     })
 
     // user on disconnected
     this.socket.on('unpeer', msg => {
-      this.debug('Unpeer', msg)
+      let peerId = msg.peerId
+      console.log('[PeerTracking] onUnpeer', peerId == this.socket.id, peerId)
       this.destroyPeer(msg.peerId)
       this.socket.emit("member", { lectureId: data.lectureId })
     })
@@ -190,35 +195,40 @@ export default class InLecturePage extends Component {
   }
   
   createPeer(peerId, initiator, stream) {
-    this.debug('creating new peer', peerId, initiator)
+    console.log('[PeerTracking] createPeer', peerId == this.socket.id, peerId, initiator, stream)
 
-    const peer = new Peer({initiator: initiator, trickle: false, stream})
+    const peer = new Peer({initiator: initiator, trickle: false, stream })
 
     peer.on('signal', (signal) => {
       const msgId = (new Date().getTime())
       const msg = { msgId, signal, to: peerId }
-      this.debug('peer signal sent', msg)
-      this.socket.emit('signal', msg)
+      console.log('[PeerTracking] onSignal', peerId == this.socket.id, peerId, msg)
+      if (peerId != this.socket.id) this.socket.emit('signal', msg)
     })
   
     peer.on('stream', (stream) => {
-      this.debug('Got peer stream!!!', peerId, stream)
+      console.log('[PeerTracking] onStream', peerId == this.socket.id, peerId, stream)
       if (peerId == this.socket.id) {
         peer.stream = this.myVideoStream
-        return this.setPeerState(peerId, peer)
+        console.log("[VideoTracking]", "onStream is me", peerId, "is Mine")
       }
-      peer.stream = stream
+      else {
+        peer.stream = stream
+        console.log("[VideoTracking]", "onStream", peerId, stream)
+      }
       this.setPeerState(peerId, peer)
     })
 
     peer.on('connect', () => {
-      this.debug('Connected to peer', peerId)
+      console.log('[PeerTracking] onConnect', peerId == this.socket.id, peerId)
       //peer.connected = true
       this.setPeerState(peerId, peer)
     })
 
     peer.on('error', (e) => {
-      this.debug('Peer error %s:', peerId, e);
+      console.log('[PeerTracking] onError', peerId == this.socket.id, peerId, e)
+      // 에러 발생시 삭제 하고 다시 만들기
+      this.createPeer(peerId, true, this.myVideoStream)
     })
 
     this.setPeerState(peerId, peer)
@@ -234,18 +244,6 @@ export default class InLecturePage extends Component {
     })
   }
 
-  serialize(data) {
-    return JSON.stringify(data)
-  }
-
-  unserialize(data) {
-    try {
-      return JSON.parse(data.toString())
-    } catch(e) {
-      return undefined
-    }
-  }
-
   setPeerState(peerId, peer) {
     const peers = {...this.state.peers}
     peers[peerId] = peer
@@ -254,15 +252,17 @@ export default class InLecturePage extends Component {
     })
   }
 
-  debug(str, ...data){
-    console.log(str, data)
-  }
-
   signalPeer(peer, data) {
     try {
       peer.signal(data)
     } catch(e) {
-      this.debug('sigal error', e)
+      if (e.message == "cannot signal after peer is destroyed"){
+        console.log('[PeerTracking] destroy signal error', peer, data, e)
+        
+      }
+      else {
+        console.log('[PeerTracking] signal error', peer, data, e)
+      }
     }
   }
 
@@ -315,6 +315,7 @@ export default class InLecturePage extends Component {
 
         // event callback
         onClickPresentation={this.handlePresentation.bind(this)}
+
       />
     }
     return (

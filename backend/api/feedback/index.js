@@ -21,4 +21,6 @@ router.post("/save_reply", [serviceUser.checkLogin, fc.replyPost])
 
 router.post("/list_reply", [serviceUser.checkLogin, fc.listReply])
 
+router.post("/admin_list_reply", [serviceUser.checkLogin, fc.adminListReply])
+
 module.exports = router

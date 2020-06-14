@@ -152,6 +152,23 @@ class SocketServer {
       console.log(socket.userId, "request", userMap)
     })
 
+    socket.on("presentation", msg=>{
+      console.log("presentation", msg)
+      let lectureId = String(msg.lectureId)
+      if (!lectureId || lectureId != socket.joinedLecture) {
+        console.log("not in lecture :", lectureId, socket.joinedLecture)
+        return
+      }
+      
+      if (!this.presentationMap[lectureId] || this.presentationMap[lectureId].type != 1){
+        socket.emit("presentation", { type: "end" })
+      }
+      else {
+        socket.emit("presentation", { type: "start", userId: this.presentationMap[lectureId].userId, startedAt: this.presentationMap[lectureId].startedAt })
+      }
+        
+    })
+
   }
 
   /**

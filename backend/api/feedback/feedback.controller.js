@@ -91,7 +91,7 @@ exports.listForm = (req, res, next)=>{
     res.json(form)
   }
   
-  checkManager(userId, classId)
+  checkManager(userId, classId, 1)
     .then(findForm)
     .then(respond)
     .catch(err=>{

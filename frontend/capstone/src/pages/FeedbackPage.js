@@ -61,11 +61,7 @@ export default class FeedbackPage extends Component {
           <FeedbackForm feedBackFormText={this.state.feedBackFormText}></FeedbackForm>
           <br></br>
         </div>
-
-        {/* {this.state.feedbackList.map((e) => { */}
-        {/* })} */}
-
-        {/* <FeedbackList questionsAndAnswers = { dummy } ></FeedbackList> */}
+        
         <FeedbackList json={this.state.feedbackList} ></FeedbackList>
       </TeamTemplate >
     );

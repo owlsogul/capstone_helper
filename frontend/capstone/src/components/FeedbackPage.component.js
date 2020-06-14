@@ -85,23 +85,19 @@ function MyExpansionPanel(props) {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography className={classes.heading}>{"dkdkk"}</Typography>
+          <Typography className={classes.heading}>{props.title}</Typography>
 
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Typography>
-            {/* <Pagination count={1} color="primary"></Pagination> */}
             {
-
-              <h1>{props.body}</h1>
-              // .map((each)=>{
-              //   Object.keys(each) // [["0", "1", "2"], ["0", "1", "2"]] (2)
-              // }).map((v)=>{
-              //   return <h1>{v}</h1>
+              // props.body.map((e) => {
+              //   Object.keys(e)
+              // }).map(key => {
+              //   return <h3>{key + "는" + e[key]}</h3>
               // })
+              JSON.stringify(props.body)
             }
-            {/* <Pagination color="primary"></Pagination>
-            {props.body} */}
           </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -132,14 +128,16 @@ class FeedbackList extends Component {
           })
           bodyArr.push(finalArr)
         })
-        arr.push({ "title": e["title"], "body": bodyArr }) // 5주차 피드백
+        arr.push({ "title": e["title"], "body": bodyArr })
       })
       myArray = arr
       return (
         <div>
-          {myArray.forEach((e) => {
-            return <MyExpansionPanel title={e.title} body={e.body}></MyExpansionPanel>
-          })}
+          {
+            myArray.map((e) => {
+              return <MyExpansionPanel title={e.title} body={e.body}></MyExpansionPanel>
+            })
+          }
         </div>
       )
     }

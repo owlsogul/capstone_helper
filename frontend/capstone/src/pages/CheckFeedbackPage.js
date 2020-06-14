@@ -24,6 +24,7 @@ export default class CheckFeedbackPage extends Component {
     getListFeedback(classId, teamId)
       .then((json) => {
         console.log("피드백 리스트는...")
+        console.log(json)
         this.setState({ posts: json })
       })
   }

@@ -3,6 +3,10 @@ import network from "../network/index";
 import Dashboard from "../components/Dashboard.component";
 import { MessageList, MessageClassList, AdminMessageList } from '../components/MessgePage.component';
 
+const userInfo = () => {
+  return network.network('/api/user/user_info', { method: "GET" })
+}
+
 //// 학생용 
 // 학생들의 메세지 목록을 호출하는 API
 function getMessage() {
@@ -64,21 +68,23 @@ const loadClass = () => {
 export default class MessagePage extends Component {
   constructor(props) {
     super(props);
-    this.state = { classId: -1, isAdmin: false, takeClassList: [], manageClassList: [], messages: [], student: ""  }
+    this.state = { classId: -1, isAdmin: false, takeClassList: [], manageClassList: [], messages: [], student: "" }
     this.studentSelectClass = this.studentSelectClass.bind(this)
     this.adminSelectClass = this.adminSelectClass.bind(this)
     this.sendMessageAnd = this.sendMessageAnd.bind(this)
-    this.setIsAdmin = this.setIsAdmin.bind(this)
   }
 
   componentDidMount() {
     loadClass()
       .then((res) => {
+        console.log("res는")
         console.log(res)
         let takeClassList = []
         let manageClassList = []
 
         if (res.take) {
+          console.log("take로 옴")
+          this.setState({ isAdmin: false })
           takeClassList = takeClassList.concat(res.take.map(e => {
             return {
               classId: e.classId,
@@ -87,7 +93,7 @@ export default class MessagePage extends Component {
           }));
         }
 
-        if (res.manage) {
+        else if (res.manage) {
           this.setState({ isAdmin: true })
           manageClassList = manageClassList.concat(res.manage.map(e => {
             return {
@@ -97,7 +103,7 @@ export default class MessagePage extends Component {
           }));
         }
 
-        if (res.own) {
+        else if (res.own) {
           this.setState({ isAdmin: true })
           manageClassList = manageClassList.concat(res.own.map(e => {
             return {
@@ -117,6 +123,7 @@ export default class MessagePage extends Component {
   }
 
   studentSelectClass(classId) {
+    console.log("student가 class선택함")
     this.setState({ classId: classId })
     getMessage().then((res) => {
       console.log("getMessage의 결과는")
@@ -134,7 +141,7 @@ export default class MessagePage extends Component {
       // userId: [{}{}] userId2: [{}{}{}]
       var messages = {}
       var keys = Object.keys(res) // userId, userId2
-      for (var i=0; i<keys.length; i++){
+      for (var i = 0; i < keys.length; i++) {
         var key = keys[i]
         messages[key] = res[key]
       }
@@ -155,11 +162,9 @@ export default class MessagePage extends Component {
       })
   }
 
-  setIsAdmin(boolValue) {
-    this.setState({ isAdmin: boolValue })
-  }
-
   render() {
+    console.log("그래서 IsAdmin은")
+    console.log(this.state.isAdmin)
     if (this.state.isAdmin == true) {
       // 관리자용
       return (
@@ -168,7 +173,6 @@ export default class MessagePage extends Component {
             <MessageClassList takeClassList={this.state.takeClassList}
               manageClassList={this.state.manageClassList}
               listGroupClickedCallBack={this.adminSelectClass}
-              setIsAdmin={this.setIsAdmin}
             ></MessageClassList>
             <AdminMessageList classId={this.state.classId} messages={this.state.messages} sendMsg={this.sendReply}></AdminMessageList>
           </div>
@@ -182,7 +186,6 @@ export default class MessagePage extends Component {
           <MessageClassList takeClassList={this.state.takeClassList}
             manageClassList={this.state.manageClassList}
             listGroupClickedCallBack={this.studentSelectClass}
-            setIsAdmin={this.setIsAdmin}
           ></MessageClassList>
           <MessageList classId={this.state.classId} messages={this.state.messages} sendMsg={this.sendMessageAnd}></MessageList>
         </div>

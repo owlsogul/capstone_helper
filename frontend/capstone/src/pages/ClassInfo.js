@@ -7,8 +7,7 @@ import network from "../network"
 import { Table } from "react-bootstrap"
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import { InputGroup, FormControl} from "react-bootstrap"
-
+import { InputGroup, FormControl, Card } from "react-bootstrap"
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > *': {
@@ -182,32 +181,38 @@ class ClassInfoPage extends Component {
           <div style={{ height: "5rem" }}>
             <br></br>
           </div>
-          <div>
-            <ul>
-              <li>{this.state.lectureId}</li>
-              {/* <a class="btn btn-light btn-lg" href="#" role="button">PDF 다운로드</a> */}
-              <Button variant="contained" color="primary">강의 계획서 PDF 다운로드</Button>
-            </ul>
-          </div>
+          <Card body>
+            <div>
+              <ul>
+                <li>{this.state.lectureId}</li>
+                {/* <a class="btn btn-light btn-lg" href="#" role="button">PDF 다운로드</a> */}
+                <Button variant="contained" color="primary">강의 계획서 PDF 다운로드</Button>
+              </ul>
+            </div>
+          </Card>
           <br></br><br></br><br></br><br></br>
-          <div>
-            <ul>
-              <h3>[수업 시작하기]</h3>
-              {lectureForm}
-            </ul>
-          </div>
+          <Card body>
+            <div>
+              <ul>
+                <h3>[수업 시작하기]</h3>
+                {lectureForm}
+              </ul>
+            </div>
+          </Card>
           <br></br><br></br><br></br><br></br>
-          <div>
-            <h3>[관리자 정보]</h3>
-          </div>
-          <div>
-            <div><b>{this.state.professor.professorName}</b></div>
-            {this.state.professor.professor}
-          </div>
-          <div class="adminInfo" style={{ width: "30rem", margin: "auto" }}>
-            {postList
+          <Card body>
+            <div>
+              <h3>[관리자 정보]</h3>
+            </div>
+            <div>
+              <div><b>{this.state.professor.professorName}</b></div>
+              {this.state.professor.professor}
+            </div>
+            <div class="adminInfo" style={{ width: "30rem", margin: "auto" }}>
+              {postList
             /*<ClassInfoList data={this.state.information} />*/}
-          </div>
+            </div>
+          </Card>
           <br></br><br></br><br></br><br></br>
           <div>
             <Button variant="contained" color="secondary" onClick={this.submit}>

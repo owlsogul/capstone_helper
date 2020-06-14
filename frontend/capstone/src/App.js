@@ -8,10 +8,10 @@ import wait from './pages/Wait';
 import OpenClass from './pages/OpenClass'
 import RedirectingComponent from './components/RedirectingComponent.js';
 import NoticePage from './pages/NoticePage.js';
+import WriteNoticePage from './pages/WriteNoticePage';
 import DashboardPage from "./pages/DashboardPage"
 import ClassInfoPage from './pages/ClassInfo';
 import StudentList from './pages/StudentList';
-import WriteNoticePage from './pages/WriteNoticePage';
 import TeamPage from './pages/TeamPage';
 import AdminTeamPage from './pages/AdminTeamPage';
 import TeamInfoPage from './pages/TeamInfoPage';
@@ -22,6 +22,8 @@ import ManageLinkPage from './pages/ManageLinkPage';
 import JoinPage from './pages/JoinPage';
 import WebRTCTest from './pages/WebRTCTest';
 import InLecturePage from './pages/InLecturePage';
+import EditFeedbackFormPage from './pages/EditFeebackFormPage';
+import FeedbackFormPage from './pages/FeedbackFormPage';
 
 function App() {
   return (
@@ -36,6 +38,7 @@ function App() {
           <Route path="/dashboard" component={DashboardPage} />
           <Route path="/writenotice" component={WriteNoticePage} />
           <Route path="/:classId/notice" component={NoticePage} />
+          <Route path="/:classId/writeNotice" component={WriteNoticePage} />
           <Route path="/:classId/classinfo" component={ClassInfoPage} />
           <Route path="/:classId/lecture" component={InLecturePage} />
           <Route path="/:classId/students" component={StudentList} />
@@ -48,6 +51,9 @@ function App() {
           <Route exact path="/:classId/teams/:teamId/info" component={TeamInfoPage} /> 
           <Route exact path="/:classId/teams/:teamId/feedback" component={FeedbackPage} /> 
           <Route exact path="/:classId/teams/:teamId/check_feedback" component={CheckFeedbackPage} /> 
+
+          <Route exact path="/:classId/fixForm" component={EditFeedbackFormPage} />
+          <Route exact path="/:classId/form" component={FeedbackFormPage} />
 
           <Route path="/join/:code" component={JoinPage} /> 
           <Route path="/webrtctest" component={WebRTCTest} /> 

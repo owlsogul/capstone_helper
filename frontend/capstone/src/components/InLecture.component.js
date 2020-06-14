@@ -4,7 +4,8 @@ import Moment from 'react-moment';
 import { 
   Button, 
   Nav, 
-  Badge 
+  Badge,
+  Alert
 } from "react-bootstrap"
 
 const style = {
@@ -38,7 +39,8 @@ const style = {
     position: "absolute", right: 0, top: 0, left: 0, bottom: 0,
     background: "rgba(0,0,0,0.8)", color: "#ffffff",
     display: "flex", flexDirection: "column", justifyContent: "center", alignContent: "center",
-
+    overflow: "auto",
+    padding: 5
   }
 }
 
@@ -64,9 +66,12 @@ class MainVideo extends Component {
     this.renderVideo = this.renderVideo.bind(this)
   }
 
-  componentDidUpdate(){
-    if (this.props.stream){
-      this.video.srcObject = this.props.stream.video
+  componentDidUpdate(prevProps){
+    
+    if (prevProps.stream != this.props.stream){
+      if (this.props.stream){
+        this.video.srcObject = this.props.stream.video
+      }
     }
   }
 
@@ -79,7 +84,8 @@ class MainVideo extends Component {
 
   renderVideo(){
     if (this.props.stream){
-      return <video ref={this.handleRef} autoPlay style={{ width: "100%", height: "100%"}}/>
+      return <video ref={this.handleRef} autoPlay style={{ flex: "1 1 auto", alignItems: "stretch"}}/>
+      //return <video ref={this.handleRef} autoPlay style={{ wid}}/>
     }
     else {
       return <div>No video</div>
@@ -88,7 +94,7 @@ class MainVideo extends Component {
 
   render(){
     return(
-      <div style={{ width: "100%", height: "100%"}}>
+      <div style={{ flex: "1 1 auto", alignItems: "center"}}>
         {this.renderVideo()}
       </div>
     )
@@ -111,11 +117,13 @@ class UserVideo extends Component {
     this.renderVideoData = this.renderVideoData.bind(this)
   }
 
-  componentDidUpdate(){
-    this.video.srcObject = this.props.stream
-    console.log("[VideoTracking]", "componentDidUpdate", this.props.id, this.props.stream)
-    if (!this.props.stream.active){
-      console.log("[VideoTracking]", "onInactive", this.props.id, this.props.stream, this.props.stream.getTracks())
+  componentDidUpdate(prevProps){
+    if (prevProps.stream != this.props.stream){
+      this.video.srcObject = this.props.stream
+      console.log("[VideoTracking]", "componentDidUpdate", this.props.id, this.props.stream)
+      if (!this.props.stream.active){
+        console.log("[VideoTracking]", "onInactive", this.props.id, this.props.stream, this.props.stream.getTracks())
+      }
     }
   }
 
@@ -161,7 +169,6 @@ class UserVideo extends Component {
       let presentationData = this.props.userData.presentation
       let presentationInfo = (
         <>
-          <div> key : {this.props.id} </div>
           <div>발표 총 횟수: {presentationData.length}</div>
           {presentationData.reverse().map((p, idx)=>{
             if (idx > 3 || !p.endedAt) return <></>
@@ -204,11 +211,22 @@ class LecturePage extends Component {
   constructor(props){
     super(props)
     this.state = {
-      videos: {}
-    
+      videos: {},
+      now: new Date(),
+      showFeedback: false,
     }
     this.attachPeerVideos = this.attachPeerVideos.bind(this)
     this.renderMapping = this.renderMapping.bind(this)
+    this.timer = false
+  }
+
+  componentDidMount(){
+    if (this.timer){
+      clearInterval(this.timer)
+    }
+    this.timer = setInterval(()=>{
+      this.setState({now: new Date()})
+    }, 1000)
   }
 
   componentDidUpdate(prevProps) {
@@ -285,9 +303,80 @@ class LecturePage extends Component {
     )
   }
 
+  renderController(){
+    var presentationTimer = <></>
+    if (this.props.presentationStartedAt){
+      let userData = this.props.userDataMap[this.props.presentationUserId]
+      let name = userData ? userData.name : "loading..."
+      let startDate = Date.parse(this.props.presentationStartedAt)
+      let gap = this.state.now.getTime() - startDate
+      presentationTimer = (<div style={{ marginRight: 10}}>
+                              <div style={{ textAlign: "left" }}>발표자 {name}</div>
+                              <div style={{ textAlign: "left" }}>
+                                <Moment format="MM.DD hh:mm:ss">{this.props.presentationStartedAt}</Moment>
+                                <Badge>{Math.floor(gap/1000)}초 경과</Badge>
+                              </div>
+                          </div>)
+    }
+
+    var btnCheckFeedback = <></>
+    if (this.props.presentationStartedAt){
+      btnCheckFeedback = (
+        <Button variant="primary" size="lg" onClick={()=>{ this.setState({ showFeedback: true}); this.props.onClickCheckFeedback();  }} style={{ marginLeft: 10}}>
+          피드백 확인
+        </Button>
+      )
+    }
+
+    return (
+      <div style={{ position:"absolute", left: 0, bottom: 0, width: "100%", maxWidth: "100%", height: "auto", background:"rgba(0,0,0,0.5)", padding: 10, display:"flex", flexDirection: "row" }}>
+        {presentationTimer}
+        <Button variant="primary" size="lg" onClick={this.props.onClickPresentation} style={{ marginLeft: 10}}>
+          { this.props.presentationUserId ? "발표종료" : "발표시작" }
+        </Button>
+        {btnCheckFeedback}
+      </div>
+    )
+  }
+
+  renderFeedbackAlert(){
+    let feedbackAlert = <></>
+    if (this.state.showFeedback){
+      let msg = this.props.userFeedbackData.msg
+      if (this.props.userFeedbackData.result){
+        msg = this.props.userFeedbackData.body.map(feedback=>{
+          return (
+            <div>
+              <div>{feedback.title}</div>
+              <div>
+                {
+                  Object.entries(feedback.body).map(([pId, pData])=>{
+                    console.log("[FeedbackTracking]", "inner", pData)
+                    return (
+                      <div>
+                        {pData.title} : {pData.answer}
+                      </div>
+                    )
+                  })
+                }
+              </div>
+            </div>
+          )
+        })
+      }
+      feedbackAlert = (
+        <Alert variant={this.props.userFeedbackData.result ? "success" : "danger"} onClose={() => { this.setState({ showFeedback: false })}} dismissible>
+          <Alert.Heading>피드백 확인</Alert.Heading>
+          {msg}
+        </Alert>
+      )
+    }
+    return feedbackAlert
+  }
+
   render(){
     return(
-      <div style={{ position: "relative", flex: "0 1 auto", display: "flex",  flexDirection: "column", height: "100%"}}>
+      <div className="OnlineLectureWrapper" style={{ position: "relative", flex: "0 1 auto", display: "flex",  flexDirection: "column", height: "100%"}}>
         
         {/* user cam part */}
         <div style={{ overflowX: "scroll", WebkitOverflowScrolling: "touch" }}>
@@ -304,9 +393,10 @@ class LecturePage extends Component {
         </div>
 
         {/* controller part */}
-        <div style={{ position:"absolute", left: 0, right:0, bottom: 0, height: "auto", background:"#000000", padding: 10 }}>
-          <Button variant="primary" size="lg" onClick={this.props.onClickPresentation}>{ this.props.presentationUserId ? "발표종료" : "발표시작" }</Button>
-        </div>
+        {this.renderController()}
+
+        {/* alert view part */}
+        {this.renderFeedbackAlert()}
         
       </div>
     )

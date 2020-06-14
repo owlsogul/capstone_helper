@@ -3,6 +3,11 @@ import Moment from 'react-moment';
 import 'moment-timezone';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
+const style = {
+  margin: "auto",
+  width: "70%",
+}
+
 class ComplexList extends Component {
   constructor(props) {
     super(props)
@@ -17,18 +22,18 @@ class ComplexList extends Component {
 
   render() {
     return (
-      <ul>
-        {this.props.list.map(item => (
-          <div class="jumbotron">
-            <h3>{item.title}</h3>
-            <hr class="my-4"></hr>
-            <h5>{item.body}</h5>
-            <div><Moment format={"YYYY.MM.DD"}>{item.writtenDate}</Moment> (<Moment fromNow>{item.writtenDate}</Moment>)</div>
-            {/* <a class="btn btn-primary btn-lg" href="#" role="button">수정</a>
-            <a class="btn btn-primary btn-lg" href="#" role="button">삭제</a> */}
-          </div>
-        ))}
-      </ul>
+      <div style={style}>
+        <ul>
+          {this.props.list.map(item => (
+            <div class="jumbotron">
+              <h3>{item.title}</h3>
+              <hr class="my-4"></hr>
+              <h5>{item.body}</h5>
+              <div><Moment format={"YYYY.MM.DD"}>{item.writtenDate}</Moment> (<Moment fromNow>{item.writtenDate}</Moment>)</div>
+            </div>
+          ))}
+        </ul>
+      </div>
     )
   }
 }

@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
 import network from '../network/index';
+import { array } from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,25 +60,23 @@ function SimpleExpansionPanel(props) {
   );
 }
 
+// title, key 받아오기
+/*
+[
+  {title: 5주차 피드백,
+  body: [{내용의흐름도:5, 내용: 어쩌구저쩌구}, {내용의흐름도:5, 내용: 어쩌구저쩌구}]
+  },
+  {title: 5주차 피드백,
+  body: [{내용의흐름도:5, 내용: 어쩌구저쩌구}, {내용의흐름도:5, 내용: 어쩌구저쩌구}]
+  }
+  ]
+  */
+
 function MyExpansionPanel(props) {
   const classes = useStyles();
-  var a = null;
-  var b = null;
-  var v = null;
-  a = props.questionsAndAnswers[Object.keys(props.questionsAndAnswers)]
-  // console.log(a) // [Log] {질문1: "발표를 잘했나요?", 질문2: "발표 자료의 완성도는 어땠나요?"} (main.chunk.js, line 1203)
-  // console.log(Object.keys(a)) // [Log] ["0", "1"] (2) (main.chunk.js, line 1204)
+  console.log("안에는....")
+  console.log(props)
 
-  // for (var i = 0; i < Object.keys(a).length; i++) {
-  //   for (var j = 0; j < Object.keys(a[key]).length; j++) {
-  //     return (
-  //       <div>
-  //         <li>set</li>
-  //         <form>a[key][set]</form>
-  //       </div>
-  //     )
-  //   }
-  // }
   return (
     <div className={classes.root}>
       <ExpansionPanel>
@@ -86,25 +85,51 @@ function MyExpansionPanel(props) {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography className={classes.heading}>{props.week}</Typography>
+          <Typography className={classes.heading}>{props.title}</Typography>
+
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Typography>
-            <Pagination count={props.count} color="primary"></Pagination>
             {
-              Object.keys(a).map((key) => {
-                // console.log(key)
-                return key;
-              }).map((set) => {
-                console.log(set)
-                console.log(a[set]) // [Log] {질문2: "발표를 잘했나요?", 답변1: "예"} (main.chunk.js, line 1285)
-                return `${a[set]}`
-              })
-              // .map((each)=>{
-              //   Object.keys(each) // [["0", "1", "2"], ["0", "1", "2"]] (2)
-              // }).map((v)=>{
-              //   return <h1>{v}</h1>
+             props.body.map(reply=>{
+               var body = reply.body
+               return (
+                 <div>
+                   <div>평가 조 : {reply.targetTeamId}</div>
+                  <div>평가 내역 : 
+                    { 
+                      Object.entries(body)
+                        .sort((prev, next)=>{ // 이부분은 해도 되고 안해도 되고 문제 id로 정렬하는거
+                          if (prev[0] < next[0]) return -1
+                          else if (prev[0] == next[0]) return 0
+                          else return 1
+                        })
+                        .map(([key, value])=>{
+                          return (
+                            <div>
+                              <div>문항 번호 {key}</div>
+                              <div>{value.title} : {value.answer}</div>
+                            </div>
+                          )
+                        })
+                    }
+                  </div>
+                 </div>
+               )
+             }) 
+              // props.body.map(reply=>{
+              //   return (
+              //     <div>
+                    
+              //     </div>
+              //   )
               // })
+              // props.body.map((e) => {
+              //   Object.keys(e)
+              // }).map(key => {
+              //   return <h3>{key + "는" + e[key]}</h3>
+              // })
+              // JSON.stringify(props.body, null, 2)
             }
           </Typography>
         </ExpansionPanelDetails>
@@ -115,17 +140,53 @@ function MyExpansionPanel(props) {
 
 
 class FeedbackList extends Component {
+
+  constructor(props){
+    super(props)
+    this.renderWeeks = this.renderWeeks.bind(this)
+  }
+
+  renderWeeks(){
+    return this.props.feedbackList.map(feedback=>{
+      let formBody = feedback.FeedbackForm.body // form body json string
+      let replyBody = feedback.FeedbackReplies.map(reply=>{
+        var formObj = JSON.parse(formBody)
+        var replyObj = JSON.parse(reply.body)
+
+        // form에다가 answer 항목 넣어서 전달.
+        Object.keys(formObj).forEach(key=>{
+          if (replyObj[key]){
+            formObj[key].answer = replyObj[key]
+          }
+        })
+
+        var retValue = {
+          targetTeamId: reply.targetTeamId,
+          teamId: reply.teamId,
+          body: formObj
+        }
+        return retValue
+      })
+      return <MyExpansionPanel title={feedback.title} body={replyBody}></MyExpansionPanel>
+    })
+  }
+
   render() {
-    console.log("더미는")
-    console.log(this.props.questionsAndAnswers)
-    // return <h1> hello </h1>
-    return (
-      <div>
-        {this.props.questionsAndAnswers["questionsAndAnswers"].map((key, index, array) => {
-          return <MyExpansionPanel week={Object.keys(key)[0]} questionsAndAnswers={array[index][Object.keys(key)[0]][0].body[index]} count={array[index][Object.keys(key)[0]][1].count}></MyExpansionPanel>
-        })}
-      </div>
-    )
+    var myArray = null
+    var keys = null
+    console.log("json은")
+    console.log(this.props.feedbackList)
+    var arr = [] // 제일 큰 array
+
+    if (this.props.feedbackList.length > 0) {
+      return (<>
+      {this.renderWeeks()}
+      </>)
+    }
+    else {
+      console.log("여기여기여기")
+      return <h6>보여줄 것이 없습니다.</h6>
+    }
   }
 }
 
@@ -134,4 +195,4 @@ class DefaultFeedbackList extends Component {
     return <SimpleExpansionPanel title={this.props.title} body={this.props.body}></SimpleExpansionPanel>
   }
 }
-export { FeedbackForm, FeedbackList, DefaultFeedbackList }
+export { FeedbackForm, FeedbackList, DefaultFeedbackList, MyExpansionPanel }

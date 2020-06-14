@@ -25,7 +25,8 @@ export default class InLecturePage extends Component {
       userDataMap: {}, // userId와 userData의 매핑 정보
       lectureId: false,
       presentationUserId: false, // 발표자 socketId
-      presentationStartedAt: false
+      presentationStartedAt: false,
+      userFeedbackData: { result: false, msg: "로딩 중..." },
     }
     this.myVideoStream = false
     this.getMedia = this.getMedia.bind(this)
@@ -104,6 +105,7 @@ export default class InLecturePage extends Component {
   
       // 발표 관련 부분
       this.socket.on("presentation", msg=>{
+          console.log("[PresentationTracker] onPresentation", msg)
           let type = msg.type
           let userId = msg.userId
           let startedAt = msg.startedAt
@@ -117,6 +119,7 @@ export default class InLecturePage extends Component {
   connectWebRTCSocket(data){
     this.setState({ lectureId: data.lectureId })
     this.socket.emit("member", { lectureId: data.lectureId })
+    this.socket.emit("presentation", { lectureId:  data.lectureId })
     // user on signal
     this.socket.on('signal', data => {
       const peerId = data.from
@@ -228,6 +231,9 @@ export default class InLecturePage extends Component {
     peer.on('error', (e) => {
       console.log('[PeerTracking] onError', peerId == this.socket.id, peerId, e)
       // 에러 발생시 삭제 하고 다시 만들기
+      if (peer){
+        peer.destroy()
+      }
       this.createPeer(peerId, true, this.myVideoStream)
     })
 
@@ -238,6 +244,7 @@ export default class InLecturePage extends Component {
 
   destroyPeer(peerId) {
     const peers = {...this.state.peers}
+    if (peers[peerId]) peers[peerId].destroy()
     delete peers[peerId]
     this.setState({
       peers
@@ -298,6 +305,56 @@ export default class InLecturePage extends Component {
     }
   }
 
+  handleCheckFeedback(){
+
+    this.setState({ userFeedbackData: { result: false, msg: "로딩 중..." } })
+    // target userId, classId => team
+    // team => feedback replies
+    // show it
+    network.network("/api/feedback/admin_list_reply", { body: { userId: this.state.presentationUserId, classId: this.state.classId } })
+      .then(feedbackList=>{
+        var body = feedbackList.map(weeklyFeedback=>{
+          var replies = weeklyFeedback.FeedbackReplies
+          var form = weeklyFeedback.FeedbackForm
+
+          // 응답 수집 및 가공
+          var formBody = JSON.parse(form.body)
+          var retValue = {
+            postId: weeklyFeedback.postId,
+            title: weeklyFeedback.title,
+            body: {}
+          }
+          Object.entries(formBody).forEach(([pId, pData])=>{
+            if (pData.type == "number"){
+              retValue.body[pId] = {
+                title: pData.title,
+                answer: replies.reduce((prev, reply)=>{
+                  return prev + Number.parseInt(JSON.parse(reply.body)[pId])/replies.length
+                }, 0)
+              }
+            }
+            else {
+              retValue.body[pId] = {
+                title: pData.title,
+                answer: replies.reduce((prev, reply)=>{
+                  return prev + JSON.parse(reply.body)[pId] + "\n"
+                }, "")
+              }
+            }
+          })
+
+          // 리턴
+          console.log("[FeedbackTracking]", retValue)
+          return retValue
+        })        
+        this.setState({ userFeedbackData: { result: true, body: body} })
+      })
+      .catch(res=>{
+        this.setState({ userFeedbackData: { result: false, msg: "권한이 없습니다." } })
+      })
+
+  }
+
   render() {
     let page = (<></>)
     if (this.state.error) {
@@ -312,9 +369,14 @@ export default class InLecturePage extends Component {
         userMap={this.state.userMap} 
         userDataMap={this.state.userDataMap}
         presentationUserId={this.state.presentationUserId}
+        presentationStartedAt={this.state.presentationStartedAt}
 
         // event callback
         onClickPresentation={this.handlePresentation.bind(this)}
+        onClickCheckFeedback={this.handleCheckFeedback.bind(this)}
+        
+        // 주차별로 합산들어갑니다잉
+        userFeedbackData={this.state.userFeedbackData}
 
       />
     }

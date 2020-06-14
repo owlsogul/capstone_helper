@@ -92,13 +92,16 @@ li {
   top: 0;
   z-index: 1040;
   width: 100vw;
+  max-width: 100vw;
   height: 100vh;
+  max-height: 100vh;
   background-color: #ffffff;
 }
 
 .dashboard-container{
   width: 100%;
-  min-height: 100%;
+  height: 100%;
+  max-height: 100%;
   display: flex;
   flex-direction: row;
 }
@@ -157,10 +160,12 @@ li {
 #title_txt:focus { outline : none; }
 
 #content_txt {
-  width: 91%;
+  border: 'solid';
+  border-width: '0 0 1px';
   resize: none;
   border: none;
-  height: 500px
+  height: 500px;
+  width: 100%
 }
 
 #content_txt:focus { outline : none; }

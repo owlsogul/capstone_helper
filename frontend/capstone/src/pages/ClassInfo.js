@@ -184,9 +184,9 @@ class ClassInfoPage extends Component {
           <Card body>
             <div>
               <ul>
-                <li>{this.state.lectureId}</li>
-                {/* <a class="btn btn-light btn-lg" href="#" role="button">PDF 다운로드</a> */}
-                <Button variant="contained" color="primary">강의 계획서 PDF 다운로드</Button>
+                <li>{"classId: " + this.state.lectureId}</li>
+                <a class="btn btn-light btn-lg" variant="contained" color="primary" href="https://caphelper.owlsogul.com/files/syllabus/1.pdf" role="button">PDF 다운로드</a>
+                {/* <Button onclick="location.href='https://caphelper.owlsogul.com/files/syllabus/1.pdf'" variant="contained" color="primary">강의 계획서 PDF 다운로드</Button> */}
               </ul>
             </div>
           </Card>

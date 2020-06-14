@@ -63,9 +63,21 @@ function MyExpansionPanel(props) {
   const classes = useStyles();
   var a = null;
   var b = null;
+  var v = null;
   a = props.questionsAndAnswers[Object.keys(props.questionsAndAnswers)]
-  console.log(a) // [Log] {질문1: "발표를 잘했나요?", 질문2: "발표 자료의 완성도는 어땠나요?"} (main.chunk.js, line 1203)
-  console.log(Object.keys(a)) // [Log] ["질문1", "질문2"] (2) (main.chunk.js, line 1204)
+  // console.log(a) // [Log] {질문1: "발표를 잘했나요?", 질문2: "발표 자료의 완성도는 어땠나요?"} (main.chunk.js, line 1203)
+  // console.log(Object.keys(a)) // [Log] ["0", "1"] (2) (main.chunk.js, line 1204)
+
+  // for (var i = 0; i < Object.keys(a).length; i++) {
+  //   for (var j = 0; j < Object.keys(a[key]).length; j++) {
+  //     return (
+  //       <div>
+  //         <li>set</li>
+  //         <form>a[key][set]</form>
+  //       </div>
+  //     )
+  //   }
+  // }
   return (
     <div className={classes.root}>
       <ExpansionPanel>
@@ -80,9 +92,19 @@ function MyExpansionPanel(props) {
           <Typography>
             <Pagination count={props.count} color="primary"></Pagination>
             {
-              Object.keys(a).map((key)=>{
-                return <li>{key+':'+ a[key]}</li>
+              Object.keys(a).map((key) => {
+                // console.log(key)
+                return key;
+              }).map((set) => {
+                console.log(set)
+                console.log(a[set]) // [Log] {질문2: "발표를 잘했나요?", 답변1: "예"} (main.chunk.js, line 1285)
+                return `${a[set]}`
               })
+              // .map((each)=>{
+              //   Object.keys(each) // [["0", "1", "2"], ["0", "1", "2"]] (2)
+              // }).map((v)=>{
+              //   return <h1>{v}</h1>
+              // })
             }
           </Typography>
         </ExpansionPanelDetails>
@@ -100,11 +122,6 @@ class FeedbackList extends Component {
     return (
       <div>
         {this.props.questionsAndAnswers["questionsAndAnswers"].map((key, index, array) => {
-          // 한주차 씩
-          console.log("body는")
-          console.log(index)
-          console.log(Object.keys(key)[0])
-          console.log(array[index][Object.keys(key)[0]][0].body[index])
           return <MyExpansionPanel week={Object.keys(key)[0]} questionsAndAnswers={array[index][Object.keys(key)[0]][0].body[index]} count={array[index][Object.keys(key)[0]][1].count}></MyExpansionPanel>
         })}
       </div>

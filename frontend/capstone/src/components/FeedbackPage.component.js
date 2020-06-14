@@ -29,7 +29,7 @@ class FeedbackForm extends Component {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
             <div>
-              {this.props.feedBackFormText}
+              {JSON.stringify(this.props.feedBackFormText)}
             </div>
           </ExpansionPanelDetails>
         </ExpansionPanel>
@@ -91,45 +91,34 @@ function MyExpansionPanel(props) {
         <ExpansionPanelDetails>
           <Typography>
             {
-             props.body.map(reply=>{
-               var body = reply.body
-               return (
-                 <div>
-                   <div>평가 조 : {reply.targetTeamId}</div>
-                  <div>평가 내역 : 
-                    { 
-                      Object.entries(body)
-                        .sort((prev, next)=>{ // 이부분은 해도 되고 안해도 되고 문제 id로 정렬하는거
-                          if (prev[0] < next[0]) return -1
-                          else if (prev[0] == next[0]) return 0
-                          else return 1
-                        })
-                        .map(([key, value])=>{
-                          return (
-                            <div>
-                              <div>문항 번호 {key}</div>
-                              <div>{value.title} : {value.answer}</div>
-                            </div>
-                          )
-                        })
-                    }
+              props.body.map(reply => {
+                var body = reply.body
+                return (
+                  <div>
+                    <div>평가 조 : {reply.targetTeamId}</div>
+                    <div>[평가 내역]
+                    {
+                        Object.entries(body)
+                          .sort((prev, next) => { // 이부분은 해도 되고 안해도 되고 문제 id로 정렬하는거
+                            if (prev[0] < next[0]) return -1
+                            else if (prev[0] == next[0]) return 0
+                            else return 1
+                          })
+                          .map(([key, value]) => {
+                            return (
+                              <div>
+                                {/* <div>문항 번호 {key}</div> */}
+                                <div>{value.title} : {value.answer}</div>
+                              </div>
+                            )
+                          })
+                      }
+                    </div>
+                    <br>
+                    </br>
                   </div>
-                 </div>
-               )
-             }) 
-              // props.body.map(reply=>{
-              //   return (
-              //     <div>
-                    
-              //     </div>
-              //   )
-              // })
-              // props.body.map((e) => {
-              //   Object.keys(e)
-              // }).map(key => {
-              //   return <h3>{key + "는" + e[key]}</h3>
-              // })
-              // JSON.stringify(props.body, null, 2)
+                )
+              })
             }
           </Typography>
         </ExpansionPanelDetails>
@@ -141,21 +130,21 @@ function MyExpansionPanel(props) {
 
 class FeedbackList extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props)
     this.renderWeeks = this.renderWeeks.bind(this)
   }
 
-  renderWeeks(){
-    return this.props.feedbackList.map(feedback=>{
+  renderWeeks() {
+    return this.props.feedbackList.map(feedback => {
       let formBody = feedback.FeedbackForm.body // form body json string
-      let replyBody = feedback.FeedbackReplies.map(reply=>{
+      let replyBody = feedback.FeedbackReplies.map(reply => {
         var formObj = JSON.parse(formBody)
         var replyObj = JSON.parse(reply.body)
 
         // form에다가 answer 항목 넣어서 전달.
-        Object.keys(formObj).forEach(key=>{
-          if (replyObj[key]){
+        Object.keys(formObj).forEach(key => {
+          if (replyObj[key]) {
             formObj[key].answer = replyObj[key]
           }
         })
@@ -178,9 +167,9 @@ class FeedbackList extends Component {
     console.log(this.props.feedbackList)
     var arr = [] // 제일 큰 array
 
-    if (this.props.feedbackList.length > 0) {
+    if (this.props.feedbackList && this.props.feedbackList.length > 0) {
       return (<>
-      {this.renderWeeks()}
+        {this.renderWeeks()}
       </>)
     }
     else {

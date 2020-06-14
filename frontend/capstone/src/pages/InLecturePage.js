@@ -231,9 +231,6 @@ export default class InLecturePage extends Component {
     peer.on('error', (e) => {
       console.log('[PeerTracking] onError', peerId == this.socket.id, peerId, e)
       // 에러 발생시 삭제 하고 다시 만들기
-      if (peer){
-        peer.destroy()
-      }
       this.createPeer(peerId, true, this.myVideoStream)
     })
 

@@ -287,76 +287,76 @@ module.exports = ()=>{
           postId: 1,
           teamId: 1,
           targetTeamId: 2,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 1->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"PPT 시각자료를 잘 활용해서 그런지 이해가 잘되었습니다." })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 1,
           targetTeamId: 3,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 1->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"준비가 많이 미흡한 것 같습니다. 팀원간에 소통이 없이 개발이 된거 같은 느낌을 받았습니다. 데모 준비가 되지 않았던점은 매우 아쉽습니다." })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 1,
           targetTeamId: 4,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 1->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"보여주신게 많이 없는 것 같아요… 다음 시간에는 더 많은 걸 보여주셨으면 좋겠습니다." })
         }),
         //2
         models.FeedbackReply.create({
           postId: 1,
           teamId: 2,
           targetTeamId: 1,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->1 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"새로운 기술을 시도하려는 모습이 보기 좋습니다." })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 2,
           targetTeamId: 3,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"피드백 수렴도 좋고 진행도 잘 되고 있는것 같다." })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 2,
           targetTeamId: 4,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 2->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"발표가 말이 빨라서 빠르게 이해하기 좀 어려운 면이 있었지만 개발은 잘 진행이 되고 있는 것 같았습니다." })
         }),
         // 3
         models.FeedbackReply.create({
           postId: 1,
           teamId: 3,
           targetTeamId: 2,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 3->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"이전 중간데모에서 있었던 오류들을 잘 해결하신 것 같습니다." })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 3,
           targetTeamId: 1,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 3->1 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"아직 핵심 기능들이 구현되지 않아서 남은 주차가 힘들 것 같습니다. 잘 마무리되게 진행하셨으면 좋겠습니다." })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 3,
           targetTeamId: 4,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 3->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"좋은 발표 잘 들었습니다. 데모를 통해서 프론트엔드에서 추가적인 기능이 있었으면 좋겠습니다." })
         }),
         // 4
         models.FeedbackReply.create({
           postId: 1,
           teamId: 4,
           targetTeamId: 2,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 4->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"오류가 아쉬웠으나 전체적으로 디자인이 eclass를 연상시키는듯하여 좋았습니다." })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 4,
           targetTeamId: 1,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 4->1 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"열심히 하신것 같지만 구현 진도가 다소 부진해 보입니다. 구현내용에 대해서 좀 더 솔직하게 발표하시면 좋을 것 같아요." })
         }),
         models.FeedbackReply.create({
           postId: 1,
           teamId: 4,
           targetTeamId: 3,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"3주차 4->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"인터페이스에 많은 신경을 쓴 것 같습니다." })
         }),
 
         // 4주차
@@ -365,76 +365,76 @@ module.exports = ()=>{
           postId: 2,
           teamId: 1,
           targetTeamId: 2,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 1->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"전체적인 프로젝트 진행이 잘 되는 것 같다" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 1,
           targetTeamId: 3,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 1->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"악성 유저들에 대처하려는 노력이 ppt에 잘 담겨 있어서 좋았습니다. 개발이 잘 이루어지고 있는 것 같습니다." })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 1,
           targetTeamId: 4,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 1->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"너무 기능적 진행에 초점을 두셔서 개발 진행은 느린감이 없지않아 있는같다" })
         }),
         //2
         models.FeedbackReply.create({
           postId: 2,
           teamId: 2,
           targetTeamId: 1,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 2->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"창 간이동에 오류가 잦았는데 완성도가 아쉬웠습니다." })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 2,
           targetTeamId: 3,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 2->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"UI가 깔끔해서 좋다." })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 2,
           targetTeamId: 4,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 2->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"캡스톤 재밌다." })
         }),
         // 3
         models.FeedbackReply.create({
           postId: 2,
           teamId: 3,
           targetTeamId: 2,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 3->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"정말로 재밌는걸?" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 3,
           targetTeamId: 1,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 3->1 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"기쁘다" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 3,
           targetTeamId: 4,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 3->4 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"종강 화이팅입니다." })
         }),
         // 4
         models.FeedbackReply.create({
           postId: 2,
           teamId: 4,
           targetTeamId: 2,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 4->2 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"굳굳굳" })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 4,
           targetTeamId: 1,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 4->1 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"파이널 데모까지 파이팅입니다." })
         }),
         models.FeedbackReply.create({
           postId: 2,
           teamId: 4,
           targetTeamId: 3,
-          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"4주차 4->3 피드백" })
+          body: JSON.stringify({ "_1": "5", "_3":"5", "_2":"좋습니다." })
         }),
       ]
       return Promise.all(msg)

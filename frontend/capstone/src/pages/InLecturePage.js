@@ -202,7 +202,7 @@ export default class InLecturePage extends Component {
 
     const peer = new Peer({
       initiator: initiator, 
-      trickle: false, 
+      trickle: true, 
       stream: stream, 
       config: { 
         iceServers: [

@@ -48,7 +48,7 @@ function getClassMessage(classId) {
 }
 
 // 수업 관리자들이 메시지를 보내는 API
-function sendReply(classId, receiver) {
+function sendReply(classId, receiver, body) {
   return network.network('/api/message/send_reply', {
     method: 'POST',
     credentials: 'include',
@@ -56,7 +56,7 @@ function sendReply(classId, receiver) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: { classId: classId, receiver: receiver },
+    body: { classId: classId, receiver: receiver, body: body },
   })
 }
 
@@ -165,15 +165,12 @@ export default class MessagePage extends Component {
   }
 
   sendMyReply(classId, body) {
-    sendReply(classId, "student01@cau.ac.kr", body)
+    sendReply(1, "student01@cau.ac.kr", body)
       .then(() => {
         return getMessage()
       })
-      .then((res) => {
-        let a = this.state.classId
-        console.log(a)
-        this.setState({ messages: res[a] })
-        console.log(this.state.message)
+      .then(()=>{
+        alert("메세지가 정상적으로 보내졌습니다.")
       })
   }
 

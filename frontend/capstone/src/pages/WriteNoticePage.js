@@ -17,8 +17,8 @@ class WriteNoticePage extends Component {
     }
 
     sendMsg(title, body) {
-        console.log("classId는")
-        console.log(this.state.classId)
+        // console.log("classId는")
+        // console.log(this.state.classId)
         /// TODO: classId가 undefined인 문제 있음. 
         uploadNotice(1, title, body)
             .then((res) => {
